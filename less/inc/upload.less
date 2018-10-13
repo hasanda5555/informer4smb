@@ -1,0 +1,59 @@
+ul {
+	&.tab {
+		padding-left: 0;
+		list-style: none;
+		
+		li {
+			display: inline-block;
+			padding: 0 10px 10px;
+			
+		}
+	}
+}
+
+.tabcontent {
+    overflow: auto;
+	margin-bottom: 15px;
+	
+	#pla {
+		th {
+			padding: 2px 5px;
+			
+		}
+		td {
+			padding: 2px;
+			
+			&.amount {
+				max-width: 120px;
+			}
+			
+			&.percent {
+				text-align: center;
+				
+				input {
+					max-width: 50px;
+				}
+			}
+			
+			input {
+				max-width: 100%;
+			}
+		}
+	}
+}
+button#map {
+	margin-left: 10px;
+}
+
+#divrpttabs {
+    padding-top: 10px;
+    border-top: 1px solid #aaa;
+}
+
+#divrpt .report {
+    display: inline-block;
+	
+	td, th {
+		padding: 0px 5px;
+	}
+}

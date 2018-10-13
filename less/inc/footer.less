@@ -1,0 +1,42 @@
+#footer {
+    position: absolute;
+    bottom: 0;
+	font-size: 14px;
+    text-align: center;
+    width: 100%;
+    height: @footer-height;
+    color: #fff;
+    //padding-top: 35px;
+    //padding-bottom: 15px;
+	
+	.subfooter {
+		display: block;
+		font-size: 12px;
+		//color: #777;
+	}
+
+    @media (min-width: (@screen-lg-min + 80)) {
+        //padding-left: @sidebar-left-width;
+    }
+    
+    .f-menu {
+        display: block;
+        width: 100%;
+        .list-inline();
+        margin-top: 8px;
+        
+        & > li > a {
+            color: #a2a2a2;
+            
+            &:hover {
+                color: #777;
+            }
+        } 
+    }
+}
+
+.sidebar-toggled {
+    #footer {
+        display: none;
+    }
+}

@@ -1,0 +1,61 @@
+.btn {
+    border: 0;
+    text-transform: uppercase;
+
+    &[class*="bgm-"]:not(.bgm-white) {
+        color: #fff;
+    } 
+
+    .caret {
+        margin-top: -3px;
+    }
+
+    &:not(.btn-link) {
+        box-shadow: 0 2px 5px rgba(0,0,0,.16),0 2px 10px rgba(0,0,0,.12);
+    }
+	
+	&.disabled, &[disabled] {
+		cursor: default;
+	}
+}
+
+fieldset[disabled] .btn {
+	cursor: default;
+}
+
+.btn-link {
+    color: #797979;
+    text-decoration: none;
+    border-radius: 2px;
+
+    &:hover {
+        color: #0a0a0a;
+    }
+}
+
+.btn-primary {
+	&.btn-inverted {
+		color: @primary-color;
+		background: @primary-color-inverted; 
+		
+		&:hover, &:focus {
+			background: darken(@primary-color-inverted, 10%);
+			color: @primary-color;
+		}
+		
+		&[disabled] {
+			background: #ddd;
+			color: #777;
+		}
+	}
+}
+
+.open .btn {
+    outline: none !important;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+
+    &:focus, &:active {
+        outline: none !important;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+    }
+}

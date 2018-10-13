@@ -1,0 +1,399 @@
+.table {
+    margin-bottom: 0;
+    
+    & > thead > tr > th {
+        //background-color: @m-teal;
+        vertical-align: middle;
+        font-weight: 500;
+        color: #333;
+        border-width: 1px;
+        text-transform: uppercase;
+    }
+
+    &.table-inner {
+        border: 0;
+    }
+    
+    & > thead > tr,
+    & > tbody > tr,
+    & > tfoot > tr {
+        & > th, & > td {
+            &:first-child {
+                padding-left: 30px;
+            }
+            
+            &:last-child {
+                padding-right: 30px;
+            }
+            
+        }
+    }
+    
+    & > tbody, & > tfoot {
+        & > tr {
+            &.active,
+            &.info,
+            &.warning,
+            &.succes,
+            &.danger {
+                & > td {
+                    border: 0;
+                }
+            }
+            
+            &:last-child > td >  {
+                //padding-bottom: 20px;
+            }
+        }
+    }
+	
+	&.dataTable {
+		margin: 0;
+	}
+	
+	&.figures {
+		border-top: none;
+		
+		& > thead {
+			& > tr {
+				& > th {
+					text-align: center;
+					text-transform: none;
+					padding: 5px 5px 0;
+					border-bottom: none;
+				}
+			}
+		}
+		
+		& > tbody {
+			& > tr {
+				& > td {
+					text-align: center;
+					border-top: none;
+					padding-top: 0;
+					padding-bottom: 0;
+					color: #333;
+					//background: @m-teal;
+					width: 33%;
+					padding-left: 10px;
+					padding-right: 10px;
+					vertical-align: bottom;
+					
+					.number {
+						font-size: 3em;
+						display: block;
+						
+						.arrow-icon {
+							height: 20px;
+							vertical-align: top;
+							margin-right: 5px;
+							margin-top: 2px;
+						}
+					}
+					
+					.following {
+						font-size: 1.2em;
+					}
+				}
+			}
+		}
+	}
+}
+
+.table-striped {
+    td, th {
+        border: 0 !important;
+    }
+}
+
+.table-bordered {
+    border-bottom: 0;
+    border-left: 0;
+    border-right: 0; 
+    
+    & > tbody > tr {
+        & > td, & > th {
+            border-bottom: 0;
+            border-left: 0;
+            
+            &:last-child {
+                border-right: 0;
+            }
+        }
+    }
+    
+    & > thead > tr > th {
+        border-left: 0;
+        
+        &:last-child {
+            border-right: 0;
+        }
+    }
+}
+
+.table-responsive {
+    border: 0;
+}
+
+.has-alert {
+	.layer-table {
+		.number-row {
+			td {
+				width: 29%;
+				
+				&.icon-cell {
+					width: 13%;
+				}
+				
+				&.secondary-cell {
+					width: 25%;
+					
+					&.primary-width {
+						width: 29%;
+					}
+				}
+				
+				&.tertiary-cell {
+					width: 33%;
+				}
+			}
+		}
+	}
+}
+
+.layer-table {
+	&.expense-overview {
+		.title-row {
+			td {
+				font-size: 14px;
+				font-weight: 400;
+			}
+		}
+	}
+}
+
+#dashboard {
+	.layer-wrapper {
+		margin-bottom: 5px;
+	}
+}
+
+.layer-table {
+    width: 100%;
+	box-shadow: 0 2px 2px rgba(0,0,0,0.3);
+	border-radius: 5px;
+	
+	&.feature {
+		margin-bottom: 10px;
+		
+		.title-row {
+			.first {
+				border-radius: 5px 0 0;
+				width: 40%;
+			}
+			.second {
+				border-radius: 0 5px 5px 0;
+				background: rgba(200,200,200,0.85);
+				width: 60%;
+				text-align: center;
+				font-size: 32px;
+				font-weight: 400;
+				
+				img {
+					max-height: 32px;
+					margin-right: 5px;
+					margin-top: -8px;
+				}
+			}
+		}
+		.number-row {
+			.primary-cell {
+				border: none;
+			}
+			.secondary-cell {
+				background: #d6d6d6;
+			}
+		}
+		.bottom-row {
+			height: 15px;
+			
+			.first {
+				border-radius: 0 0 0 5px;
+			}
+			.second {
+				border-radius: 0 0 5px;
+				background: #d6d6d6;
+			}
+		}
+	}
+	
+	&.disabled {
+		tbody {
+			tr {
+				&.title-row {
+					td {
+						color: #777;
+					}
+				}
+				
+				&.number-row {
+					span{
+						&.number {
+							min-height: 53px;
+							line-height: 37px;
+							
+						}
+					}
+				}
+				
+				td {
+					background: #ddd;
+					opacity: 0.65;
+					color: #777;
+				}
+			}
+		}
+	}
+	
+	&.current-month {
+		.title-row {
+			td {
+				font-size: 17px;
+				font-weight: 500;
+			}
+		}
+	}
+	
+	.title-row {
+		td {
+			background: rgba(255,255,255,.85);
+			border-radius: 5px 5px 0 0;
+			padding: 2px 10px 0;
+			//text-transform: uppercase;
+			color: #32218a;
+			//color: #32218a;
+			font-size: 15px;
+			font-weight: 500;
+		}
+	}
+	.number-row {
+		td {
+			color: #32218a;
+			background: rgba(255,255,255,.85);
+			text-align: center;
+			width: 33%;
+			vertical-align: bottom;
+			
+			&.icon-cell {
+				width: 0%;
+				margin-bottom: 10px;
+				vertical-align: middle;
+				text-align: right;
+				
+				img {
+					max-width: 75%;
+					max-height: 40px;
+				}
+			}
+			&.primary-cell {
+				border-right: 1px solid #aaa;
+				
+				.number {
+					font-size: 24px;
+					
+					.arrow-icon {
+						height: 25px;
+						margin-top: 4px;
+					}
+				}
+			}
+			&.secondary-cell {
+				border-right: 1px solid #aaa;
+				
+				& +.primary-cell {
+					border-right: none;
+				}
+			}
+			&.tertiary-cell {
+				
+			}
+			
+			.number {
+				display: block;
+				font-size: 18px;
+				
+				.arrow-icon {
+					height: 20px;
+					vertical-align: top;
+					margin-right: 5px;
+					margin-top: 2px;
+				}
+				
+				.zmdi {
+					font-size: 24px;
+				}
+			}
+		}
+	}
+	.bottom-row {
+		td {
+			background: rgba(255,255,255,.85);
+			border-radius: 0 0 5px 5px;
+			height: 5px;
+		}
+	}
+	
+	.negative {
+		color: #e51616;
+	}
+}
+.layer-spacer {
+	height: 5px;
+}
+
+@media(max-width: @screen-xs-max) {
+	.table {
+		&.figures {
+			& > thead {
+				& > tr {
+					& > th {
+						
+					}
+				}
+			}
+			
+			& > tbody {
+				& > tr {
+					& > td {
+						&.first {
+							padding-bottom: 0;
+							//padding-top: 10px;
+							
+							.number {
+								font-size: 2.5em;
+							}
+						}
+						
+						&.percentage {
+							.number {
+								line-height: 20px;
+							}
+						}
+						
+						.number {
+							font-size: 1.9em;
+							
+							.zmdi {
+								font-size: 32px;
+							}
+						}
+						
+						.following {
+							font-size: 1em;
+						}
+					}
+				}
+			}
+		}
+	}
+}

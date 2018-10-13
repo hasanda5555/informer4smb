@@ -1,0 +1,217 @@
+.panel {
+    box-shadow: none;
+    border: 0;
+}
+
+.panel-heading {
+    padding: 0;
+}
+
+.panel-title {
+    & > a {
+        padding: 10px 15px;
+        display: block;
+        font-size: 13px;
+    }
+}
+ 
+.panel-collapse {
+    .panel-heading {
+        position: relative;
+		background: @brand-primary;
+        
+        .panel-title {
+            & > a {
+                padding: 20px 5px 20px 40px;
+                color: #fff;
+                position: relative;
+				font-size: 18px;
+				font-weight: 400;
+                
+                &:after,
+                &:before {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    height: 2px;
+                    width: 100%;
+                    content: "";
+                    .transition(all);
+                    .transition-duration(300ms);
+                    .backface-visibility(hidden);
+                }
+                
+                &:after {
+                    .scale(0);
+                }
+            }
+        }
+        
+        &:not(.active) .panel-title > a {
+            &:before {
+                background: #eee;
+            }
+        }
+        
+        &:before,
+        &:after {
+            font-family: @font-icon-md;
+            position: absolute;
+            .transition(all);
+            .transition-duration(300ms);
+            .backface-visibility(hidden);
+            
+			color: #fff;
+			font-size: 22px;
+			top: 15px;
+			left: 15px;
+        }
+        
+        &:before {
+            content: "\f278";
+            .scale(1);
+        }
+        
+        &:after {
+            .scale(0);
+            content: "\f273";
+        }
+        
+        &.active {
+            .panel-title > a {
+                &:after {
+                    .scale(1);
+                }
+            }
+            
+            &:before {
+                .scale-rotate(0, -90deg);
+            }
+            
+            &:after {
+                .scale(1);
+            }
+        }
+    }
+    
+    
+    .panel-body {
+        border-top: 0 !important;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+}
+
+.panel-collapse-color(@color) {
+    .panel-collapse {
+        .panel-heading {
+            &.active .panel-title > a {
+                &:after {
+                    background: @color;
+                }
+            }
+        }
+    }
+}
+
+.commentary-panel, .content-panel {
+    background: rgba(255,255,255,0.85);
+    border-radius: 4px;
+    padding: 0;
+	margin-bottom: 15px;
+    min-height: 200px;
+	
+	header {
+		border-radius: 4px 4px 0 0;
+	}
+	
+	.hi-logo {
+		& > a[disabled] {
+			cursor: default;
+		}
+	}
+	
+	.panel-body {
+		font-size: 15px;
+		
+		h2 {
+			margin-top: 0;
+			margin-bottom: 10px;
+			
+			&.step {
+				font-size: 24px;
+			}
+		}
+		
+		.left-content {
+			display: inline-block;
+			width: 200px;
+			text-align: right;
+		}
+		
+		.right-content {
+			display: inline-block;
+		}
+		
+		.spacer {
+			margin-bottom: 0;
+			height: 1px;
+		}
+	}
+	
+	.commentary-body {
+		padding: 15px 15px 10px;
+		
+		.generated-commentary {
+			padding-bottom: 15px;
+		}
+	}
+	
+	.button-panel {
+		text-align: right;
+		padding: 0 15px 10px;
+		
+		button {
+			margin-left: 10px;
+			
+			&.pull-left {
+				margin-left: 0;
+				margin-right: 10px;
+			}
+		}
+	}
+}
+
+.panel-group {
+    &:not([data-collapse-color]) {
+        .panel-collapse-color(@brand-primary);
+    }
+    
+    &[data-collapse-color="blue"] {
+        .panel-collapse-color(@m-blue);
+    }
+    
+    &[data-collapse-color="red"] {
+        .panel-collapse-color(@m-red);
+    }
+    
+    &[data-collapse-color="green"] {
+        .panel-collapse-color(@m-green);
+    }
+    
+    &[data-collapse-color="amber"] {
+        .panel-collapse-color(@m-amber);
+    }
+    
+    &[data-collapse-color="teal"] {
+        .panel-collapse-color(@m-teal);
+    }
+    
+    &[data-collapse-color="black"] {
+        .panel-collapse-color(@m-black);
+    }
+    
+    &[data-collapse-color="cyan"] {
+        .panel-collapse-color(@m-cyan);
+    }
+}

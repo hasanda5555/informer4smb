@@ -1,0 +1,73 @@
+body {
+	&.waves {
+		background: url('../img/waves.jpg') repeat top left #697ea7;
+		
+		#footer {
+			color: #fff;
+			background: #555;
+			padding-top: 5px;
+		}
+	}
+	
+	&.variant1 {
+		background: #eee;
+		
+		header {
+			background: darksalmon;
+		}
+		
+		.company-header {
+			background: teal;
+			
+			.logo-container {
+				display: none;
+			}
+			
+			.text-container {
+				padding-left: 15px;
+			}
+			
+			.subheading {
+				background: rgba(0,0,0,0.3);
+			}
+		}
+		
+		.tab-content {
+			#dashboard, #overview {
+				button {
+					&.btn-lg {
+						background: teal;
+						color: #fff;
+						
+						&:hover, &:focus {
+							background: #026e64;
+						}
+						
+						&[disabled='disabled'] {
+							&:hover, &:focus {
+								background: teal;
+							}
+						}
+					}
+				}
+			}
+			
+			.graph-container {
+				/*background: teal;*/
+				background: darksalmon;
+			}
+		}
+		
+		.btn-primary {
+			background: teal;
+			
+			&:hover, &:focus {
+				background: #026e64;
+			}
+		}
+		
+		#footer {
+			color: #333;
+		}
+	}
+}
