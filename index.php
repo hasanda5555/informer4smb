@@ -62,6 +62,7 @@ ob_end_flush();
         
         <!-- CSS -->
         <link href="css/app_1.min.css" rel="stylesheet">
+        <link href="css/informer_style.css" rel="stylesheet">
 		<link href="vendors/bootstrapDialog/bootstrap-dialog.min.css" rel="stylesheet">
 	</head>
 

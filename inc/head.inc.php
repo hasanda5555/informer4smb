@@ -10,7 +10,7 @@
 
 <!-- CSS -->
 <link href="css/app_1.min.css" rel="stylesheet">
-	
+<link href="css/informer_style.css" rel="stylesheet">
 
 <script src="vendors/bower_components/jquery/dist/jquery.min.js"></script>
 <script src="vendors/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
