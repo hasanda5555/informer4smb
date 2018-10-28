@@ -285,7 +285,57 @@
 						</div>
 							
 						<div role="tabpanel" class="tab-pane" id="user-management">
-							<p class="temp">[ Temporary content for 'User Management' section ]</p>
+							 <div class="tab-content">
+                                    		<div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 content-panel">
+                                    			<div class="panel-body">
+                                    			    <ul class="nav nav-tabs">
+                                                      <li class="active"><a data-toggle="tab" href="#userlist">User List</a></li>
+                                                      <li><a data-toggle="tab" href="#organisationlist" >Organisation List</a></li>
+                                                    </ul>
+                                                    <!-- user management content -->
+                                    	            <div id="content" class="tab-content">
+                                    	              <div id="userlist" class="tab-pane fade in active">
+                                    	                <h2 class="step">Current User List <button class="btn btn-primary pull-right m-r-30 waves-effect" data-toggle="modal" data-target="#addNewUser">Add new User</button></h2>
+                                                        <!-- user list -->
+                                                        <div id="usr_list">ff</div>
+                                                        <table class="table user-management-list-table">
+                                                           <tbody>
+
+                                                                      <tr>
+                                                                        <td class="middle">
+                                                                          <div class="media">
+                                                                            <div class="media-body">
+                                                                              <h4 class="media-heading">Contact 1</h4>
+                                                                              <address class="no-margin">contact1@sample.com</address>
+                                                                            </div>
+                                                                          </div>
+                                                                        </td>
+                                                                        <td width="100" class="middle">
+                                                                          <div>
+                                                                            <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" onclick="simpleFunction(4)">
+                                                                              <i class="glyphicon glyphicon-edit"></i>
+                                                                            </a>
+                                                                            <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit">
+                                                                              <i class="glyphicon glyphicon-trash"></i>
+                                                                            </a>
+                                                                          </div>
+                                                                        </td>
+                                                                      </tr>
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+
+                                                     <div id="organisationlist" class="tab-pane fade">
+                                                            <h2 class="step">Current Organisation List <button class="btn btn-primary pull-right m-r-30 waves-effect" data-toggle="modal" data-target="#addNewUser">Add new Organisation</button></h2>
+
+                                                     </div>
+
+
+                                                    </div>
+                                                 </div>
+                                             </div>
+                                     </div>
 						</div>
 						
 						<div role="tabpanel" class="tab-pane" id="template">

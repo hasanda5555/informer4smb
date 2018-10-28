@@ -97,6 +97,270 @@
 			include("inc/navbar.inc.php"); 
 		?>
 
+		<?php
+
+            $ch = curl_init();
+            curl_setopt($ch,CURLOPT_URL, "https://informer4smb.com.au/pla/user/user.php");
+            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'list','format' => 'json','userid' => $_SESSION['userid']));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            $result = curl_exec($ch);
+            curl_close($ch);
+            json_decode($result, true);
+
+
+             $ch = curl_init();
+            curl_setopt($ch,CURLOPT_URL, "https://informer4smb.com.au/pla/user/org.php");
+            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'orglist','format' => 'json','userid' => $_SESSION['userid']));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            $orgresult = curl_exec($ch);
+            curl_close($ch);
+            json_decode($orgresult, true);
+
+        ?>
+
+                <script type="text/javascript">
+                    var userdata = <?php echo $result ?>;
+                    var orgdata = <?php echo $orgresult ?>;
+
+                    console.log(orgdata);
+                    console.log(userdata);
+
+
+
+                    function resetforNewUser(){
+
+                        var newUserMode = '<input class="newUserMode" type="hidden" name="mode" value="create">';
+
+                        $("#userform").prepend(newUserMode);
+                        $(".editUserMode").remove();
+
+                        $("#addNewUser").removeClass('edit-UserModal');
+
+                        $("#userid").val('');
+                        $("#loginid").val('').removeAttr("disabled");
+                        $('#fname').val('');
+                        $('#lname').val('');
+                        $('#address').val('');
+                        $('#mobile').val('');
+                        $('#phone').val('');
+                        $('#email').val('');
+                        $('#orgid').val('');
+                        $('#role').val('');
+                        $("#assignorgid option").prop("selected", false);
+
+                    }
+
+
+                    function editUser(id){
+
+                        resetforNewUser();
+
+                        var tempUser;
+                        var editUserMode = '<input class="editUserMode" type="hidden" name="mode" value="modify">';
+
+                        $("#userform").prepend(editUserMode);
+                        $(".newUserMode").remove();
+
+                        $.each(userdata.user, function(index, element) {
+                            if(element.id == id){
+                                tempUser = element;
+                            }
+                        });
+
+                        $("#addNewUser").addClass('edit-UserModal');
+                        //var el = $("#addNewUser").elements;
+
+                        $("#userid").val(tempUser.id);
+                        $("#loginid").val(tempUser.login).prop("disabled", true);
+
+                        $('#fname').val(tempUser.first_name);
+                        $('#lname').val(tempUser.surname);
+                        $('#address').val(tempUser.address);
+                        $('#mobile').val(tempUser.mobile);
+                        $('#phone').val(tempUser.phone);
+                        $('#email').val(tempUser.email);
+                        $('#orgid').val(tempUser.orgid);
+                        $('#role').val(tempUser.role);
+                        var values=tempUser.assignorgid;
+                        $.each(values.split(","), function(i,e){
+                            $("#assignorgid option[value='" + e + "']").prop("selected", true);
+                        });
+                        //alert("me ready to edit "+tempUser.first_name);
+                    }
+
+                     function resetforNewOrg(){
+
+                        var newUserMode = '<input class="newOrgMode" type="hidden" name="mode" value="create">';
+
+                        $("#orgform").prepend(newUserMode);
+                        $(".editOrgMode").remove();
+
+                        $("#addNewOrg").removeClass('edit-OrgModal');
+
+                        $("#abn").val('').removeAttr("disabled");
+                        //$('#orgidnew').val('').removeAttr('disabed');
+                        $('#editorgid').val('');
+                        $('#orgname').val('');
+                        $('#compaddress').val('');
+                        $('#compemail').val('');
+                        $('#compphone').val('');
+
+                    }
+
+                    function editOrg(id){
+
+                        resetforNewOrg();
+
+                        var tempOrg;
+                        var editOrgMode = '<input class="editOrgMode" type="hidden" name="mode" value="modify">';
+
+                        $("#orgform").prepend(editOrgMode);
+                        $(".newOrgMode").remove();
+
+                        $.each(orgdata.orgs.org, function(index, element) {
+                            if(element.orgid == id){
+                                tempOrg = element;
+                            }
+                        });
+
+                        $("#addNewOrg").addClass('edit-OrgModal');
+                        //var el = $("#addNewUser").elements;
+
+                        $("#abn").val(tempOrg.abn).prop("disabled", true);
+                        $('#editorgid').val(tempOrg.orgid);
+                        $('#orgname').val(tempOrg.orgname);
+                        $('#compaddress').val(tempOrg.orgaddress);
+                        $('#compemail').val(tempOrg.orgemail);
+                        $('#compphone').val(tempOrg.orgphone);
+
+                    }
+
+                    function userManagementUserList() {
+                        $.each(userdata.user, function(index, element) {
+                            //console.log(element);
+                             var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.first_name +' '+ element.surname+'</h4> <address class="no-margin">'+ element.email+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewUser" onclick="editUser('+element.id+')"> <i class="glyphicon glyphicon-edit"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide "  title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> </div></td></tr>';
+                              $(".user-management-list-table tbody").append(userRow)
+                        });
+                    }
+
+                    function userManagementOrgList() {
+                        $.each(orgdata.orgs.org , function(index, element) {
+                            //console.log(element);
+                             var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.orgname +' <small>('+ element.abn+')</small></h4> <address class="no-margin">'+ element.orgemail+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewOrg"  onclick="editOrg('+element.orgid+')"> <i class="glyphicon glyphicon-edit"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide" title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> </div></td></tr>';
+                              $(".organisation-list-table tbody").append(userRow)
+                        });
+                    }
+
+                    $(document).ready(function() {
+                        userManagementUserList();
+                        userManagementOrgList();
+                    });
+
+                    function validateuserform(form) {
+                        var msg="";
+                        el=form.elements;
+                        var illegalChars = /\W/;
+
+                        if(el.namedItem('userid').value=="")
+                            msg+="Enter User ID \n";
+                        if (illegalChars.test(el.namedItem('userid').value))
+                            msg+= "The User ID contains illegal characters. Only letters, numbers, and underscores are allowed\n";
+                        if(el.namedItem('fname').value=="")
+                            msg+="Enter First Name\n";
+                        if(el.namedItem('lname').value=="")
+                            msg+="Enter Last Name\n";
+                        if(el.namedItem('pass').value=="")
+                            msg+="Enter Password\n";
+                        if(!matchpassword(el.namedItem('pass').value,el.namedItem('confirmpass').value))
+                            msg+="Passwords do not match \n";
+                        if(el.namedItem('email').value=="")
+                            msg+="Enter Email \n";
+                        if(el.namedItem('email').value!="" && !validateEmail(el.namedItem('email').value))
+                            msg+="Invalid email address\n";
+                        if(el.namedItem('orgid').value=="")
+                            msg+="Enter Organisation\n";
+
+                        if(msg!="")	{
+                            alert(msg);
+                            return false;
+                        }
+
+                        return true;
+
+                    }
+
+                    $( document ).ready(function() {
+
+                            $.each(orgdata.orgs.org, function(index, element) {
+                                $('#assignorgid , #orgid').append($('<option>', {
+                                        value: element.orgid,
+                                        text : element.orgname
+                                }));
+                             });
+
+                            // this is the id of the form
+                            $("#userform").submit(function(e) {
+                                var form = $(this);
+                                var url = 'https://informer4smb.com.au/pla/user/user.php';
+
+                                $.ajax({
+                                       type: "POST",
+                                       url: url,
+                                       data: form.serialize(), // serializes the form's elements.
+                                       success: function(data)
+                                       {
+                                            var returnobj = JSON.parse(data);
+
+                                            if(returnobj.result == 'pass' || returnobj.result == 'ok'){
+                                                bootbox.alert({message: returnobj.message, size: 'small', className: 'success-alert alert-with-icon'}); // show response from the php script.
+                                                $("#addNewUser").modal("hide");
+                                                location.reload();
+                                            }else{
+                                                bootbox.alert({message: returnobj.message, size: 'small', className: 'danger-alert alert-with-icon'}); // show response from the php script.
+                                            }
+                                            console.log("debug : ", returnobj);
+
+                                       }
+                                     });
+
+                                e.preventDefault(); // avoid to execute the actual submit of the form.
+                            });
+
+
+                            $("#orgform").submit(function(e) {
+                                var form = $(this);
+                                var url = 'https://informer4smb.com.au/pla/user/org.php';
+
+                                $.ajax({
+                                       type: "POST",
+                                       url: url,
+                                       data: form.serialize(), // serializes the form's elements.
+                                       success: function(data)
+                                       {
+                                          var returnobj = JSON.parse(data);
+
+                                          if(returnobj.result == 'pass' || returnobj.result == 'ok' ){
+                                              bootbox.alert({message: returnobj.message, size: 'small', className: 'success-alert alert-with-icon'}); // show response from the php script.
+                                              $("#addNewOrg").modal("hide");
+                                              location.reload();
+                                          }else{
+                                              bootbox.alert({message: returnobj.message, size: 'small', className: 'danger-alert alert-with-icon'}); // show response from the php script.
+                                          }
+                                          console.log("debug : ",returnobj);
+                                       }
+                                     });
+
+                                e.preventDefault(); // avoid to execute the actual submit of the form.
+                            });
+
+                            //console.log( "ready!" );
+                    });
+
+                </script>
+
+
 
 <section id="main">
 <div id="content" class="">
@@ -113,124 +377,19 @@
                         <!-- user management content -->
         	            <div id="content" class="tab-content">
         	              <div id="userlist" class="tab-pane fade in active">
-        	                <h2 class="step">Current User List <button class="btn btn-primary pull-right m-r-30 waves-effect" data-toggle="modal" data-target="#addNewUser">Add new User</button></h2>
-
-                            <?php
-
-                                $ch = curl_init();
-                                curl_setopt($ch,CURLOPT_URL, "https://informer4smb.com.au/pla/user/user.php");
-                                curl_setopt($ch, CURLOPT_POST, TRUE);
-                                curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'list','format' => 'json'));
-                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-                                $result = curl_exec($ch);
-                                curl_close($ch);
-                                json_decode($result, true);
-
-                            ?>
-
-                            <script type="text/javascript">
-                                var userdata = <?php echo $result ?>
-
-                                function simpleFunction(numb) {
-                                    console.log(userdata);
-
-                                }
-                            </script>
-
+        	                <h2 class="step">Current User List <button class="btn btn-primary pull-right m-r-30 waves-effect" data-toggle="modal" onclick="resetforNewUser()" data-target="#addNewUser">Add new User</button></h2>
                             <!-- user list -->
                             <table class="table user-management-list-table">
-                               <tbody>
-
-                                          <tr>
-                                            <td class="middle">
-                                              <div class="media">
-                                                <div class="media-body">
-                                                  <h4 class="media-heading">Contact 1</h4>
-                                                  <address class="no-margin">contact1@sample.com</address>
-                                                </div>
-                                              </div>
-                                            </td>
-                                            <td width="100" class="middle">
-                                              <div>
-                                                <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" onclick="simpleFunction(4)">
-                                                  <i class="glyphicon glyphicon-edit"></i>
-                                                </a>
-                                                <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit">
-                                                  <i class="glyphicon glyphicon-trash"></i>
-                                                </a>
-                                              </div>
-                                            </td>
-                                          </tr>
-
-                                           <tr>
-                                              <td class="middle">
-                                                <div class="media">
-                                                  <div class="media-body">
-                                                    <h4 class="media-heading">Contact 1</h4>
-                                                    <address class="no-margin">contact1@sample.com</address>
-                                                  </div>
-                                                </div>
-                                              </td>
-                                              <td width="100" class="middle">
-                                                <div>
-                                                  <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit">
-                                                    <i class="glyphicon glyphicon-edit"></i>
-                                                  </a>
-                                                  <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit">
-                                                    <i class="glyphicon glyphicon-trash"></i>
-                                                  </a>
-                                                </div>
-                                              </td>
-                                            </tr>
-
-                                          <tr>
-                                           <td class="middle">
-                                             <div class="media">
-                                               <div class="media-body">
-                                                 <h4 class="media-heading">Contact 1</h4>
-                                                 <address class="no-margin">contact1@sample.com</address>
-                                               </div>
-                                             </div>
-                                           </td>
-                                           <td width="100" class="middle">
-                                             <div>
-                                               <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit">
-                                                 <i class="glyphicon glyphicon-edit"></i>
-                                               </a>
-                                               <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit">
-                                                 <i class="glyphicon glyphicon-trash"></i>
-                                               </a>
-                                             </div>
-                                           </td>
-                                         </tr>
-
-                                          <tr>
-                                           <td class="middle">
-                                             <div class="media">
-                                               <div class="media-body">
-                                                 <h4 class="media-heading">Contact 1</h4>
-                                                 <address class="no-margin">contact1@sample.com</address>
-                                               </div>
-                                             </div>
-                                           </td>
-                                           <td width="100" class="middle">
-                                             <div>
-                                               <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit">
-                                                 <i class="glyphicon glyphicon-edit"></i>
-                                               </a>
-                                               <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit">
-                                                 <i class="glyphicon glyphicon-trash"></i>
-                                               </a>
-                                             </div>
-                                           </td>
-                                         </tr>
-                                </tbody>
+                               <tbody></tbody>
                             </table>
                         </div>
 
                          <div id="organisationlist" class="tab-pane fade">
-                                <h2 class="step">Current Organisation List <button class="btn btn-primary pull-right m-r-30 waves-effect" data-toggle="modal" data-target="#addNewUser">Add new Organisation</button></h2>
-
+                                <h2 class="step">Current Organisation List <button class="btn btn-primary pull-right m-r-30 waves-effect" data-toggle="modal" onclick="resetforNewOrg()"  data-target="#addNewOrg">Add new Organisation</button></h2>
+                                <!-- Organisation list -->
+                                <table class="table organisation-list-table">
+                                   <tbody></tbody>
+                                </table>
                          </div>
 
 
@@ -243,93 +402,98 @@
 </div>
 </section>
 
-<!-- Modal -->
-<div id="addNewUser" class="modal fade" role="dialog">
+<!-- Add new user  Modal -->
+<div id="addNewUser" class="modal fade informer-md-modal" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Add new user</h4>
+        <h4 class="modal-title newUser-title">Add new user</h4>
+        <h4 class="modal-title editUser-title">Edit user</h4>
       </div>
-       <form class="form-horizontal" action="/action_page.php">
-      <div class="modal-body">
+       <form class="form-horizontal" id="userform" name="users" onsubmit="return validateuserform(document.getElementById('userform'));">
+                <input  type="hidden" name="format" value="json">
+                <input type="hidden" class="form-control" id="userid" name="userid" placeholder="User ID">
+       <div class="modal-body">
 
 
           <div class="form-group">
-            <label class="control-label col-sm-2" for="email">User ID:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="userid" placeholder="User ID">
+            <label class="control-label col-sm-3" for="loginid">User Login name:</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="loginid" name="loginid" placeholder="Enter new login name">
             </div>
           </div>
 
           <div class="form-group">
-            <label class="control-label col-sm-2" for="pwd">Password:</label>
-            <div class="col-sm-10">
-              <input type="password" class="form-control" id="pwd" placeholder="Enter password">
+            <label class="control-label col-sm-3" for="pwd">Password:</label>
+            <div class="col-sm-9">
+              <input type="password" class="form-control"  id="pass" name="pass" placeholder="Enter password">
             </div>
           </div>
 
           <div class="form-group">
-              <label class="control-label col-sm-2" for="email">First Name:</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="userid" placeholder="Enter First Name">
+              <label class="control-label col-sm-3" for="confirmpass">Confirm Password:</label>
+              <div class="col-sm-9">
+                <input type="password" class="form-control"  id="confirmpass" name="confirmpass" placeholder="Enter Confirm password">
+              </div>
+            </div>
+
+          <div class="form-group">
+              <label class="control-label col-sm-3" for="fname">First Name:</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="fname" name="fname"  placeholder="Enter First Name">
               </div>
             </div>
 
         <div class="form-group">
-            <label class="control-label col-sm-2" for="email">Last Name:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="userid" placeholder="Enter Last Name">
+            <label class="control-label col-sm-3" for="lname">Last Name:</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Last Name">
             </div>
           </div>
 
         <div class="form-group">
-            <label class="control-label col-sm-2" for="email">Address:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="userid" placeholder="Enter Address">
+            <label class="control-label col-sm-3" for="emaaddressil">Address:</label>
+            <div class="col-sm-9">
+              <textarea type="text" class="form-control" id="address" name="address" rows="3" cols="50" placeholder="Enter Address"></textarea>
             </div>
           </div>
 
         <div class="form-group">
-            <label class="control-label col-sm-2" for="email">Email:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="userid" placeholder="Enter Email">
-            </div>
-          </div>
-
-
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="email">Mobile:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="userid" placeholder="Enter Mobile">
+            <label class="control-label col-sm-3" for="email">Email:</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="email" name="email" placeholder="Enter Email">
             </div>
           </div>
 
 
         <div class="form-group">
-            <label class="control-label col-sm-2" for="email">Phone:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="userid" placeholder="Enter Phone">
+            <label class="control-label col-sm-3" for="mobile">Mobile:</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="mobile" name="mobile"  placeholder="Enter Mobile">
+            </div>
+          </div>
+
+
+        <div class="form-group">
+            <label class="control-label col-sm-3" for="phone">Phone:</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter Phone">
             </div>
           </div>
 
         <div class="form-group">
-            <label class="control-label col-sm-2" for="email">Organisation:</label>
-            <div class="col-sm-10">
-              <select class="form-control" id="orgid" name="orgid">
-              <option value="15">ABC</option>
-              <option value="1">Company B</option>
-              <option value="3">def company</option>
-              <option value="4">xyz company</option>
-              </select>
+            <label class="control-label col-sm-3" for="orgid">Organisation:</label>
+            <div class="col-sm-9">
+              <select class="form-control" id="orgid" name="orgid"></select>
             </div>
           </div>
 
           <div class="form-group">
-              <label class="control-label col-sm-2" for="email">User Role:</label>
-              <div class="col-sm-10">
+              <label class="control-label col-sm-3" for="role">User Role:</label>
+              <div class="col-sm-9">
                 <select  class="form-control" id="role" name="role">
                 <option value="8">Administrator</option>
                 <option value="2">Junior</option>
@@ -341,23 +505,89 @@
 
 
           <div class="form-group">
-              <label class="control-label col-sm-2" for="email">Assigned Organisation:</label>
-              <div class="col-sm-10">
-                <select class="form-control" id="assignorgid[]" name="assignorgid[]" multiple="">
-                <option value="15">ABC</option>
-                <option value="1">Company B</option>
-                <option value="3">def company</option>
-                <option value="4">xyz company</option>
-
-                </select>
+              <label class="control-label col-sm-3" for="assignorgid">Assigned Organisation:</label>
+              <div class="col-sm-9">
+                <select class="form-control" id="assignorgid" name="assignorgid" multiple=""></select>
               </div>
             </div>
 
 
       </div>
       <div class="modal-footer">
-            <button type="submit" class="btn btn-default">Submit</button>
            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+           <button type="submit" class="btn btn-primary m-r-30 waves-effect">Submit</button>
+      </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- new user modal end -->
+
+<!-- Add new Org Modal -->
+<div id="addNewOrg" class="modal fade informer-md-modal" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close"  data-dismiss="modal">&times;</button>
+        <h4 class="modal-title newOrg-title">Add New Organisation</h4>
+        <h4 class="modal-title editOrg-title">Edit Organisation</h4>
+      </div>
+       <form class="form-horizontal" action="https://informer4smb.com.au/pla/addorgs.php" method="post" id="orgform" name="orgs" onsubmit="return validateorgform(document.getElementById('orgform'));">
+            <input  type="hidden" name="format" value="json">
+            <input  type="hidden" name="userid" value="<?php echo $_SESSION['userid']; ?>" >
+            <input  type="hidden" id="editorgid" name="orgid" value="" >
+
+       <div class="modal-body">
+
+
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="abn">ABN:</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="abn" name="abn" value="" size="50" maxlength="11" placeholder="ABN">
+            </div>
+          </div>
+
+          <div class="form-group">
+              <label class="control-label col-sm-3" for="orgidnew">Organisation:</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="orgname" name="orgname" value="" size="50" placeholder="Organisation Name">
+              </div>
+            </div>
+
+
+        <div class="form-group">
+            <label class="control-label col-sm-3" for="compaddress">Organisation Address:</label>
+            <div class="col-sm-9">
+              <textarea type="text" class="form-control" id="compaddress" name="compaddress" rows="3" cols="50" placeholder="Enter Address"></textarea>
+            </div>
+          </div>
+
+
+        <div class="form-group">
+            <label class="control-label col-sm-3" for="orgmocompemailbile">Organisation Email:</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="compemail" name="compemail"  placeholder="Enter Email">
+            </div>
+          </div>
+
+
+        <div class="form-group">
+            <label class="control-label col-sm-3" for="compphone">Organisation Phone:</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="compphone" name="compphone" placeholder="Enter Phone">
+            </div>
+          </div>
+
+
+      </div>
+      <div class="modal-footer">
+
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+           <button type="submit" class="btn btn-primary m-r-30 waves-effect">Submit</button>
       </div>
 
       </form>
@@ -365,6 +595,7 @@
 
   </div>
 </div>
+<!-- Modal End -->
 
 
 	<!-- footer include -->

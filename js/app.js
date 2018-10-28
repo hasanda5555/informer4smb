@@ -12,6 +12,7 @@ function navigateTo(navData) {
 			backTarget = 'dashboard';
 			break;
 		case 'user-management':
+            targetPage = 'usermanagement.php';
 			pageTitle = 'User Management';
 			backTarget = 'dashboard';
 			break;
@@ -1550,6 +1551,8 @@ function prepareAccordions(context) {
 }
 
 (function() {
+
+
 	// force the page to refresh if the user has got there using the browser's 'Back' button
 	window.addEventListener( "pageshow", function ( event ) {
 	  var historyTraversal = event.persisted || ( typeof window.performance != "undefined" && window.performance.navigation.type === 2 );
@@ -1562,6 +1565,11 @@ function prepareAccordions(context) {
 	var previousContentPanel;
 	var dataDialog;
 	var isAdmin = true;
+
+
+	//varibale to store user data
+    var usermanager_usr_list;
+    var usermanager_org_list;
 	
 	// button actions
 	$('[data-action]').click( function (e) {
@@ -1635,7 +1643,10 @@ function prepareAccordions(context) {
 				
 				// prompt the user to select company & period
 				promptForData(userid);
-				
+
+                //get user list
+                //getUserlistData(userid,usermanager_usr_list);
+
 				// TEMP - go to main page
 				//window.location.assign("main.php?company=Company C&month=1|2017")
 			} else {
@@ -1648,7 +1659,26 @@ function prepareAccordions(context) {
 			$('#login .message').html(message).addClass('error').removeClass('hidden');
 		});
 	});
-	
+
+    function getUserlistData(userid, usermanager_usr_list){
+        $.ajax({
+            method: "POST",
+            url: "../user/user.php",
+            data: {
+                mode: 'list',
+                format: 'json'
+            }
+        }).done(function(data) {
+                var userlistjson = $.parseJSON(data);
+                console.log("userlist",userlistjson.user);
+                usermanager_usr_list = userlistjson.user;
+                $("#usr_list").html(usermanager_usr_list);
+                return userlistjson.user
+        }).fail(function (data) {
+                return null;
+        })
+    }
+
 	function promptForData(userid) {
 		// clear the selects in the dialog
 		$('.data-dialog select').val('');

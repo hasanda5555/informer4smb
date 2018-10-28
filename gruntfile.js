@@ -99,5 +99,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
 
     grunt.registerTask('dist', ['clean', 'less', 'copy']);
+    grunt.registerTask('default', ['concat','uglify']);
 
 };
