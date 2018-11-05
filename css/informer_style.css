@@ -114,3 +114,63 @@ table.table.user-management-list-table tr:last-child td,
 table.table.organisation-list-table tr:last-child td {
     border-bottom: 0px solid;
 }
+
+h4.media-heading {
+    display: inline-block;
+}
+
+span.label.label-veify {
+    position: relative;
+    top: -2px;
+    margin-left: 9px;
+    margin-right: 5px;
+}
+
+.label.label-veify.label-verifts-true {
+    background-color: #4CAF50;
+}
+
+.label.label-veify.label-verifts-false {
+    background-color: #FF9800;
+}
+
+.label.label-veify.label-verifts-true:before {
+    content: "Verified";
+}
+
+.label.label-veify.label-verifts-false:before {
+    content: "Pending";
+}
+
+.toggle-middle {
+    text-align: center;
+    margin: 0 auto;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+}
+
+.toggle-middle.st-true .fa {
+    color: #4CAF50;
+}
+
+.toggle-middle .on-fa {
+    display: block;
+}
+
+.toggle-middle .off-fa {
+    display: none;
+}
+
+.toggle-middle.st-true .on-fa {
+    display: none;
+}
+
+.toggle-middle.st-true .off-fa {
+    display: block;
+}
+
+i.off-fa.fa.fa-toggle-on.fa-lg.fa-rotate-180 {
+    position: relative;
+    top: -1px;
+}

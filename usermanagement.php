@@ -25,7 +25,13 @@
 		?>
 		
 		<script>
-			var userid = <?php echo $_SESSION['userid']; ?>
+			var userid = <?php echo $_SESSION['userid']; ?>;
+			var isAdmin = <?php
+			                    if ($role == 9)
+			                        echo 'true';
+			                     else
+			                        echo 'false';
+			               ?>;
 		</script>
 			
 		<script>
@@ -84,7 +90,7 @@
     </head>
 			
 	<body class="">
-		<?php 
+		<?php
 			// CHECK PERMISSIONS
 			if ($permissions['Reports']==0) {
 				echo $GLOBALS['accesserrormsg']; 
@@ -121,6 +127,7 @@
         ?>
 
                 <script type="text/javascript">
+
                     var userdata = <?php echo $result ?>;
                     var orgdata = <?php echo $orgresult ?>;
 
@@ -190,6 +197,50 @@
                         //alert("me ready to edit "+tempUser.first_name);
                     }
 
+                    function editUserField(id, objkey , value, pass, fail){
+
+
+                        var tempUser;
+                        var url = 'https://informer4smb.com.au/pla/user/user.php';
+
+                        $.each(userdata.user, function(index, element) {
+                            if(element.id == id){
+                                tempUser = element;
+                            }
+                        });
+
+                        tempUser.mode = 'modify';
+                        tempUser.fname = tempUser.first_name;
+                        tempUser.lname = tempUser.surname;
+                        tempUser.userid = tempUser.id;
+                        tempUser.format = 'json';
+                        tempUser[objkey] = value;
+
+                        $.ajax({
+                           type: "POST",
+                           url: url,
+                           data: $.param(tempUser), // serializes the form's elements.
+                           success: function(data)
+                           {
+                                var returnobj = JSON.parse(data);
+
+                                if(returnobj.result == 'pass' || returnobj.result == 'ok'){
+                                    bootbox.alert({message: returnobj.message, size: 'small', className: 'success-alert alert-with-icon'}); // show response from the php script.
+                                    pass();
+
+                                }else{
+                                    bootbox.alert({message: returnobj.message, size: 'small', className: 'danger-alert alert-with-icon'}); // show response from the php script.
+                                    fail();
+                                }
+                                console.log("debug : ", returnobj);
+
+
+
+                           }
+                         });
+
+                    }
+
                      function resetforNewOrg(){
 
                         var newUserMode = '<input class="newOrgMode" type="hidden" name="mode" value="create">';
@@ -240,22 +291,49 @@
                     function userManagementUserList() {
                         $.each(userdata.user, function(index, element) {
                             //console.log(element);
-                             var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.first_name +' '+ element.surname+'</h4> <address class="no-margin">'+ element.email+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewUser" onclick="editUser('+element.id+')"> <i class="glyphicon glyphicon-edit"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide "  title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> </div></td></tr>';
-                              $(".user-management-list-table tbody").append(userRow)
+                            var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.first_name +' '+ element.surname+'</h4> <span class="label label-veify label-verifts-'+ element.verified+'"> </span> <div class="toggle-middle admin-only st-'+element.verified+' " title="User verification" for="verified"><input type="hidden" name="'+element.id+'" value="'+element.verified+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  <address class="no-margin">'+ element.email+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewUser" onclick="editUser('+element.id+')"> <i class="fa fa-lg fa-pencil-square-o" aria-hidden="true"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide "  title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> <div class="toggle-middle status-toggle hint--top hint--rounded hint--bounce st-'+element.status+' " aria-label="User status" for="status" ><input type="hidden" name="'+element.id+'" value="'+element.status+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  </div></td></tr>';
+                            $(".user-management-list-table tbody").append(userRow)
                         });
                     }
 
                     function userManagementOrgList() {
                         $.each(orgdata.orgs.org , function(index, element) {
                             //console.log(element);
-                             var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.orgname +' <small>('+ element.abn+')</small></h4> <address class="no-margin">'+ element.orgemail+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewOrg"  onclick="editOrg('+element.orgid+')"> <i class="glyphicon glyphicon-edit"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide" title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> </div></td></tr>';
-                              $(".organisation-list-table tbody").append(userRow)
+                            var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.orgname +' <small>('+ element.abn+')</small></h4> <address class="no-margin">'+ element.orgemail+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewOrg"  onclick="editOrg('+element.orgid+')"> <i class="fa fa-lg fa-pencil-square-o" aria-hidden="true"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide" title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> </div></td></tr>';
+                            $(".organisation-list-table tbody").append(userRow)
                         });
                     }
 
                     $(document).ready(function() {
                         userManagementUserList();
                         userManagementOrgList();
+
+                        console.log(isAdmin);
+
+                        if(isAdmin){
+                            $(".admin-only").removeClass("admin-only");
+                        }
+
+                        $('.toggle-middle').click(function() {
+                            var clickBox = $(this);
+                            var toggleinput = $(this).children("input");
+                            var currentStatus = toggleinput.val();
+
+                            if(currentStatus == "true"){
+                                currentStatus = false;
+                            }else {
+                                currentStatus = true;
+                            }
+                            var useridforedit = toggleinput.attr("name")
+                            var temobjkey = clickBox.attr("for");
+
+                            console.log('useridforedit : '+useridforedit + ' currentStatus '+ !currentStatus );
+
+                            editUserField(useridforedit , temobjkey , currentStatus , function(){clickBox.toggleClass('st-true st-false');location.reload();}, function(){});
+
+                        });
+
+
                     });
 
                     function validateuserform(form) {
@@ -324,6 +402,9 @@
 
                                        }
                                      });
+
+                                //console.log('form', form);
+                                //console.log('form serialize', form.serialize());
 
                                 e.preventDefault(); // avoid to execute the actual submit of the form.
                             });
