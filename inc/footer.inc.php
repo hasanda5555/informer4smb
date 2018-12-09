@@ -43,4 +43,8 @@
 <script src="vendors/bower_components/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
 <script src="vendors/tinymce/tinymce.min.js"></script>
 
-<script src="js/app.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+<script src="js/app.js"></script>

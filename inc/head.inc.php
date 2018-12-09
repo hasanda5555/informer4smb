@@ -76,7 +76,7 @@
 	curl_close($ch);
 	
 	// clear any preceeding content in the returned data (i.e. test data)
-	$cleanedResultParts = split('<data>', $result);
+	$cleanedResultParts = explode('<data>', $result);
 	if(sizeof($cleanedResultParts) > 1) {
 		$cleanedResult = '<data>'.array_pop($cleanedResultParts);
 	} else {
@@ -97,7 +97,7 @@
 	//$currentPeriod=$xml->period;
 	$currentPeriod; // temp
 	
-	$monthParts = split('\|', $selectedMonth);
+	$monthParts = explode('\|', $selectedMonth);
 	if (sizeof($monthParts) > 1) {
 		// get the current period
 		$months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];

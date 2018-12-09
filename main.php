@@ -258,7 +258,11 @@
 								
 								<div class="col-xs-6 col-md-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="report" ><i class="zmdi zmdi-collection-text"></i> P/L Reports</button></div>
 								<div class="col-xs-6 col-md-2 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="report-bs" ><i class="zmdi zmdi-collection-item"></i> BS Reports</button></div>
-								
+
+								<div class="col-xs-6 col-md-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="mapdata" ><i class="zmdi zmdi-shuffle"></i> Map Data</button></div>
+                                <div class="col-xs-6 col-md-2 right"><button class="btn btn-primary btn-inverted btn-lg" disabled="disabled"><i class="zmdi zmdi-card"></i> Comming soon</button></div>
+
+
 								<div class="col-xs-6 col-md-2 left"><button class="btn btn-primary btn-inverted btn-lg" disabled="disabled"><i class="zmdi zmdi-directions"></i> Planning Assistant</button></div>
 								<div class="col-xs-6 col-md-2 right"><button class="btn btn-primary btn-inverted btn-lg" disabled="disabled"><i class="zmdi zmdi-trending-up"></i> Forecasting Module</button></div>
 							</div>
@@ -352,6 +356,7 @@
 									<?php
 										drawFullLabel($labelsMakeBuy);
 										drawGraphContainer('makebuy', 'total', false);
+										drawCommentaryMini($labelsMakeBuy);
 									?>
 								</div>
 								
@@ -359,6 +364,7 @@
 									<?php
 										drawFullLabel($labelsMakeBuyPurchases);
 										drawGraphContainer('makebuy', 'purchases');
+										drawCommentaryMini($labelsMakeBuyPurchases);
 									?>
 								</div>
 								
@@ -366,6 +372,7 @@
 									<?php
 										drawFullLabel($labelsMakeBuyPeople);
 										drawGraphContainer('makebuy', 'people');
+										drawCommentaryMini($labelsMakeBuyPeople);
 									?>
 								</div>
 							</div>
@@ -374,18 +381,24 @@
 						<div role="tabpanel" class="tab-pane has-alert" id="netprofitloss">
 							<?php
 								drawFullLabel($labelsNetProfitLoss);
+								drawGraphContainer('netprofitloss', 'total', false);
+								drawCommentaryMini($labelsNetProfitLoss);
 							?>
 						</div>
 						<?php } if(isset($layerSales) || $demo) { ?>
 						<div role="tabpanel" class="tab-pane has-alert" id="sales">
 							<?php
 								drawFullLabel($labelsSales);
+								drawGraphContainer('sales',  'total', false);
+								drawCommentaryMini($labelsSales);
 							?>
 						</div>
 						<?php } if(isset($labelsGrossProfit) || $demo) { ?>
 						<div role="tabpanel" class="tab-pane has-alert" id="grossprofit">
 							<?php
 								drawFullLabel($labelsGrossProfit);
+                                drawGraphContainer('grossprofit', 'total', false);
+                                drawCommentaryMini($labelsGrossProfit);
 							?>
 						</div>
 						<?php } if(isset($labelsSelling) || $demo) { ?>
@@ -394,18 +407,23 @@
 								<div role="tabpanel" class="tab-pane has-alert active <?php if(isset($labelsSelling) && hasAlert($labelsSelling)) echo 'hasAlert'; ?>" id="sellingtotal">
 									<?php
 										drawFullLabel($labelsSelling);
+										drawCommentaryMini($labelsSelling);
 									?>
 								</div>
 								
 								<div role="tabpanel" class="tab-pane has-alert" id="sellingpurchases">
 									<?php
 										drawFullLabel($labelsSellingPurchases);
+										drawGraphContainer('sellingtotal', 'purchases');
+										drawCommentaryMini($labelsSellingPurchases);
 									?>
 								</div>
 								
 								<div role="tabpanel" class="tab-pane has-alert" id="sellingpeople">
 									<?php
 										drawFullLabel($labelsSellingPeople);
+										drawGraphContainer('sellingtotal', 'people');
+										drawCommentaryMini($labelsSellingPeople);
 									?>
 								</div>
 							</div>
@@ -416,18 +434,21 @@
 								<div role="tabpanel" class="tab-pane has-alert active <?php if(isset($labelsAdministration) && hasAlert($labelsAdministration)) echo 'hasAlert'; ?>" id="administrationtotal">
 									<?php
 										drawFullLabel($labelsAdministration);
+										drawGraphContainer('administrationtotal', 'total', false);
 									?>
 								</div>
 								
 								<div role="tabpanel" class="tab-pane has-alert" id="administrationpurchases">
 									<?php
 										drawFullLabel($labelsAdminPurchases);
+										drawGraphContainer('administrationtotal', 'purchases');
 									?>
 								</div>
 								
 								<div role="tabpanel" class="tab-pane has-alert" id="administrationpeople">
 									<?php
 										drawFullLabel($labelsAdminPeople);
+										drawGraphContainer('administrationtotal', 'people');
 									?>
 								</div>
 							</div>

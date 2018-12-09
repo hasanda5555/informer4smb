@@ -44,6 +44,10 @@ function navigateTo(navData) {
 			targetPage = 'uploaddata.php';
 			pageTitle = 'Upload';
 			break;
+        case 'mapdata':
+            targetPage = 'mapdata.php';
+            pageTitle = 'Map Data';
+            break;
 		case 'report': 
 			targetPage = 'reports_menu.php';
 			pageTitle = 'Reports';
@@ -131,7 +135,7 @@ function navigateTo(navData) {
 				}				
 				
 				// TODO: plot any graphs (works better when container is visible)
-				plotGraph('makebuy', 'total');
+				plotGraph(navData, 'total');
 			} else {
 				// hide all tabs
 				$('.tab-pane').removeClass('active');
@@ -147,6 +151,9 @@ function navigateTo(navData) {
 				$('.container > .tab-content').append(newTab);
 				
 				$(".collapse").collapse("hide");
+
+
+
 			}
 		}
 	} 
@@ -329,10 +336,118 @@ $(document).ready(function () {
 // plot a graph for one of the layers
 function plotGraph(page, section) {
 	var graphName = section == '' ? '.'+page+'-graph' : '.'+page+'-'+section+'-graph';
-	
-	if($(graphName)[0]) {
+    //var highchartCont = section == '' ? ''+page+'-graph' : ''+page+'-'+section+'-graph';
+    
+    $.ajax({
+        url: "../inc/chartData.php",
+        type: "get", //send it through get method
+        data: {
+            section :page,
+            type: "json"
+        },
+        success: function(response) {
+            //Do Something
+        },
+        error: function(xhr) {
+            //Do Something to handle error
+        }
+    });
+
+    if($(graphName)[0]) {
+
+
+        var dataObje = {
+            "chartName": "My profit and loss Chart ",
+            "Period": ["may 2017", "jun 2017", "jul 2017", "aug 2017", "sept 2017", "nov 2017", "dec 2017", "jan 2018"],
+            "properties": {
+                "line_1": {
+                    "lineName": "Proft",
+                    "values": [10, 30, 40, 60, 50, 200, 50, 100]
+                },
+                "line_2": {
+                    "lineName": "Loss",
+                    "values": [130, 305, 406, 360, 550, 250, 150, 140]
+                }
+            }
+        } ;
+
+       // var $chartcontainer = $('<div>').appendTo(document.body);
+
+        setTimeout(function(){
+            Highcharts.chart( {
+                chart: {
+                    renderTo: $(graphName)[0],
+                    zoomType: 'xy'
+                },
+                title: {
+                    text: dataObje.chartName
+                },
+                xAxis: [{
+                    categories: dataObje.Period,
+                    crosshair: true
+                }],
+                yAxis: [{ // Primary yAxis
+                    labels: {
+                        format: '{value} $',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+                    title: {
+                        text: dataObje.properties.line_1.lineName,
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    }
+                }, { // Secondary yAxis
+                    title: {
+                        text: dataObje.properties.line_2.lineName,
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    labels: {
+                        format: '{value} $',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    opposite: true
+                }],
+                tooltip: {
+                    shared: true
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'left',
+                    x: 120,
+                    verticalAlign: 'top',
+                    y: 100,
+                    floating: true,
+                    backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || 'rgba(255,255,255,0.25)'
+                },
+                series: [{
+                    name: dataObje.properties.line_1.lineName,
+                    type: 'line',
+                    yAxis: 1,
+                    data: dataObje.properties.line_1.values,
+                    tooltip: {
+                        valueSuffix: ' $'
+                    }
+
+                }, {
+                    name: dataObje.properties.line_2.lineName,
+                    type: 'line',
+                    data: dataObje.properties.line_2.values,
+                    tooltip: {
+                        valueSuffix: '$'
+                    }
+                }]
+            });
+
+            });
 		// TEST - example graph with hard-coded data (the data would be passed in as a parameter)
-		$.plot($(graphName),[ 
+		/*$.plot($(graphName),[
 			{ label:'data1', data: [[0,0.5],[1,1],[2,4],[3,3],[4,5],[5,7],[6,9],[7,10],[8,8],[9,12]], color: 'white'},
 			{ label:'data2', data: [[0,2],[1,1.5],[2,6],[3,3.5],[4,2.5],[5,2],[6,4.5],[7,7],[8,6],[9,8]], color: 'yellow'}
 		], {
@@ -379,7 +494,7 @@ function plotGraph(page, section) {
 			} else {
 				$("#tooltip").hide();
 			}
-		});
+		});*/
 	}
 }
 
@@ -2188,3 +2303,7 @@ $('.tablinks').click(function(e) {
 });
 
 // file no longer used
+function setComment(commentFrom){
+    var commentBody = $(commentFrom).find("textarea").val();
+    alert(commentBody);
+};

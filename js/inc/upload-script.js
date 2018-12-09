@@ -105,3 +105,12 @@ $('.tablinks').click(function(e) {
 	$('.tabcontent[data-period='+tabname+']').removeClass('hidden');
 	$(this).addClass('active').attr('disabled', 'disabled');
 });
+
+function apiLogout() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'apilogout.php', true);
+    xhr.send();
+    
+    //redirect to upload page
+    window.location = window.location.href;
+}

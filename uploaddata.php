@@ -4,6 +4,7 @@ ob_start();
 	require "../includes/db_functions.php";
 	require "../includes/common_functions.inc.php";
 	require "../includes/interface_functions.inc.php";
+	require_once("../lib/PHPExcel/IOFactory.php");
 	
 	$role=logincheck();
 	if ($role == "") header("Location: index.php?msg=Please login to continue.");
@@ -20,6 +21,35 @@ ob_start();
 
         <?php 
 			include("inc/head.inc.php"); 
+			require_once "../vendor/autoload.php";
+			
+			 //============================================================================================
+    //   XERO PHP IMPORTS
+    //============================================================================================
+    
+    use XeroPHP\Application\PublicApplication;
+    use XeroPHP\Remote\Request;
+    use XeroPHP\Remote\Exception\UnauthorizedException;
+    use XeroPHP\Remote\URL;
+    use XeroPHP\Models\Accounting\Report;
+    
+    //============================================================================================
+    //   XERO OAUTH CONFIGURATION
+    //============================================================================================
+    $xeroConfig = [
+    		'oauth' => [
+    				'callback'        => 'http://informer4smb.test/pla/uploaddata.php?completed=1',
+    				'consumer_key'    => 'WVYLNFGVYWIY8XETSEOQDFX62A8GRI',
+    				'consumer_secret' => '7TZZ7CFLFVW62WVSCHTKSIAHGNNZ8S',
+    		],
+    		'curl' => [
+    				CURLOPT_CAINFO => '../config/xero/certs/ca-bundle.crt',
+    		],
+    ];
+    
+    //=============================================================================================
+    //   END XERO OAUTH CONFIGURATION
+    //=============================================================================================
 		?>
 		
 		<script>
@@ -80,14 +110,35 @@ ob_start();
 			
 	<body class="">
 		<?php 
+		
+    		    $ch = curl_init();
+    	curl_setopt($ch,CURLOPT_URL, $GLOBALS['Base_URL']."user/userrolepermissions.php");
+    	curl_setopt($ch, CURLOPT_POST, TRUE);
+    	curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'rolepermission','roleid' => $role,'category'=>'Upload Data'));
+    	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    	$result = curl_exec($ch);
+    	curl_close($ch);
+    	//echo $result;
+    	
+    	$xml = simplexml_load_string(trim($result)) ;
+    		
+    	$userresult=$xml->result;
+    	$permissions=array();
+    	if($userresult=="ok") {
+    		foreach ($xml->permissions->permission as $element) {
+    			//$permissions[$element->category]=$element->access;
+    			$category=trim($element->category);
+    			$access=trim($element->access);
+    			$permissions[$category]=$access;
+    		}
+    		//print_r($permissions);
+    	}
 			// CHECK PERMISSIONS
-			if ($permissions['Reports']==0) {
+			if ($permissions['Upload Data']==0) {
 				echo $GLOBALS['accesserrormsg']; 
 				die;
 			}
-		?>
-		
-		<?php 
+	 
 			$defaultTitle = 'Upload';
 			include("inc/navbar.inc.php"); 
 		?>
@@ -96,36 +147,7 @@ ob_start();
 <section id="main">
 <div id="content" class="">
 	<div class="container">
-<?php 
-	$ch = curl_init();
-	curl_setopt($ch,CURLOPT_URL, $GLOBALS['Base_URL']."user/userrolepermissions.php");
-	curl_setopt($ch, CURLOPT_POST, TRUE);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'rolepermission','roleid' => $role,'category'=>'Upload Data'));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-	$result = curl_exec($ch);
-	curl_close($ch);
-	//echo $result;
-	
-	$xml = simplexml_load_string(trim($result)) ;
-		
-	$userresult=$xml->result;
-	$permissions=array();
-	if($userresult=="ok") {
-		foreach ($xml->permissions->permission as $element) {
-			//$permissions[$element->category]=$element->access;
-			$category=trim($element->category);
-			$access=trim($element->access);
-			$permissions[$category]=$access;
-		}
-		//print_r($permissions);
-	}
-/*
-if ($permissions['Upload Data']==0) {
-	echo $GLOBALS['accesserrormsg']; 
-	die;
-}
-*/
-?>
+
 	
 <div class="tab-content">
 	<?php if($_POST && isset($_POST["upload"])) { ?>
@@ -140,125 +162,245 @@ if ($permissions['Upload Data']==0) {
 <!-- upload content -->
 	
 <?php
-require_once("../lib/PHPExcel/IOFactory.php");
 
-$data=array();
+
 $msg=false;
 $upload=false;
-$year=array();
 $company="";
 $msgtext="";
+$reportData = "";
+$path = "";
+$fromDate=null;
+$toDate=null;
 
 if($_POST) {
-    
-  
-     // var_dump($_POST);
-      
 
 	if(isset($_POST["upload"])) {
+	    //require_once("lib/PHPExcel/IOFactory.php");
 	    
-		$target_dir = "../uploads/";
-		$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+	    $company=$_POST['company'];	    
+	    $source=$_POST['source'];
+	    $filetype=$_POST['xlstype'];
+	    
+		$target_dir = "uploads/$company/$source/$filetype/";
 		
-		$upload=upload($target_file);
+		$target_file = basename($_FILES["fileToUpload"]["name"]);
+		
+		$upload=upload($target_dir,$target_file);
 		
 		//echo $upload;
 		
-		if($upload && isset($_POST['source']) && isset($_POST['xlstype'] ))
-			require_once("../includes/source/".$_POST['xlstype']."/".$_POST['source'].".php");
-			
-	
-			
-			
-	}
-	elseif(isset($_POST["map"])) {
-	    
-	        $srctype=($_POST['srctype']!='pl') ? $_POST['srctype']."_" : "";
-	   // echo "here";
-    //die;
-                 $year=unserialize($_POST['year']);
-        foreach ($year as $yearvalue) {
-		
-			$key=preg_replace("/[^a-zA-Z0-9]+/", "", $yearvalue);
-			
-			$monthyear=array();
-			
-			if($_POST['srctype']=="bs"){
-			    $monthyear=explode(" ",substr($yearvalue,3));
-			    $curyear=$monthyear[1];
-			}
-			else{
-			    $monthyear=explode("-",$yearvalue);
-			    $curyear=$GLOBALS['yearprefix'].$monthyear[1];
-			}
-			//echo $srctype;  
-			//print_r($monthyear);
-		
-			if($monthyear[0]!="YTD"){
-				$date=date_parse($monthyear[0]);
-			    $buildsql="";
-			    $buildsql2="";
-			   
-				for ($i=0;$i<$_POST['key'];$i++){
-				    
-					$value=($_POST['value'.$key.$i]=="") ? 0 : $_POST['value'.$key.$i];
-					$cat1=($_POST['cat1'.$key.$i]=="") ? 100 : $_POST['cat1'.$key.$i];
-					$cat2=($_POST['cat2'.$key.$i]=="") ? 0 : $_POST['cat2'.$key.$i];
-					$cat3=($_POST['cat3'.$key.$i]=="") ? 0 : $_POST['cat3'.$key.$i];
-					
-					$mapid=mysqli_real_escape_string ($GLOBALS['link'],$_POST['mapid']);
-                	$company=mysqli_real_escape_string ($GLOBALS['link'],$_POST['company']);
-                	$type=mysqli_real_escape_string ($GLOBALS['link'],$_POST['type'.$key.$i]);
-                	$item=mysqli_real_escape_string ($GLOBALS['link'],$_POST['item'.$key.$i]);
-                	$cat1=mysqli_real_escape_string ($GLOBALS['link'],$cat1);
-                	$cat2=mysqli_real_escape_string ($GLOBALS['link'],$cat2);
-                	$cat3=mysqli_real_escape_string ($GLOBALS['link'],$cat3);
-                	$curyear=mysqli_real_escape_string ($GLOBALS['link'],$curyear);
-	                $month=mysqli_real_escape_string ($GLOBALS['link'],$date['month']);
-	                $value=mysqli_real_escape_string ($GLOBALS['link'],$value);
-	                
-	                $value=number_format($value,2,'.','');
-	                $cat1=($value==0) ? 0 : number_format((($cat1/100)*$value),2,'.','');
-	                 $cat2=($value==0) ? 0 : number_format((($cat2/100)*$value),2,'.','');
-	                 $cat3=($value==0) ? 0 : number_format((($cat3/100)*$value),2,'.','');
-	    
-					//$msg=insertmap($_POST['mapid'],$_POST['company'],$_POST['type'.$key.$i],$_POST['item'.$key.$i],$cat1,$cat2,$cat3);
-						$numrows=getmapping($company,$item,$mapid,$type);
-	
-                	if($numrows>0){
-                		$delsql="delete from ".$srctype."mapping where company='$company' and item='$item' and typeid=$type and mapid=$mapid ";
-                	
-                	if(!mysqli_query($GLOBALS['link'],$delsql)){ print 'MySQL Error: PLA ERROR0x9001' . mysqli_error($GLOBALS['link']); }
-                	}
-                
-                	
-                $delsql="delete from ".$srctype."mapping_amount where company='$company' and year=$curyear and month=$month and item='$item' and typeid=$type ";
-	
-	        //echo $delsql;
-	                if(!mysqli_query($GLOBALS['link'],$delsql)){ print 'MySQL Error: PLA ERROR0x9004' . mysqli_error($GLOBALS['link']); } 
-	             
-	               
-	                
-					$buildsql.="($mapid,'$company',$type,'$item',$cat1,$cat2,$cat3),";
-
-					$buildsql2.="('$company',$curyear,$month,$type,'$item',$value,$cat1,$cat2,$cat3,'".$curyear."-".$month."-01'),";
-				}
-				
-				$buildsql=substr($buildsql,0,-1);
-				$buildsql2=substr($buildsql2,0,-1);
-				
-				//echo $buildsql."<br/>".$buildsql2;
-			//	die;
-				$msg=insertmap_amount($buildsql,$buildsql2,$srctype);
-				
-				if($msg)
-						$msgtext="Data mapping successful.";
-						
-				if($_POST['srctype']=='pl')
-				    calculatetotals($_POST['company'],$curyear,$month);
-			}
-			
+		if($upload){
+		    $filename = pathinfo($_FILES['fileToUpload']['name'], PATHINFO_FILENAME);
+		    $msg=true;
+			$msgtext="File upload successful.<br>
+    		<form action=\"mapdata.php\" method=\"post\" name=\"mapfrm\" id=\"mapfrm\">
+            <input type=\"hidden\" name=\"company\" id=\"company\" value=\"$company\" />
+            <input type=\"hidden\" name=\"source\" id=\"source\" value=\"$source\" />
+            <input type=\"hidden\" name=\"xlstype\" id=\"xlstype\" value=\"$filetype\" />
+            <input type=\"hidden\" name=\"filename\" id=\"filename\" value=\"".urlencode($filename)."\" />
+            <input type=\"submit\" value=\"Map uploaded file\" name=\"getfile\">
+            </form>";
 		}
+
+	} else if(isset($_POST["uploadXero"])) {
+		//===================================================
+		//   CODE FOR HANDLING XERO UPLOADED DATA
+		//===================================================
+		//require_once("lib/PHPExcel/IOFactory.php");
+		 
+		$company=$_POST['company'];		
+		//echo $company;
+		$fromDate=$_POST['fromDate'];
+		$toDate=$_POST['toDate'];
+		//echo $fromDate;
+		
+		$filetype=$_POST['xlstype']; //e.g Balance Sheet or Profit & Loss
+		$source = 'xero';
+		$target_dir = "uploads/$company/$source/$filetype/";
+		$target_file = 'xero-'.$filetype.rand(0, 1000).'.csv';//TBD - change file naming convention
+		
+		function getBalanceSheet($xeroConfig, $fromDate, $toDate)
+		{
+			//use output buffering to convert output to string
+			ob_start();
+			
+			//select 'From' and 'To' dates
+			$fromTS = strtotime($fromDate);
+			$toTS = strtotime($toDate);
+				
+			$from = new \DateTime();
+			$from->setTimestamp($fromTS);
+				
+			$to = new \DateTime();
+			$to->setTimestamp($toTS);
+				
+			//calculate the number of months between the two dates
+			$year1 = date('Y', $fromTS);
+			$year2 = date('Y', $toTS);
+				
+			$month1 = date('m', $fromTS);
+			$month2 = date('m', $toTS);
+
+			//query date strings
+			$toDateString = date('Y-m-d', $toTS);
+				
+			$periods = $year2 - $year1;
+			$periods = $periods == 0 ? 1 : $periods;
+			$timeframe = 'YEAR';
+				
+			try {
+				$xero = getXeroAuth($xeroConfig);
+				$data = $xero->load('Accounting\\Report\\BalanceSheet')
+				             ->setParameter('date', $toDateString)
+				             ->setParameter('periods', $periods)
+				             ->setParameter('timeframe', $timeframe)
+				             ->execute();
+					
+				$format = 'csv';
+				if(strtoupper($format) == 'DEBUG'){
+					print("<pre>".print_r($data,true)."</pre>");
+				}
+				else if(strtoupper($format) == 'JSON'){
+					echo "<pre>";
+					//just output rows as JSON
+					echo json_encode($data[0]->Rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+					echo "</pre>";
+				}
+				//csv is default format
+				else {
+					printCSV($data);
+				}
+			} catch (\Exception $e){
+				//reinitialise - user needs to authenticate again
+				unset($_SESSION['oauth']);
+				session_destroy();
+				//force re-auth flow - TBD
+			}
+			
+			$output = ob_get_clean();
+			return $output;
+		}
+		
+		function getProfitLoss($xeroConfig, $fromDate, $toDate)
+		{
+			//use output buffering to convert output to string
+			ob_start();
+			
+			//select 'From' and 'To' dates
+			if($fromDate){
+			   $fromTS = strtotime($fromDate);			
+			} else {
+			   $fromTS = strtotime($fromDate.' -12 months');
+			}
+			
+			$from = new \DateTime();
+			$from->setTimestamp($fromTS);
+			
+			$to = new \DateTime();
+			if($toDate){
+			   $toTS = strtotime($toDate);	
+			   $to->setTimestamp($toTS);
+			}
+			   			
+			//calculate the number of months between the two dates			
+			$year1 = date('Y', $fromTS);
+			$year2 = date('Y', $toTS);
+			
+			$month1 = date('m', $fromTS);
+			$month2 = date('m', $toTS);
+			$periods = (($year2 - $year1) * 12) + ($month2 - $month1);			
+			$timeframe = 'MONTH';
+		
+			try
+			{
+				$xero = getXeroAuth($xeroConfig);
+				$data = $xero->load('Accounting\\Report\\ProfitLoss')
+                             ->fromDate($from)
+				             ->toDate($to)
+				             ->setParameter('periods', $periods)
+				             ->setParameter('timeframe', $timeframe)
+				             ->execute();
+				 
+				$format = 'csv';
+					
+				if(strtoupper($format) == 'DEBUG'){
+					print("<pre>".print_r($data,true)."</pre>");
+				}
+				else if(strtoupper($format) == 'JSON'){
+					echo "<pre>";
+					//just output rows as JSON
+					echo json_encode($data[0]->Rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+					echo "</pre>";
+				}
+				//csv is default format
+				else {
+					printCSV($data);
+				}
+			} catch (\Exception $e){
+				//reinitialise - user needs to authenticate again
+				unset($_SESSION['oauth']);
+				session_destroy();
+			}
+			
+			$output = ob_get_clean();
+			return $output;
+		}
+		
+		
+		
+		$len = -1;
+		
+		if($filetype){
+			if($filetype == 'bs'){
+				$reportData = getBalanceSheet($xeroConfig, $fromDate, $toDate);
+				$breaks = array("<br />","<br>","<br/>");
+				//replace HTML line breaks with CRLF for output file
+                $reportData = str_ireplace($breaks, "\r\n", $reportData);  
+				
+				$path = $target_dir.$target_file;
+				//echo $path;
+				try{
+				   $len = file_put_contents($path, $reportData);
+				}catch(Exception $e){
+					echo 'Exception calling file_put_contents';
+				}
+			} 
+			elseif($filetype == 'pl'){
+				$reportData = getProfitLoss($xeroConfig, $fromDate, $toDate);
+				
+				$breaks = array("<br />","<br>","<br/>");
+				//replace HTML line breaks with CRLF for output file
+				$reportData = str_ireplace($breaks, "\r\n", $reportData);
+				
+				$path = $target_dir.$target_file;
+				//echo $path;
+				try{
+					$len = file_put_contents($path, $reportData);
+				}catch(Exception $e){
+					echo 'Exception calling file_put_contents';
+				}
+			}
+			
+			if($len !== FALSE && $len >= 0){
+				$msg=true;
+				$filename = pathinfo($target_file, PATHINFO_FILENAME);
+				$msgtext="Xero data upload successful.<br>
+				<form action=\"mapdata.php\" method=\"post\" name=\"mapfrm\" id=\"mapfrm\">
+				<input type=\"hidden\" name=\"company\" id=\"company\" value=\"$company\" />
+				<input type=\"hidden\" name=\"source\" id=\"source\" value=\"$source\" />
+				<input type=\"hidden\" name=\"xlstype\" id=\"xlstype\" value=\"$filetype\" />
+				<input type=\"hidden\" name=\"filename\" id=\"filename\" value=\"".urlencode($filename)."\" />
+                    <input type=\"submit\" value=\"Map uploaded file\" name=\"getfile\">
+                    </form>";
+			}
+		}
+		
+		//$upload=upload($target_dir,$target_file);
+		
+		//====================================================
+		//   END - CODE FOR HANDLING XERO UPLOADED DATA
+		//====================================================
 	}
 }
 
@@ -269,7 +411,28 @@ if($_POST) {
        <div id="frmmsg">
 <?php 
 
-if(!$upload && sizeof($data)<=0 && !$msg) { ?>
+if(!$upload && !$msg) { 
+    $ch = curl_init();
+    curl_setopt($ch,CURLOPT_URL, $GLOBALS['Base_URL']."user/org.php");
+    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'getorgassigned','userid'=>$_SESSION["userid"]));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    $result = curl_exec($ch);
+ 
+    curl_close($ch);
+    
+    $xml = simplexml_load_string(trim($result)) ;
+    
+    $userresult=$xml->result;
+    $authresult=$xml->message; 
+    $options="<option value=\"\">(please select)</option> \r\n";
+    foreach ($xml->orgs->org as $org) {
+        $orgid=$org->orgid;
+        $orgname=$org->orgname;
+        $selected = strcasecmp($orgname, $company) == 0 ? 'selected' : '';
+	    $options.="<option value=\"$orgname\" $selected>$orgname</option> \r\n";
+	}
+?>
 <div id="uploadfrm">
 	<form name="frmupload" action="uploaddata.php?company=<?php echo urlencode($selectedCompany); ?>&month=<?php echo $selectedMonth; ?>&page=upload" method="post" enctype="multipart/form-data">
 	    <h2 class="step">Step 1: Upload file</h2>
@@ -302,191 +465,370 @@ if(!$upload && sizeof($data)<=0 && !$msg) { ?>
 </div>
 <?php 
 } 
-if(sizeof($data)>0){
-    
-        $types = ($_POST['xlstype'] == 'bs') ? getbstypes() : gettypes();
-		
-		$company=getcompany($data);
-		$year=setyear($data);
-?>
-
-	<form name="frmmap" action="uploaddata.php?company=<?php echo $companyname; ?>&month=<?php echo $companymonth; ?>&page=upload" method="post" onsubmit="return checkform();">
-		<h2 class='step'>Step 2: Map the data</h2>
-		
-		<p>Company: 
-			<?php if($company=="") { ?>
-				<input style="width:400px;" type="text" name="company" id="company" value="" size="50" />
-			<?php } else { 
-				echo $company;
-			?>
-				<input type="hidden" name="company" id="company" value="$company" />
-			<?php } ?>
-		</p>
-		<p class="indented">
-			<input type="checkbox" name="chkmapall" id="chkmapall" onclick='mapall(this, <?php echo json_encode($year); ?>);' /> Use same mapping for all months
-		</p>
-		<p class="spacer">&nbsp;</p>
-		
-		<ul class="tab">
-			<?php 
-				foreach ($year as $key=>$value) {
-				  echo "<li><a href=\"javascript:void(0)\" class=\"tablinks btn btn-primary\" data-value='".trim($value)."' onclick-=\"openTab(event, '".trim($value)."')\" id=\"tab$key\">$value</a></li>\n";
-				}
-			?>
-		</ul>
-		
-<?php
-		
-				
-		$csvdata=getcsvdata($data,$year);
-		$oldkey="";
-		$endtag=false;
-		foreach ($csvdata as $key=>$value) {
-			if($oldkey!=$key){
-				if($endtag){
-					echo "</table>\n";
-					echo "</div>\n";
-				}
-				
-				$keyString = implode('-', explode(' ', $key));
-				echo "<div id=\"$key\" data-period='$keyString' class=\"tabcontent hidden\">\n";
-				echo "<table id=\"pla\"> \n";
-				
-				if($_POST['xlstype']=='pl'){
-				    echo "<tr><th>Item</th><th>Type</th><th>Value ($)</th><th>Make/Buy (%)</th><th>Obtain/Retain <br/>Customers (%)</th><th>Admin (%)</th></tr> \n";
-				}
-				elseif($_POST['xlstype']=='bs'){
-				    echo "<tr><th>Item</th><th>Type</th><th>Value ($)</th><th style=\"display:none;\">Assets (%)</th><th style=\"display:none;\">Liabilities (%)</th><th style=\"display:none;\">Equity (%)</th></tr> \n";
-				}
-				
-				$oldkey=$key;
-				$endtag=true;
-			}
-			
-			//print_r($value);
-			 $i=0;
-    	foreach ($value as $itemamount) {
-    	    
-                $key=preg_replace("/[^a-zA-Z0-9]+/", "", $key);
-			    
-				//$mapvalues=getmapping($company,key($itemamount),$i);
-				echo "<tr><td class=\"item\">".trim(key($itemamount))."<input type=\"hidden\" name=\"item$key$i\" id=\"item$key$i\" value=\"".trim(key($itemamount))."\" />";
-				echo "<input type=\"hidden\" name=\"mapid\" id=\"mapid\" value=\"$i\" /></td>";
-				echo "<td><select name=\"type$key$i\" id=\"type$key$i\">";
-				$curgrp="";
-				$onclick="";
-				foreach ($types as $typeval){
-					$type=explode("|",$typeval);
-					$selected=($type[2]==1) ? "selected" : "";
-					
-					
-					if($_POST['xlstype']=='bs'){
-					    
-					    $group=explode("-",$type[1]);
-					    
-					    if(trim($group[0])!=$curgrp){
-					        
-					        if($curgrp!=""){
-					            echo "</optgroup>";
-					            $curgrp=""; 
-					        }
-					        else{						      
-					            echo "<optgroup label=\"".trim($group[0])."\"> \n";
-					            $curgrp=trim($group[0]);
-                            }
-					    }
-					    
-					    $type[1]=trim($group[1]);
-					    
-				        $onclick="onclick=\"populatefield('cat".trim($type[3])."','$key$i');\"";	    
-					}
-					
-					echo "<option value=\"".$type[0]."\" $selected $onclick >".$type[1]."</option>";
-				}
-				
-				$inputtype="text";
-				$td="<td class=\"item percent\">";
-				$slashtd="</td>";
-				if($_POST['xlstype']=='bs'){
-				    echo "</optgroup>";
-				    $inputtype="hidden";
-				    $td="";
-				    $slashtd="";
-				}
-				
-			   echo "</select></td>";
-			   echo "<td class=\"item amount\"><input style=\"text-align:right;\" type=\"text\" name=\"value$key$i\" value=\"".$itemamount[key($itemamount)]."\" /></td>";
-				echo "$td<input style=\"text-align:right;\" type=\"$inputtype\" name=\"cat1$key$i\" id=\"cat1$key$i\" value=\"100\"  onclick=\"populatefield('cat1','$key$i');\" onchange=\"checkblank(this);\" / >$slashtd";
-				echo "$td<input style=\"text-align:right;\"  type=\"$inputtype\" name=\"cat2$key$i\" id=\"cat2$key$i\" value=\"0\" onclick=\"populatefield('cat2','$key$i');\" onchange=\"checkblank(this);\" />$slashtd";
-				echo "$td<input style=\"text-align:right;\" type=\"$inputtype\" name=\"cat3$key$i\" id=\"cat3$key$i\" value=\"0\" onclick=\"populatefield('cat3','$key$i');\" onchange=\"checkblank(this);\" />$slashtd";
-				echo "</tr> \n";
-				$i++;
-			}  
+else
+	
+	//need to refetch org options
+	if(isset($_POST["uploadXero"])) {
+		$ch = curl_init();
+		curl_setopt($ch,CURLOPT_URL, $GLOBALS['Base_URL']."user/org.php");
+		curl_setopt($ch, CURLOPT_POST, TRUE);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'getorgassigned','userid'=>$_SESSION["userid"]));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		$result = curl_exec($ch);
+	
+		curl_close($ch);
+	
+		$xml = simplexml_load_string(trim($result)) ;
+	
+		$userresult=$xml->result;
+		$authresult=$xml->message;
+		$options="<option value=\"\">(please select)</option> \r\n";
+		foreach ($xml->orgs->org as $org) {
+			$orgid=$org->orgid;
+			$orgname=$org->orgname;
+			$selected = strcasecmp($orgname, $company) == 0 ? 'selected' : '';
+			$options.="<option value=\"$orgname\" $selected>$orgname</option> \r\n";
 		}
-		
-		if($endtag){
-			echo "</table>\n";
-			echo "</div>\n";
-		}
-		
-		echo "<input type=\"hidden\" name=\"key\" id=\"key\" value=\"".$i."\" /> \n";
-		echo "<input type=\"hidden\" name=\"srctype\" id=\"srctype\" value=\"".$_POST['xlstype']."\" /> \n";
-		echo "<input type=\"hidden\" name=\"year\" id=\"year\" value=\"".htmlentities(serialize($year))."\" /> \n";
-		echo "<p style=\"text-align:center; \">";
+    }
 	
-		echo "<button type=\"reset\" name=\"reset\" id=\"reset\" class='btn btn-secondary' >Reset Selections</button> \n";
-		echo "<button type=\"submit\" name=\"map\" id=\"map\" class='btn btn-primary' >Map Fields</button> \n";
-		echo "</p>";
-		echo "</form> \n";
-		echo "<p>&nbsp;</p>";
-		
-		echo "<script>\n document.getElementById('tab0').click();\n</script>\n";
-		
-	}	
-	
-	
-	echo "<h1>$msgtext</h1>";
-
-	/*if($msg){
-		$reports="";
-		
-		echo "<p style=\"font-weight:bold; font-size:18px; padding-left:10px;\"><font style=\"color:green;\">Step 1. File Uploaded</font> <font style=\"font-size: 1.75rem;\">&rArr;</font> <font style=\"color:green;\">Step 2. Fields Mapped</font> <font style=\"font-size: 1.75rem;\">&rArr;</font> Step 3. Reports</p>";
-		echo "<table> \n";
-		echo "<tr><td style=\"padding-top:10px; padding-left:10px; padding-bottom:10px; font-size:16px;\"><strong>Company:</strong>&nbsp;".$_POST['company']."</td></tr> \n";
-		
-		echo "</table>\n";
-		if(sizeof($year)>1){
-	?>
-		<p style="padding-left:10px;"><button onclick='document.getElementById("divrpt").innerHTML=""; showrpttabs(<?php echo  json_encode($year) ?>,"<?php echo $_POST['company']?>","1")'>Show Monthly Report</button>
-		<button onclick='document.getElementById("divrpt").innerHTML=""; showrpttabs(<?php echo  json_encode($year) ?>,"<?php echo $_POST['company']?>","3")'>Show Quaterly Report</button></p>
-		
-	<?php	
-		} else {
-	?>	
-		<ul class="tab">
-			<li><a href="javascript:void(0)" class="tablinks" onclick="showrpt('<?php echo $_POST['company']?>','20','7');" id="tab0">July 2014 through June 2015</a></li>
-		</ul>
-	<?php		
-		}
-		
-		//echo "<p><button onclick=\"window.open('charts.php?company=$company&amp;year=$year&amp;month=$month','_blank');\">Show Chart</button></p>";
-		
-		echo "<div id=\"divrpttabs\" ></div>";
-	
-		echo "<script>\n document.getElementById('tab0').click();\n</script>\n";
-		
-		echo "<div id=\"divrpt\" ></div>";
-		
-		
-		
-	} */
-
+	echo '<div style="padding-left:10px;"><h5>'.$msgtext.'</h5></div>';
 ?>
 
 <div style="clear:both"></div>
 </div>
 </div>
+<!-- ============================================================ -->
+<!--              SUPPORT FOR XERO INTEGRATION                    -->
+<!-- ============================================================ -->
+<?php 	
+	//for demo only
+	function getAllowedAbns(){
+		//return ["11111111138", "11111111150"];
+		$abns = array();
+		
+		$ch = curl_init();
+		curl_setopt($ch,CURLOPT_URL, $GLOBALS['Base_URL']."user/org.php");
+		curl_setopt($ch, CURLOPT_POST, TRUE);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'orglist','userid'=>$_SESSION["userid"]));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		$result = curl_exec($ch);
+		
+		curl_close($ch);
+		
+		$xml = simplexml_load_string(trim($result)) ;
+		
+		$userresult=$xml->result;
+		foreach ($xml->orgs->org as $org) {
+			$abns[] = $org->abn;
+		}
+		return $abns;
+	}
+			
+	/**
+	 * Show the 'Connect to <Service>' button on the Demo -> API Auth page.
+	 *
+	 * @return Response
+	 */
+	function index($xeroConfig, $initOnLoad = false)
+	{
+		$data = array();
+	
+		if(isset($_REQUEST['completed']) && $_REQUEST['completed'] == '1'){
+			$data['authCompleted'] = 1;
+			//echo 'SWAP';
+			
+			//run the verify step to swap REQUEST token for ACCESS token
+			//- this is a VITAL step
+			try{
+				swapTokens($xeroConfig);
+			} catch(UnauthorizedException $e){
+				//Log and ignore
+				error_log('swapTokens() cannot be called twice in a session (back button clicked maybe?): '.$e->getMessage());
+				error_log('swapTokens() ACCESS token is used where a REQUEST token is expected');
+			} catch(\Exception $e){
+				//Log and ignore
+				error_log('swapTokens() called - general exception : '.$e->getMessage());
+			}
+		}
+			
+		//Start a session for the oauth session storage
+		session_start();
+		$xero = new PublicApplication($xeroConfig);
+		
+		$oauth_session = getOAuthSession();
+		
+		//check if session has expired
+		if(isset($_SESSION['oauth']) && 
+		   isset($_SESSION['oauth']['expires']) && 
+		   $_SESSION['oauth']['expires'] != NULL && 
+		   $_SESSION['oauth']['expires'] <= time()){
+			$oauth_session = null;
+		}
+		
+		//$oauth_session = null;
+				
+		if (null === $oauth_session) {
+				
+			$url = new URL($xero, URL::OAUTH_REQUEST_TOKEN);
+			$request = new Request($xero, $url);
+	
+			try {
+				$request->send();
+			} catch (Exception $e) {
+				error_log($e->getMessage());
+				if ($request->getResponse()) {
+					error_log($request->getResponse()->getOAuthResponse());
+				}
+			}
+	
+			$oauth_response = $request->getResponse()->getOAuthResponse();
+				
+			setOAuthSession(
+					$oauth_response['oauth_token'],
+					$oauth_response['oauth_token_secret']
+			);
+	
+			$data['url'] = $xero->getAuthorizeURL($oauth_response['oauth_token']);
+		}
+		else
+		{
+			//echo '4';
+			$data['url'] = '';
+			$_SESSION['oauth']['authenticated-with-xero'] = '1';
+		}
+				 
+		return $data;
+	}
+	
+	
+	function setOAuthSession($token, $secret, $expires = null)
+	{
+		// expires sends back an int
+		if ($expires !== null) {
+			$expires = time() + intval($expires);
+		}
+	
+		$_SESSION['oauth'] = [
+				'token' => $token,
+				'token_secret' => $secret,
+				'expires' => $expires
+		];
+	}
+	
+	function getOAuthSession()
+	{
+		//If it doesn't exist or is expired, return null
+		if (!isset($_SESSION['oauth'])
+				|| ($_SESSION['oauth']['expires'] !== null
+						&& $_SESSION['oauth']['expires'] <= time())
+		) {
+			return null;
+		}
+		
+		return $_SESSION['oauth'];
+	}
+	
+	/**
+	 * Fetch an ACCESS token from Xero and swap with the current REQUEST token in the session.
+	 *
+	 * @return Response
+	 */
+	function swapTokens($xeroConfig)
+	{
+		// Start a session for the oauth session storage
+		session_start();
+		$xero = new PublicApplication($xeroConfig);
+	
+		$oauth_session = getOAuthSession();
+	
+		$xero->getOAuthClient()
+		->setToken($oauth_session['token'])
+		->setTokenSecret($oauth_session['token_secret']);
+	
+		if (isset($_REQUEST['oauth_verifier'])) {
+	
+			$xero->getOAuthClient()->setVerifier($_REQUEST['oauth_verifier']);
+	
+			$url = new URL($xero, URL::OAUTH_ACCESS_TOKEN);
+			$request = new Request($xero, $url);
+	
+			$request->send();
+			$oauth_response = $request->getResponse()->getOAuthResponse();
+	
+			setOAuthSession(
+					$oauth_response['oauth_token'],
+					$oauth_response['oauth_token_secret'],
+					$oauth_response['oauth_expires_in']
+			);
+	
+			$xero->getOAuthClient()
+			->setToken($oauth_session['token'])
+			->setTokenSecret($oauth_session['token_secret']);
+		}
+	}
+	
+	/**
+	 * Cross check that organisation is inside allowed set. i.e. the organisation is
+	 * one which the user has adviser access to.
+	 *
+	 * @return Response
+	 */
+	function checkOrganisationAllowed($xero, $xeroConfig)
+	{
+		$isAllowed = false;
+		$organisation = null;
+		try {
+			$organisation = $xero->load('Accounting\\Organisation')->execute();
+		} catch (Exception $e) {
+			//print_r($e);
+			error_log($e->getMessage());
+			//back to 'Connect to Xero' button
+			return index($xeroConfig);
+		}
+				
+		//ABN is Xero API 'Registration Number'
+		$organisationAbn = $organisation[0]->RegistrationNumber;
+		//echo $organisationAbn;
+		$allowedArr = getAllowedAbns();
+		if(in_array($organisationAbn, $allowedArr)){
+			$isAllowed = true;
+		}
+		
+		return $isAllowed;
+		
+	}//end of function
+	
+	function getXeroAuth($xeroConfig)
+	{
+		// Start a session for the oauth session storage
+		session_start();
+		$xero = new PublicApplication($xeroConfig);
+	
+		$oauth_session = getOAuthSession();
+        $xero->getOAuthClient()
+			  ->setToken($oauth_session['token'])
+			  ->setTokenSecret($oauth_session['token_secret']);
+			
+		return $xero;
+	}
+	//end of function
+	
+    if(!$upload && !$msg ) {
+    	//echo '1';
+	    $data = index($xeroConfig);
+    }
 
+    //only show blue 'Connect to Xero' button if
+    //there is no oauth session or xero auth is not complete
+    if(!isset($_SESSION['oauth']) || 
+       !isset($_SESSION['oauth']['authenticated-with-xero']) || 
+              $_SESSION['oauth']['authenticated-with-xero'] !== '1'){
+?>
+
+<div class="container content-box" style="margin-top: 20px;">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default no-bg">
+				<div class="panel-body">
+					 <a href="<?php echo $data['url']; ?>"><img src="img/connect_xero_button_blue.png" alt="Connect to Xero"></img></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<?php 
+} else {
+	//echo '6';
+	
+	if(checkOrganisationAllowed(getXeroAuth($xeroConfig), $xeroConfig)){
+		//var_dump($_SESSION['oauth']);
+		//var_dump($GLOBALS);
+?>
+<div class="container content-box" style="margin-top: 20px;">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					 <div id="uploadfrm">
+					 <div style="padding:10px 0px 20px 0px;"><b>Upload Xero Data (Direct)</b></div>
+					 <div style="color:#13B5EA;padding-bottom:20px;">&#10003;&nbsp;Connected to Xero <span id="api-logout" style="cursor: pointer;">[<u>Logout</u>]</span></div>					 
+					 <form name="frmupload" action="uploaddata.php" method="post" enctype="multipart/form-data" class="form-horizontal">
+                                  <div class="form-group">
+	                                <label class="col-lg-3 control-label">Company*:</label>
+	                                <div class="col-lg-9">
+	                                  <select id="company" name="company" class="form-control">
+                                      <?php echo $options; ?>
+                                      </select>
+                                    </div>
+	                              </div>
+	                              <div class="form-group">
+	                                <label class="col-lg-3 control-label">Type:</label>
+	                                <div class="col-lg-9">
+	                                  <select id="xlstype" name="xlstype" class="form-control">
+	   	                                <option value="bs">Balance Sheet</option>
+	   	                                <option value="pl" selected>Profit & Loss</option>
+	                                  </select>
+                                    </div>
+	                              </div>
+	                              <div class="form-group">
+	                                <label class="col-lg-3 control-label">From:</label>
+	                                <div class="col-lg-9"><input id="fromDate" name="fromDate" type="date" class="form-control"></div>
+	                              </div>
+	                              <div class="form-group">
+	                                <label class="col-lg-3 control-label">To:</label>
+	                                <div class="col-lg-9"><input id="toDate" name="toDate" type="date" class="form-control"></div>
+	                              </div>
+	                              <div class="form-group">
+	                                <div class="col-lg-6">
+	                                   <input type="submit" value="Upload From Xero" name="uploadXero" class="btn btn-primary">
+	                                </div>
+	                              </input>
+	                 </form>
+	                 <?php
+	                   if($reportData) 
+	                   {
+	                 ?>
+	                     <br/>
+	                     <span style="color:#000; font-size:12px;"> 
+	                     
+	                     <b>FROM: <?php echo $fromDate; ?> TO: <?php echo $toDate; ?></b><br/>
+	                     <u>Raw CSV Data from Xero (copied to: <b><?php echo $path; ?></b>)</u> <br/>
+	                 <?php 
+	                       echo $reportData;
+	                 ?>
+	                    </span>
+	                 <?php 
+	                    }
+	                 ?>
+				</div>
+			</div>
+		</div>
+	</div>
+  </div>
+</div>
+<?php 
+	} else {
+?>
+<div class="container content-box">
+	<div class="row">
+		<div class="col-md-11">
+			<div class="panel panel-default">
+				<div class="panel-body" style="color:red;">
+					 &nbsp;Access to organisation not allowed via Informer
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<?php 
+	}
+}
+?>
+<!-- ============================================================ -->
+<!--          END - SUPPORT FOR XERO INTEGRATION                  -->
+<!-- ============================================================ -->
 </div>
 
 <!-- end upload content -->
@@ -502,6 +844,27 @@ if(sizeof($data)>0){
 		include("inc/footer.inc.php"); 
 	?>
 	<!-- end footer -->
+	
+	<script>
+
+	function apiLogout() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'apilogout.php', true);
+        xhr.send();
+
+        //redirect to upload page
+        window.location = window.location.href;
+    }
+
+
+    $(document).ready(function() {
+    	$('#api-logout').click(function() {
+    		apiLogout();
+    		console.log('api logout');
+    	});
+    });
+ </script>
+
 
 </body>
 </html>
