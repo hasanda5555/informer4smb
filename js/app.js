@@ -1,3 +1,5 @@
+var navTitle = '';
+
 function navigateTo(navData) {
 	//alert('navData: '+navData);
 	
@@ -6,6 +8,9 @@ function navigateTo(navData) {
 	var showCommentary = false;
 	var targetPage = 'main.php';
 	var extraParams = '';
+
+    navTitle = navData ;
+
 	switch(navData) {
 		case 'overview':
 			pageTitle = 'Menu';
@@ -2302,8 +2307,78 @@ $('.tablinks').click(function(e) {
 	$(this).addClass('active').attr('disabled', 'disabled');
 });
 
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+};
+
 // file no longer used
-function setComment(commentFrom){
-    var commentBody = $(commentFrom).find("textarea").val();
-    alert(commentBody);
+function setComment(commentFrom, label){
+    var commentBody = $(commentFrom).children("textarea");
+    var commentBodytwo = tinyMCE.activeEditor.getContent();
+
+    var company = getUrlParameter('company');
+    var month = getUrlParameter('month');
+
+    var userType = userregtype;
+
+    //setTimeout(function(){
+    //console.log(commentBody);
+    //console.log(commentBodytwo);
+    //}, 3000);
+
+    var MyDate = new Date();
+    var MyDateString;
+
+    MyDateString = ('0' + MyDate.getDate()).slice(-2) + '-'
+        + ('0' + (MyDate.getMonth()+1)).slice(-2) + '-'
+        + MyDate.getFullYear();
+
+    var datetime = "" + MyDateString + "  "
+        + MyDate.getHours() + ":"
+        + MyDate.getMinutes() + ":"
+        + MyDate.getSeconds();
+
+    var comentGoestoThisSection = $('#'+userType.toLowerCase()+'cmt-'+navTitle+' .generated-commentary');
+    var greetingmessage  = $('.greeting').html();
+    var userFullName = greetingmessage.split("Logged in as ").pop();
+
+
+    $.ajax({
+        method: "POST",
+        url: "../informer/comments.php",
+        data: {
+            mode: 'insertcomment',
+            comment : commentBodytwo,
+            userid : userid,
+            monthyear : selectedMonth,
+            label : label,
+            layer : navTitle,
+            company: selectedCompany
+
+        }
+    })
+    .done(function(data) {
+        $(comentGoestoThisSection).prepend( '<div><p>'+datetime + ' - (' + userFullName + ')</p>' + commentBodytwo + '</div>');
+        bootbox.alert({message: 'Your commentary has been saved successfully.', size: 'small', className: 'success-alert alert-with-icon'});
+        tinyMCE.activeEditor.setContent('');
+        //console.log('send' + userType);
+    })
+    .fail(function() {
+        bootbox.alert({message: 'Unable to save your commentary', size: 'small', className: 'danger-alert alert-with-icon'});
+
+        console.log('fail' + userType);
+    });
+    
+
 };

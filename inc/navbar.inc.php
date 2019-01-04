@@ -7,6 +7,7 @@
 <aside id="sidebar-right" class="sidebar sidebar-alt sidebar-right c-overflow">
 	<header id="sidebar-header" class="clearfix" data-ma-theme="">
 		<ul class="h-inner">
+
 			<li class="pull-right">
 				<ul class="hi-menu">
 					<li>
@@ -35,7 +36,8 @@
 <!-- side menu -->
 <aside id="sidebar-menu" class="sidebar sidebar-alt sidebar-right c-overflow">
 	<header id="sidebar-header" class="clearfix" data-ma-theme="">
-		<ul class="h-inner">			
+		<ul class="h-inner">
+		    <li class="pull-left"><h3 style="position: relative;top: -9px; color: #FFF;">Menu</h3></li>
 			<li class="pull-right">
 				<ul class="hi-menu">
 					<li>
@@ -52,7 +54,7 @@
 			
 			<?php if(!$noData) { ?>
 			<li class="sub-menu">
-				<a href="" data-ma-action="submenu-toggle"><i class="zmdi zmdi-chevron-right"></i><i class="zmdi zmdi-chevron-down hidden"></i> Menu</a>
+				<a href="" data-ma-action="submenu-toggle"><i class="zmdi zmdi-chevron-right"></i><i class="zmdi zmdi-chevron-down hidden"></i> Layers</a>
 				<ul>
 					<?php if(isset($labelsSales) || $demo) { ?>
 					<li><a href="#sales" data-ma-action="navigate" data-nav-data="sales">Revenue</a></li>
@@ -112,6 +114,10 @@
 		</div>
 	</div>
 </div>
+
+<script>
+			var userregtype =  '<?php echo $regtype; ?>';
+</script>
 
 <!-- main nav bar -->
 <header id="header" class="clearfix" data-ma-theme="">

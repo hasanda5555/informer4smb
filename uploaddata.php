@@ -1,10 +1,10 @@
 <?php
 ob_start();
-	
-	require "../includes/db_functions.php";
+
+    require "../includes/db_functions.php";
 	require "../includes/common_functions.inc.php";
 	require "../includes/interface_functions.inc.php";
-	require_once("../lib/PHPExcel/IOFactory.php");
+
 	
 	$role=logincheck();
 	if ($role == "") header("Location: index.php?msg=Please login to continue.");
@@ -55,57 +55,7 @@ ob_start();
 		<script>
 			var userid = <?php echo $_SESSION['userid']; ?>
 		</script>
-			
-		<script>
-			function showrpt(comp,yr,mnth) {
-				$.get('reports.php', {showrpt: true, company: comp,year:yr,month:mnth}, function(response) {
-					document.getElementById('divrpt').innerHTML=response;
-				});
-			}
 
-			function showrpttabs(yrs,comp,type) {
-				$.get('reports.php', {yeararray: yrs, company: comp, rpttype: type}, function(response) {
-					// Log the response to the console
-				   // alert("Response: "+response);
-					document.getElementById('divrpttabs').innerHTML=response;
-				});
-			}
-
-			function mapall(ele,tabs) {
-				if(ele.checked) {
-					//confirm("Do you wish to use same mapping for all the months?");
-					var items = parseInt(document.getElementById('key').value);
-					for (var tab=0; tab<tabs.length; tab++) {
-						tabs[tab]=tabs[tab].trim();
-						tabs[tab]=tabs[tab].replace("-", "");
-						tabs[tab]=tabs[tab].replace(" ", "");
-						
-						if(tab==0) continue;
-						
-						for (var i = 0; i < items; i++) {
-							//alert ('cat1'+tabs[tab]+i+'--'+'\n'+'cat2'+tabs[tab]+i+'--'+'\n'+'cat3'+tabs[tab]+i+'--'+'\n'+'type'+tabs[tab]+i+'--');
-							//alert('cat1'+(tabs[0].trim()).replace(" ", "")+i);
-						//	alert(document.getElementById('cat130Jun20170').value);
-						//	alert(document.getElementById('cat1'+(tabs[0].trim()).replace(" ", "")+i).value);
-							
-							var cat1val=document.getElementById('cat1'+(tabs[0].trim()).replace(" ", "")+i).value;
-							var cat2val=document.getElementById('cat2'+(tabs[0].trim()).replace(" ", "")+i).value;
-							var cat3val=document.getElementById('cat3'+(tabs[0].trim()).replace(" ", "")+i).value;
-							var type=document.getElementById('type'+(tabs[0].trim()).replace(" ", "")+i).value;
-							
-					//	alert('cat1'+(tabs[tab].trim()).replace(" ", "")+i);
-						//	alert ('cat1'+tabs[tab]+i);
-							document.getElementById('cat1'+(tabs[tab].trim()).replace(" ", "")+i).value=cat1val;
-							document.getElementById('cat2'+(tabs[tab].trim()).replace(" ", "")+i).value=cat2val;
-							document.getElementById('cat3'+(tabs[tab].trim()).replace(" ", "")+i).value=cat3val;
-							document.getElementById('type'+(tabs[tab].trim()).replace(" ", "")+i).value=type;
-							//alert ('cat1'+tabs[tab]+i+'--'+cat1val+'\n'+'cat2'+tabs[tab]+i+'--'+cat2val+'\n'+'cat3'+tabs[tab]+i+'--'+cat3val+'\n'+'type'+tabs[tab]+i+'--'+type);
-							//alert(items );
-						} 
-					} 
-				}
-			}
-			</script>
     </head>
 			
 	<body class="">
@@ -174,16 +124,20 @@ $fromDate=null;
 $toDate=null;
 
 if($_POST) {
+    
+    //print_r($_POST);
 
 	if(isset($_POST["upload"])) {
 	    //require_once("lib/PHPExcel/IOFactory.php");
 	    
-	    $company=$_POST['company'];	    
+	    $company=urldecode($_POST['company']);	    
 	    $source=$_POST['source'];
 	    $filetype=$_POST['xlstype'];
 	    
-		$target_dir = "uploads/$company/$source/$filetype/";
+		$target_dir = "../uploads/$company/$source/$filetype/";
 		
+		
+		//echo $target_dir.
 		$target_file = basename($_FILES["fileToUpload"]["name"]);
 		
 		$upload=upload($target_dir,$target_file);
@@ -191,6 +145,7 @@ if($_POST) {
 		//echo $upload;
 		
 		if($upload){
+		    
 		    $filename = pathinfo($_FILES['fileToUpload']['name'], PATHINFO_FILENAME);
 		    $msg=true;
 			$msgtext="File upload successful.<br>
@@ -201,6 +156,8 @@ if($_POST) {
             <input type=\"hidden\" name=\"filename\" id=\"filename\" value=\"".urlencode($filename)."\" />
             <input type=\"submit\" value=\"Map uploaded file\" name=\"getfile\">
             </form>";
+            
+            //echo $msgtext;
 		}
 
 	} else if(isset($_POST["uploadXero"])) {
@@ -209,7 +166,7 @@ if($_POST) {
 		//===================================================
 		//require_once("lib/PHPExcel/IOFactory.php");
 		 
-		$company=$_POST['company'];		
+		$company=urldecode($_POST['company']);		
 		//echo $company;
 		$fromDate=$_POST['fromDate'];
 		$toDate=$_POST['toDate'];
@@ -217,7 +174,7 @@ if($_POST) {
 		
 		$filetype=$_POST['xlstype']; //e.g Balance Sheet or Profit & Loss
 		$source = 'xero';
-		$target_dir = "uploads/$company/$source/$filetype/";
+		$target_dir = "../uploads/$company/$source/$filetype/";
 		$target_file = 'xero-'.$filetype.rand(0, 1000).'.csv';//TBD - change file naming convention
 		
 		function getBalanceSheet($xeroConfig, $fromDate, $toDate)
@@ -406,7 +363,6 @@ if($_POST) {
 
 ?>
 
-  <div id="content">
   
        <div id="frmmsg">
 <?php 
@@ -435,10 +391,11 @@ if(!$upload && !$msg) {
 ?>
 <div id="uploadfrm">
 	<form name="frmupload" action="uploaddata.php?company=<?php echo urlencode($selectedCompany); ?>&month=<?php echo $selectedMonth; ?>&page=upload" method="post" enctype="multipart/form-data">
+	    <input type="hidden" name="company" id="company" value="<?php echo urlencode($selectedCompany); ?>" />
 	    <h2 class="step">Step 1: Upload file</h2>
 		
 		<p class="left-content">Select CSV to upload:</p>
-		<p class="right-content"><input type="file" name="fileToUpload" id="fileToUpload"></p>
+		<p class="right-content"><input type="file"  name="fileToUpload" id="fileToUpload"></p>
 		<p class="spacer">&nbsp;</p>
 		
 		<p class="left-content">Source:</p>
@@ -465,10 +422,7 @@ if(!$upload && !$msg) {
 </div>
 <?php 
 } 
-else
-	
-	//need to refetch org options
-	if(isset($_POST["uploadXero"])) {
+else if(isset($_POST["uploadXero"])) {
 		$ch = curl_init();
 		curl_setopt($ch,CURLOPT_URL, $GLOBALS['Base_URL']."user/org.php");
 		curl_setopt($ch, CURLOPT_POST, TRUE);
@@ -490,7 +444,7 @@ else
 			$options.="<option value=\"$orgname\" $selected>$orgname</option> \r\n";
 		}
     }
-	
+else
 	echo '<div style="padding-left:10px;"><h5>'.$msgtext.'</h5></div>';
 ?>
 
@@ -754,15 +708,8 @@ else
 					 <div style="padding:10px 0px 20px 0px;"><b>Upload Xero Data (Direct)</b></div>
 					 <div style="color:#13B5EA;padding-bottom:20px;">&#10003;&nbsp;Connected to Xero <span id="api-logout" style="cursor: pointer;">[<u>Logout</u>]</span></div>					 
 					 <form name="frmupload" action="uploaddata.php" method="post" enctype="multipart/form-data" class="form-horizontal">
-                                  <div class="form-group">
-	                                <label class="col-lg-3 control-label">Company*:</label>
-	                                <div class="col-lg-9">
-	                                  <select id="company" name="company" class="form-control">
-                                      <?php echo $options; ?>
-                                      </select>
-                                    </div>
-	                              </div>
-	                              <div class="form-group">
+                                  <input type="hidden" name="company" id="company" value="<?php echo urlencode($selectedCompany); ?>" />
+	                             <div class="form-group">
 	                                <label class="col-lg-3 control-label">Type:</label>
 	                                <div class="col-lg-9">
 	                                  <select id="xlstype" name="xlstype" class="form-control">

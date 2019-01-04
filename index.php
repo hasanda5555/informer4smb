@@ -17,7 +17,7 @@
 		$result = curl_exec($ch);
 		curl_close($ch);
 		
-		//echo $result;
+		echo $result;
 		$xml = simplexml_load_string(trim($result)) ;
 		
 		$userresult=$xml->result;
@@ -27,9 +27,11 @@
 			$userid=$xml->user->id;
 			$gname=$xml->user->first_name;
 			$lname=$xml->user->surname;
+			$regtype=$xml->user->regtype;
 			session_start();
 			$_SESSION["userid"]=trim($userid);
 			$_SESSION["uname"]=trim($gname)." ".trim($lname);
+			$_SESSION["regtype"]=trim($regtype);
 			setsession($userid, session_id());
 			
 			// check for company & period

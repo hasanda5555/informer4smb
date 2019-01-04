@@ -182,16 +182,28 @@
                         $("#userid").val(tempUser.id);
                         $("#loginid").val(tempUser.login).prop("disabled", true);
 
+
+                        if(jQuery.isEmptyObject(tempUser.first_name)){tempUser.first_name = ''};
                         $('#fname').val(tempUser.first_name);
                         $('#lname').val(tempUser.surname);
+                        if(jQuery.isEmptyObject(tempUser.address)){tempUser.address = ''};
                         $('#address').val(tempUser.address);
+                        if(jQuery.isEmptyObject(tempUser.mobile)){tempUser.mobile = ''};
                         $('#mobile').val(tempUser.mobile);
+                        if(jQuery.isEmptyObject(tempUser.phone)){tempUser.phone = ''};
                         $('#phone').val(tempUser.phone);
                         $('#email').val(tempUser.email);
                         $('#orgid').val(tempUser.orgid);
                         $('#role').val(tempUser.role);
-                        var values=tempUser.assignorgid;
-                        $.each(values.split(","), function(i,e){
+
+                        var values = tempUser.assignorgid;
+                        if ( tempUser.assignorgid  == null){
+                            values= ''+tempUser.orgid;
+                        }
+
+                        //console.log(tempUser);
+
+                        $.each(values.split(','), function(i,e){
                             $("#assignorgid option[value='" + e + "']").prop("selected", true);
                         });
                         //alert("me ready to edit "+tempUser.first_name);
@@ -291,17 +303,28 @@
                     function userManagementUserList() {
                         $.each(userdata.user, function(index, element) {
                             //console.log(element);
-                            var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.first_name +' '+ element.surname+'</h4> <span class="label label-veify label-verifts-'+ element.verified+'"> </span> <div class="toggle-middle admin-only st-'+element.verified+' " title="User verification" for="verified"><input type="hidden" name="'+element.id+'" value="'+element.verified+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  <address class="no-margin">'+ element.email+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewUser" onclick="editUser('+element.id+')"> <i class="fa fa-lg fa-pencil-square-o" aria-hidden="true"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide "  title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> <div class="toggle-middle status-toggle hint--top hint--rounded hint--bounce st-'+element.status+' " aria-label="User status" for="status" ><input type="hidden" name="'+element.id+'" value="'+element.status+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  </div></td></tr>';
+                            var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.first_name +' '+ element.surname+'</h4> <span class="label label-veify label-verifts-'+ element.verified+'"> </span> <div class="hint--right hint--rounded hint--bounce toggle-middle admin-only st-'+element.verified+' " aria-label="User verification '+(element.verified === 'true' ? 'active' : 'pending' )+'" for="verified"><input type="hidden" name="'+element.id+'" value="'+element.verified+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  <address class="no-margin">'+ element.email+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewUser" onclick="editUser('+element.id+')"> <i class="fa fa-lg fa-pencil-square-o" aria-hidden="true"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide "  title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> <div class="toggle-middle status-toggle hint--left hint--rounded hint--bounce st-'+element.status+' " aria-label="User status '+(element.status  === 'true' ? 'active' : 'inactive')+'" for="status" ><input type="hidden" name="'+element.id+'" value="'+element.status+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  </div></td></tr>';
                             $(".user-management-list-table tbody").append(userRow)
                         });
                     }
 
                     function userManagementOrgList() {
+
+                        if(orgdata.orgs.org.length == undefined){
+
+                            var singleEle = orgdata.orgs.org
+                            orgdata.orgs.org = [];
+                            orgdata.orgs.org.push(singleEle);
+                        }
+
+                        //console.log("orgta s",orgdata);
+
                         $.each(orgdata.orgs.org , function(index, element) {
                             //console.log(element);
                             var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.orgname +' <small>('+ element.abn+')</small></h4> <address class="no-margin">'+ element.orgemail+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewOrg"  onclick="editOrg('+element.orgid+')"> <i class="fa fa-lg fa-pencil-square-o" aria-hidden="true"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide" title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> </div></td></tr>';
                             $(".organisation-list-table tbody").append(userRow)
                         });
+
                     }
 
                     $(document).ready(function() {
@@ -383,6 +406,7 @@
                                 var form = $(this);
                                 var url = 'https://informer4smb.com.au/pla/user/user.php';
 
+
                                 $.ajax({
                                        type: "POST",
                                        url: url,
@@ -390,6 +414,8 @@
                                        success: function(data)
                                        {
                                             var returnobj = JSON.parse(data);
+
+                                            //console.log(data);
 
                                             if(returnobj.result == 'pass' || returnobj.result == 'ok'){
                                                 bootbox.alert({message: returnobj.message, size: 'small', className: 'success-alert alert-with-icon'}); // show response from the php script.
@@ -588,7 +614,7 @@
           <div class="form-group">
               <label class="control-label col-sm-3" for="assignorgid">Assigned Organisation:</label>
               <div class="col-sm-9">
-                <select class="form-control" id="assignorgid" name="assignorgid" multiple=""></select>
+                <select class="form-control" id="assignorgid" name="assignorgid[]" multiple=""></select>
               </div>
             </div>
 

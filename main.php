@@ -356,7 +356,7 @@
 									<?php
 										drawFullLabel($labelsMakeBuy);
 										drawGraphContainer('makebuy', 'total', false);
-										drawCommentaryMini($labelsMakeBuy);
+										drawCommentaryMini($labelsMakeBuy,'makebuy');
 									?>
 								</div>
 								
@@ -364,7 +364,7 @@
 									<?php
 										drawFullLabel($labelsMakeBuyPurchases);
 										drawGraphContainer('makebuy', 'purchases');
-										drawCommentaryMini($labelsMakeBuyPurchases);
+										drawCommentaryMini($labelsMakeBuyPurchases,'makebuypurchases');
 									?>
 								</div>
 								
@@ -372,7 +372,7 @@
 									<?php
 										drawFullLabel($labelsMakeBuyPeople);
 										drawGraphContainer('makebuy', 'people');
-										drawCommentaryMini($labelsMakeBuyPeople);
+										drawCommentaryMini($labelsMakeBuyPeople,'makebuypeople');
 									?>
 								</div>
 							</div>
@@ -382,7 +382,7 @@
 							<?php
 								drawFullLabel($labelsNetProfitLoss);
 								drawGraphContainer('netprofitloss', 'total', false);
-								drawCommentaryMini($labelsNetProfitLoss);
+								drawCommentaryMini($labelsNetProfitLoss,'netprofitloss');
 							?>
 						</div>
 						<?php } if(isset($layerSales) || $demo) { ?>
@@ -390,7 +390,7 @@
 							<?php
 								drawFullLabel($labelsSales);
 								drawGraphContainer('sales',  'total', false);
-								drawCommentaryMini($labelsSales);
+								drawCommentaryMini($labelsSales,'sales');
 							?>
 						</div>
 						<?php } if(isset($labelsGrossProfit) || $demo) { ?>
@@ -398,7 +398,7 @@
 							<?php
 								drawFullLabel($labelsGrossProfit);
                                 drawGraphContainer('grossprofit', 'total', false);
-                                drawCommentaryMini($labelsGrossProfit);
+                                drawCommentaryMini($labelsGrossProfit, 'grossprofit');
 							?>
 						</div>
 						<?php } if(isset($labelsSelling) || $demo) { ?>
@@ -407,7 +407,7 @@
 								<div role="tabpanel" class="tab-pane has-alert active <?php if(isset($labelsSelling) && hasAlert($labelsSelling)) echo 'hasAlert'; ?>" id="sellingtotal">
 									<?php
 										drawFullLabel($labelsSelling);
-										drawCommentaryMini($labelsSelling);
+										drawCommentaryMini($labelsSelling, 'selling');
 									?>
 								</div>
 								
@@ -415,7 +415,7 @@
 									<?php
 										drawFullLabel($labelsSellingPurchases);
 										drawGraphContainer('sellingtotal', 'purchases');
-										drawCommentaryMini($labelsSellingPurchases);
+										drawCommentaryMini($labelsSellingPurchases, 'sellingpurchases');
 									?>
 								</div>
 								
@@ -423,7 +423,7 @@
 									<?php
 										drawFullLabel($labelsSellingPeople);
 										drawGraphContainer('sellingtotal', 'people');
-										drawCommentaryMini($labelsSellingPeople);
+										drawCommentaryMini($labelsSellingPeople, 'sellingpeople');
 									?>
 								</div>
 							</div>

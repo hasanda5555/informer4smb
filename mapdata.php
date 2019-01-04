@@ -138,6 +138,8 @@ $company="";
 $msgtext="";
 
 if($_POST) {
+
+
     
     if(isset($_POST["getfile"])) {
         
@@ -371,7 +373,7 @@ if(sizeof($data)<=0) {
 </div>
 <?php 
 } 
-if(sizeof($data)>0){
+if(sizeof($data)>0 && $company==trim(getcompany($data))){
     
         $types=($_POST['xlstype']=='bs') ? getbstypes() : gettypes();
 		
@@ -506,7 +508,9 @@ if(sizeof($data)>0){
 		
 		echo "<script>\n document.getElementById('tab0').click();\n</script>\n";
 		
-	}	
+	}
+else if(sizeof($data)>0 && $company!=trim(getcompany($data)))
+    $msgtext="Chosen file does not match selected organisation.";
 
 	echo "<h1>$msgtext</h1>";
 ?>

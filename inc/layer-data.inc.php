@@ -3,6 +3,9 @@
 	$summaryData = new stdClass();
 	
 	$layersData = $xml->layers->layer;
+	//echo '<pre>';
+	//print_r($xml);
+	//echo '</pre>';
 	foreach($layersData as $layerData) {
 		switch(strtolower($layerData['name'])) {
 			case 'make/buy':
