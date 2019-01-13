@@ -170,6 +170,14 @@
                         $("#userform").prepend(editUserMode);
                         $(".newUserMode").remove();
 
+
+
+                        if(userdata.user.length == undefined){
+                            var singleUser = userdata.user
+                            userdata.user = [];
+                            userdata.user.push(singleUser);
+                        }
+
                         $.each(userdata.user, function(index, element) {
                             if(element.id == id){
                                 tempUser = element;
@@ -178,6 +186,51 @@
 
                         $("#addNewUser").addClass('edit-UserModal');
                         //var el = $("#addNewUser").elements;
+
+                        var orgUrl = 'https://informer4smb.com.au/pla/user/org.php';
+
+                        var getObject = { mode: null, userid: null, format : 'json'};
+                        getObject.mode = 'getorgassigned';
+                        getObject.userid = tempUser.id;
+
+                         $.ajax({
+                               type: "POST",
+                               url: orgUrl,
+                               data: $.param(getObject), // serializes the form's elements.
+                               success: function(data)
+                               {
+                                  var returnobj = JSON.parse(data);
+                                  var dtaobj = returnobj.orgs.org;
+                                  var tempAssingOrgarry = [];
+
+                                  if(returnobj.orgs.org.length == undefined){
+                                      var singleorg= returnobj.orgs.org
+                                      returnobj.orgs.org = [];
+                                      returnobj.orgs.org.push(singleorg);
+                                      dtaobj = [];
+                                      dtaobj.push(singleorg);
+                                  }
+
+                                  Object.keys(dtaobj).forEach(function(key) {
+                                    //console.log(key, dtaobj[key].orgid);
+                                    tempAssingOrgarry.push(dtaobj[key].orgid)
+
+                                  });
+
+                                  tempUser['assignorgid'] = tempAssingOrgarry;
+
+                                  var values = tempUser.assignorgid;
+                                  if ( tempUser.assignorgid  == null){
+                                      values= ''+tempUser.orgid;
+                                  }
+
+                                  $.each(values, function(i,e){
+                                      $("#assignorgid option[value='" + e + "']").prop("selected", true);
+                                  });
+                               }
+                         });
+
+
 
                         $("#userid").val(tempUser.id);
                         $("#loginid").val(tempUser.login).prop("disabled", true);
@@ -196,17 +249,8 @@
                         $('#orgid').val(tempUser.orgid);
                         $('#role').val(tempUser.role);
 
-                        var values = tempUser.assignorgid;
-                        if ( tempUser.assignorgid  == null){
-                            values= ''+tempUser.orgid;
-                        }
 
-                        //console.log(tempUser);
 
-                        $.each(values.split(','), function(i,e){
-                            $("#assignorgid option[value='" + e + "']").prop("selected", true);
-                        });
-                        //alert("me ready to edit "+tempUser.first_name);
                     }
 
                     function editUserField(id, objkey , value, pass, fail){
@@ -301,11 +345,20 @@
                     }
 
                     function userManagementUserList() {
+
+                         if(userdata.user.length == undefined){
+                            var singleUser = userdata.user
+                            userdata.user = [];
+                            userdata.user.push(singleUser);
+                         }
+
                         $.each(userdata.user, function(index, element) {
-                            //console.log(element);
-                            var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.first_name +' '+ element.surname+'</h4> <span class="label label-veify label-verifts-'+ element.verified+'"> </span> <div class="hint--right hint--rounded hint--bounce toggle-middle admin-only st-'+element.verified+' " aria-label="User verification '+(element.verified === 'true' ? 'active' : 'pending' )+'" for="verified"><input type="hidden" name="'+element.id+'" value="'+element.verified+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  <address class="no-margin">'+ element.email+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewUser" onclick="editUser('+element.id+')"> <i class="fa fa-lg fa-pencil-square-o" aria-hidden="true"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide "  title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> <div class="toggle-middle status-toggle hint--left hint--rounded hint--bounce st-'+element.status+' " aria-label="User status '+(element.status  === 'true' ? 'active' : 'inactive')+'" for="status" ><input type="hidden" name="'+element.id+'" value="'+element.status+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  </div></td></tr>';
-                            $(".user-management-list-table tbody").append(userRow)
-                        });
+                             //console.log(element);
+                             var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.first_name +' '+ element.surname+'</h4> <span class="label label-veify label-verifts-'+ element.verified+'"> </span> <div class="hint--right hint--rounded hint--bounce toggle-middle admin-only st-'+element.verified+' " aria-label="User verification '+(element.verified === 'true' ? 'active' : 'pending' )+'" for="verified"><input type="hidden" name="'+element.id+'" value="'+element.verified+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  <address class="no-margin">'+ element.email+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewUser" onclick="editUser('+element.id+')"> <i class="fa fa-lg fa-pencil-square-o" aria-hidden="true"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide "  title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> <div class="toggle-middle status-toggle hint--left hint--rounded hint--bounce st-'+element.status+' " aria-label="User status '+(element.status  === 'true' ? 'active' : 'inactive')+'" for="status" ><input type="hidden" name="'+element.id+'" value="'+element.status+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  </div></td></tr>';
+                             $(".user-management-list-table tbody").append(userRow)
+                         });
+
+
                     }
 
                     function userManagementOrgList() {

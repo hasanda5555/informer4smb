@@ -2369,7 +2369,13 @@ function setComment(commentFrom, label){
         }
     })
     .done(function(data) {
-        $(comentGoestoThisSection).prepend( '<div><p>'+datetime + ' - (' + userFullName + ')</p>' + commentBodytwo + '</div>');
+
+        if($(comentGoestoThisSection).length == 0){
+            $('#'+userType.toLowerCase()+'cmt-'+navTitle).prepend( '<div class="generated-commentary"><div><p>'+datetime + ' - (' + userFullName + ')</p>' + commentBodytwo + '</div></div>');
+        }else {
+            $(comentGoestoThisSection).prepend( '<div><p>'+datetime + ' - (' + userFullName + ')</p>' + commentBodytwo + '</div>');
+        }
+
         bootbox.alert({message: 'Your commentary has been saved successfully.', size: 'small', className: 'success-alert alert-with-icon'});
         tinyMCE.activeEditor.setContent('');
         //console.log('send' + userType);

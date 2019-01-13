@@ -148,13 +148,13 @@ if($_POST) {
 		    
 		    $filename = pathinfo($_FILES['fileToUpload']['name'], PATHINFO_FILENAME);
 		    $msg=true;
-			$msgtext="File upload successful.<br>
+			$msgtext="<h2 class='step'>File upload successful.</h2><br>
     		<form action=\"mapdata.php\" method=\"post\" name=\"mapfrm\" id=\"mapfrm\">
             <input type=\"hidden\" name=\"company\" id=\"company\" value=\"$company\" />
             <input type=\"hidden\" name=\"source\" id=\"source\" value=\"$source\" />
             <input type=\"hidden\" name=\"xlstype\" id=\"xlstype\" value=\"$filetype\" />
             <input type=\"hidden\" name=\"filename\" id=\"filename\" value=\"".urlencode($filename)."\" />
-            <input type=\"submit\" value=\"Map uploaded file\" name=\"getfile\">
+            <input type=\"submit\" class=\"btn btn-primary pull-left m-r-30 waves-effect\" value=\"Map uploaded file\" name=\"getfile\">
             </form>";
             
             //echo $msgtext;
@@ -342,13 +342,13 @@ if($_POST) {
 			if($len !== FALSE && $len >= 0){
 				$msg=true;
 				$filename = pathinfo($target_file, PATHINFO_FILENAME);
-				$msgtext="Xero data upload successful.<br>
+				$msgtext="<h2 class='step'>Xero data upload successful.</h2><br>
 				<form action=\"mapdata.php\" method=\"post\" name=\"mapfrm\" id=\"mapfrm\">
 				<input type=\"hidden\" name=\"company\" id=\"company\" value=\"$company\" />
 				<input type=\"hidden\" name=\"source\" id=\"source\" value=\"$source\" />
 				<input type=\"hidden\" name=\"xlstype\" id=\"xlstype\" value=\"$filetype\" />
 				<input type=\"hidden\" name=\"filename\" id=\"filename\" value=\"".urlencode($filename)."\" />
-                    <input type=\"submit\" value=\"Map uploaded file\" name=\"getfile\">
+                    <input type=\"submit\" class=\"btn btn-primary pull-left m-r-30 waves-effect\" value=\"Map uploaded file\" name=\"getfile\">
                     </form>";
 			}
 		}
