@@ -70,8 +70,15 @@ function navigateTo(navData) {
 	var filename = pathParts[pathParts.length - 1];
 	
 	if(targetPage != filename) {
+        var getParams = 'page='+navData;
 		// redirect to the page
-		var getParams = 'page='+navData;
+        /* if(typeof navData != 'undefined'){
+           getParams = 'page='+navData;
+        }else {
+           getParams = 'page=dashboard'
+       }*/
+        
+
 		if((selectedCompany && selectedCompany!='') && (selectedMonth && selectedMonth!='')) {
 			getParams += '&company='+encodeURI(selectedCompany)+'&month='+selectedMonth;
 		} else {
@@ -1821,6 +1828,8 @@ function prepareAccordions(context) {
 		  
 			if(result == 'ok') {
 				var dialogContent = $('.data-dialog').clone();
+                $('.company-select', dialogContent).find("option").remove().end();
+                $('.company-select', dialogContent).append('<option selected="true" disabled="disabled">Select Organisation</option>');
 				
 				xml.find('org').each(function(index) {
 					//alert($(this).find('orgname').text());
@@ -1951,7 +1960,10 @@ function prepareAccordions(context) {
 			var result = xml.find( "result" ).text();
 		  
 			if(result == 'ok') {
-				var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                $('.period-select').find('option').remove().end();
+                $('.period-select').append('<option selected="true" disabled="disabled">Select period</option>');
+
+                var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 					
 				xml.find('Value').each(function(index) {
 					var month = parseInt($(this).find('month').text());
@@ -2058,7 +2070,10 @@ function prepareAccordions(context) {
 		  
 			if(result == 'ok') {
 				var options = '';
-				xml.find('org').each(function(index) {
+                $('.company-select').find("option").remove().end();
+                $('.company-select').append('<option selected="true" disabled="disabled">Select Organisation</option>');
+
+                xml.find('org').each(function(index) {
 					//alert($(this).find('orgname').text());
 					var orgid = $(this).find('orgid').text();
 					var orgname = $(this).find('orgname').text();
@@ -2120,7 +2135,17 @@ function prepareAccordions(context) {
 							var selectedPeriod = $('.period-select', dialogContent).val();
 							
 							var path = "main.php?company="+selectedCompany+"&month="+selectedPeriod;
-							if(pageID) path += '&page='+pageID;
+
+							if(pageID == 'menu'){
+                                path += '&page=dashboard';
+                               // console.log(pageID)
+                            }else {
+                                if(typeof pageID == 'undefined'){
+                                    pageID = 'dashboard';
+                                }
+							    path += '&page='+pageID;
+                             //   console.log(pageID)
+                            }
 							
 							window.location.assign(path);
 						}

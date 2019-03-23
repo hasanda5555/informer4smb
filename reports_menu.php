@@ -18,7 +18,22 @@ ob_start();
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Informer 4 SMB</title>
-
+<style>
+    #divrpt .report {
+        display: inline !important;
+    }
+    .text-right {
+        text-align: right !important;
+    }
+    tr.table-head th {
+        background-color: #22437e;
+        color: #fff;
+    }
+    td.sec-head {
+        background: #e4e4e4;
+        color: #ea7e19;
+    }
+</style>
 	<?php 
 		include("inc/head.inc.php"); 
 	?>

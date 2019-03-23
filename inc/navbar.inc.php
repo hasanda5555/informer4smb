@@ -109,7 +109,17 @@
 	
 	<div class="subheading">
 		<div class="sub-container">
-			<span class="company-name"><?php echo isset($companyname) ? $companyname : '&nbsp;'; ?></span>
+
+			<span class="company-name"><?php echo isset($selectedCompany) ? $selectedCompany : '&nbsp;'; ?> -
+			 <?php
+             		   // echo isset($_GET['month']) ? $_GET['month'] : ''; isset($companyname)
+             		    if(isset($_GET['month'])){
+             		        $pieces = explode("|", $_GET['month']);
+             		        $monthDate = date("M", strtotime($pieces[1]."-".$pieces[0]."-01"));
+             		        echo $monthDate .' '.$pieces[1];
+             		    }
+             ?>
+			 </span>
 			<span class="greeting"><?php echo isset($uname) ? 'Logged in as '.$uname : '&nbsp;'; ?></span>
 		</div>
 	</div>

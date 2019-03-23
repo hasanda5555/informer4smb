@@ -64,49 +64,7 @@
 		$noData = false;
 	}
 	
-	$ch = curl_init();
-	curl_setopt($ch,CURLOPT_URL, $GLOBALS['Base_URL']."informer/reports.php");
-	curl_setopt($ch, CURLOPT_POST, TRUE);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, array(
-		'mode' => 'expensereport',
-		'company' => $selectedCompany,
-		'monthyear' => $selectedMonth
-	));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-	$result = curl_exec($ch);
-	curl_close($ch);
 	
-	// clear any preceeding content in the returned data (i.e. test data)
-	$cleanedResultParts = explode('<data>', $result);
-	if(sizeof($cleanedResultParts) > 1) {
-		$cleanedResult = '<data>'.array_pop($cleanedResultParts);
-	} else {
-		$cleanedResult = $result;
-	}
-	
-	echo '<div style="display:none">'. $result.'</div>';
-
-	$xml = simplexml_load_string(trim($cleanedResult)) ;
-	$json = json_encode($xml);
-	
-	$statusresult=$xml->result;
-	$messageresult = $xml->message;
-	
-	$uname=isset($_SESSION["uname"]) ? $_SESSION["uname"] : "";
-	$regtype=isset($_SESSION["regtype"]) ? $_SESSION["regtype"] : "";
-	$companyname=isset($_GET["company"]) ? $_GET["company"] : "";
-	
-	//$currentPeriod=$xml->period;
-	$currentPeriod; // temp
-	
-	$monthParts = explode('\|', $selectedMonth);
-	if (sizeof($monthParts) > 1) {
-		// get the current period
-		$months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-		
-		$monthIndex = intval($monthParts[0]);
-		$currentPeriod = $months[$monthIndex-1] .' '.$monthParts[1];
-	}
 	
 	// TEMP
 	$demo = true;

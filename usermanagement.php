@@ -20,10 +20,41 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Informer 4 SMB</title>
 
+
         <?php 
 			include("inc/head.inc.php"); 
 		?>
-		
+		<style>
+		.multiselect-container .checkbox input[type=checkbox] {
+            opacity: 1;
+            left: 8px;
+            top: 7px;
+        }
+
+        span.login_id {
+            color: #bf712d;
+            font-weight: 400;
+            font-size: 14px;
+        }
+
+        .multiselect-container .checkbox {
+            line-height: 30px;
+        }
+
+        .multiselect-container>li {
+            display: block;
+            height: 30px;
+        }
+
+        .multiselect-container>li>a {
+            height: 30px;
+        }
+
+        span.multiselect-native-select {
+            position: relative;
+            top: 10px;
+        }
+        </style>
 		<script>
 			var userid = <?php echo $_SESSION['userid']; ?>;
 			var isAdmin = <?php
@@ -147,15 +178,20 @@
 
                         $("#userid").val('');
                         $("#loginid").val('').removeAttr("disabled");
+                        $("#verifyAbn").removeAttr("disabled");
                         $('#fname').val('');
                         $('#lname').val('');
                         $('#address').val('');
                         $('#mobile').val('');
                         $('#phone').val('');
                         $('#email').val('');
-                        $('#orgid').val('');
+                        $("#confemail").val('');
+                        $('#orgid option').prop("selected", false);
+                        $("#regtype input[name='regtype'][value='other']").prop('checked', true);
                         $('#role').val('');
                         $("#assignorgid option").prop("selected", false);
+                        $('#assignorgid').multiselect('refresh');
+
 
                     }
 
@@ -222,11 +258,42 @@
                                   var values = tempUser.assignorgid;
                                   if ( tempUser.assignorgid  == null){
                                       values= ''+tempUser.orgid;
+                                      $("#assignorgid selected disabled hidden option[value='" + tempUser.orgid + "']").prop("selected", true);
                                   }
 
-                                  $.each(values, function(i,e){
-                                      $("#assignorgid option[value='" + e + "']").prop("selected", true);
-                                  });
+                                  if ( tempUser.assignorgid  != null){
+                                      $.each(values, function(i,e){
+                                          $("#assignorgid option[value='" + e + "']").prop("selected", true);
+                                      });
+                                  }
+
+                                  $('#assignorgid').multiselect('refresh');
+
+                                  /*$('#assignorgid-later').multiselect({
+                                           buttonText: function(options, select) {
+                                               console.log(select[0].length);
+                                               if (options.length === 0) {
+                                                   return 'None selected';
+                                               }
+                                               if (options.length === select[0].length) {
+                                                   return 'All selected ('+select[0].length+')';
+                                               }
+                                               else if (options.length >= 4) {
+                                                   return options.length + ' selected';
+                                               }
+                                               else {
+                                                   var labels = [];
+                                                   console.log(options);
+                                                   options.each(function() {
+                                                       labels.push($(this).val());
+                                                   });
+                                                   return labels.join(', ') + '';
+                                               }
+                                           }
+
+                                   });*/
+
+
                                }
                          });
 
@@ -246,7 +313,11 @@
                         if(jQuery.isEmptyObject(tempUser.phone)){tempUser.phone = ''};
                         $('#phone').val(tempUser.phone);
                         $('#email').val(tempUser.email);
-                        $('#orgid').val(tempUser.orgid);
+                        $("#confemail").val(tempUser.email);
+                        //$('#orgid').val(tempUser.orgid);
+                        $("#orgid option[value='" + tempUser.orgid + "']").prop("selected", true);
+                        //$("#regtype input[value='" + tempUser.regtype + "']").prop("checked");
+                        $("#regtype input[name='regtype'][value='" + tempUser.regtype + "']").prop('checked', true);
                         $('#role').val(tempUser.role);
 
 
@@ -281,12 +352,12 @@
                                 var returnobj = JSON.parse(data);
 
                                 if(returnobj.result == 'pass' || returnobj.result == 'ok'){
-                                    bootbox.alert({message: returnobj.message, size: 'small', className: 'success-alert alert-with-icon'}); // show response from the php script.
-                                    pass();
+                                    bootbox.alert({message: returnobj.message, size: 'small', className: 'success-alert alert-with-icon',callback: function () { pass(); }}); // show response from the php script.
+
 
                                 }else{
-                                    bootbox.alert({message: returnobj.message, size: 'small', className: 'danger-alert alert-with-icon'}); // show response from the php script.
-                                    fail();
+                                    bootbox.alert({message: returnobj.message, size: 'small', className: 'danger-alert alert-with-icon',callback: function () { fail(); }}) // show response from the php script.
+
                                 }
                                 console.log("debug : ", returnobj);
 
@@ -307,9 +378,18 @@
                         $("#addNewOrg").removeClass('edit-OrgModal');
 
                         $("#abn").val('').removeAttr("disabled");
+                        $("#verifyAbn").val('').removeAttr("disabled");
                         //$('#orgidnew').val('').removeAttr('disabed');
+
                         $('#editorgid').val('');
+
+
+                        $("#moreOrgName").after('<div id="oneOrgName"></div>');
+                        $("#oneOrgName").html('<input type="text" class="form-control" id="orgname" name="orgname" value="" size="50" placeholder="Organisation Name">');
+                        $("#moreOrgName").remove();
+
                         $('#orgname').val('');
+                        $("#orgname").removeAttr("disabled");
                         $('#compaddress').val('');
                         $('#compemail').val('');
                         $('#compphone').val('');
@@ -336,27 +416,41 @@
                         //var el = $("#addNewUser").elements;
 
                         $("#abn").val(tempOrg.abn).prop("disabled", true);
+                        $("#verifyAbn").val(tempOrg.abn).prop("disabled", true);
                         $('#editorgid').val(tempOrg.orgid);
-                        $('#orgname').val(tempOrg.orgname);
+                        $('#orgname').val(tempOrg.orgname).prop("disabled", true);
+                        if(jQuery.isEmptyObject(tempOrg.orgaddress)){tempOrg.orgaddress = ''};
                         $('#compaddress').val(tempOrg.orgaddress);
+                        if(jQuery.isEmptyObject(tempOrg.orgemail)){tempOrg.orgemail = ''};
                         $('#compemail').val(tempOrg.orgemail);
-                        $('#compphone').val(tempOrg.orgphone);
+                        if(tempOrg.orgphone.length){
+                            $('#compphone').val(tempOrg.orgphone);
+                        }else {
+                            $('#compphone').val('');
+                        }
+
 
                     }
 
                     function userManagementUserList() {
 
-                         if(userdata.user.length == undefined){
-                            var singleUser = userdata.user
-                            userdata.user = [];
-                            userdata.user.push(singleUser);
-                         }
+                         if(!(userdata.user === undefined)){
 
-                        $.each(userdata.user, function(index, element) {
-                             //console.log(element);
-                             var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.first_name +' '+ element.surname+'</h4> <span class="label label-veify label-verifts-'+ element.verified+'"> </span> <div class="hint--right hint--rounded hint--bounce toggle-middle admin-only st-'+element.verified+' " aria-label="User verification '+(element.verified === 'true' ? 'active' : 'pending' )+'" for="verified"><input type="hidden" name="'+element.id+'" value="'+element.verified+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  <address class="no-margin">'+ element.email+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewUser" onclick="editUser('+element.id+')"> <i class="fa fa-lg fa-pencil-square-o" aria-hidden="true"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide "  title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> <div class="toggle-middle status-toggle hint--left hint--rounded hint--bounce st-'+element.status+' " aria-label="User status '+(element.status  === 'true' ? 'active' : 'inactive')+'" for="status" ><input type="hidden" name="'+element.id+'" value="'+element.status+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  </div></td></tr>';
-                             $(".user-management-list-table tbody").append(userRow)
-                         });
+                             if(userdata.user.length == undefined){
+                                var singleUser = userdata.user
+                                userdata.user = [];
+                                userdata.user.push(singleUser);
+                             }
+
+
+
+                            $.each(userdata.user, function(index, element) {
+                                 //console.log(element);
+                                 var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.first_name +' '+ element.surname+' <span class="login_id">('+ element.login+')</span></h4> <span class="label label-veify label-verifts-'+ element.verified+'"> </span> <div class="hint--right hint--rounded hint--bounce toggle-middle admin-only st-'+element.verified+' " aria-label="User verification '+(element.verified === 'true' ? 'active' : 'pending' )+'" for="verified"><input type="hidden" name="'+element.id+'" value="'+element.verified+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  <address class="no-margin">'+ element.email+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewUser" onclick="editUser('+element.id+')"> <i class="fa fa-lg fa-pencil-square-o" aria-hidden="true"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide "  title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> <div class="toggle-middle status-toggle hint--left hint--rounded hint--bounce st-'+element.status+' " aria-label="User status '+(element.status  === 'true' ? 'active' : 'inactive')+'" for="status" ><input type="hidden" name="'+element.id+'" value="'+element.status+'"><i class="fa fa-toggle-on fa-lg on-fa" ></i><i class="off-fa fa fa-toggle-on fa-lg fa-rotate-180" ></i></div>  </div></td></tr>';
+                                 $(".user-management-list-table tbody").append(userRow)
+                             });
+
+                         }
 
 
                     }
@@ -374,13 +468,46 @@
 
                         $.each(orgdata.orgs.org , function(index, element) {
                             //console.log(element);
+                            if(jQuery.isEmptyObject(element.orgemail)){element.orgemail = ''};
                             var userRow = '<tr><td class="middle"> <div class="media"> <div class="media-body"> <h4 class="media-heading">'+element.orgname +' <small>('+ element.abn+')</small></h4> <address class="no-margin">'+ element.orgemail+'</address> </div></div></td><td width="100" class="middle"> <div> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn" title="Edit" data-toggle="modal" data-target="#addNewOrg"  onclick="editOrg('+element.orgid+')"> <i class="fa fa-lg fa-pencil-square-o" aria-hidden="true"></i> </a> <a href="#" class="btn btn-circle btn-default btn-xs icon-only-btn hide" title="Delete"> <i class="glyphicon glyphicon-trash"></i> </a> </div></td></tr>';
                             $(".organisation-list-table tbody").append(userRow)
                         });
 
                     }
 
+                    function checkEmailMatch() {
+                        var email = $("#email").val();
+                        var confirmemail = $("#confemail").val();
+
+                        if (email != confirmemail)
+                            $('#conf-email-error').show();
+                        else
+                            $('#conf-email-error').hide();
+                    }
+
+
                     $(document).ready(function() {
+
+                        $('#compemail').on('keyup', function() {
+                            var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(this.value);
+                            if(!re) {
+                                $('#compemail-error').show();
+                            } else {
+                                $('#compemail-error').hide();
+                            }
+                        })
+
+                        $('#email').on('keyup', function() {
+                            var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(this.value);
+                            if(!re) {
+                                $('#email-error').show();
+                            } else {
+                                $('#email-error').hide();
+                            }
+                        })
+
+                        $("#email, #confemail").keyup(checkEmailMatch);
+
                         userManagementUserList();
                         userManagementOrgList();
 
@@ -406,6 +533,43 @@
                             console.log('useridforedit : '+useridforedit + ' currentStatus '+ !currentStatus );
 
                             editUserField(useridforedit , temobjkey , currentStatus , function(){clickBox.toggleClass('st-true st-false');location.reload();}, function(){});
+
+                        });
+
+                        $('#verifyAbn').click(function() {
+
+                                var abnNumber = $("#abn").val();
+                                abnNumber = abnNumber.replace(/\s+/g, '');
+                                var resultData;
+
+                                $.ajax({
+                                    type:"GET",
+                                    url: "https://abr.business.gov.au/json/AbnDetails.aspx?abn="+abnNumber+"&guid=4536d14e-23fc-42f3-8db8-991a70eb481d",
+                                    success: function(data) {
+
+                                            if(data.BusinessName.length){
+                                                $("#oneOrgName").after('<div id="moreOrgName"></div>');
+                                                $("#moreOrgName").html('<div id="moreOrgName"><select class="form-control orgSelectList" id="orgname" name="orgname" placeholder="Organisation Name"></select></div>')
+                                                $("#oneOrgName").remove();
+
+                                                $.each(data.BusinessName, function (i, item) {
+                                                    $('.orgSelectList').append($('<option>', {
+                                                        value: item,
+                                                        text : item
+                                                    }));
+                                                });
+                                            }else {
+                                                $("#moreOrgName" ).remove();
+                                                $("#oneOrgName #orgname").val(data.EntityName);
+                                            }
+
+                                            //console.log(data.EntityName)
+                                        },
+                                    error: function(jqXHR, textStatus, errorThrown) {
+                                            alert("Yor abn number is "+abnNumber+". Wating to abr provide with GUID -  Error code : " + jqXHR.status);
+                                        },
+                                   dataType: "jsonp"
+                                })
 
                         });
 
@@ -454,6 +618,9 @@
                                 }));
                              });
 
+
+
+
                             // this is the id of the form
                             $("#userform").submit(function(e) {
                                 var form = $(this);
@@ -471,9 +638,9 @@
                                             //console.log(data);
 
                                             if(returnobj.result == 'pass' || returnobj.result == 'ok'){
-                                                bootbox.alert({message: returnobj.message, size: 'small', className: 'success-alert alert-with-icon'}); // show response from the php script.
+                                                bootbox.alert({message: returnobj.message, size: 'small', className: 'success-alert alert-with-icon', callback: function () {location.reload();}}); // show response from the php script.
                                                 $("#addNewUser").modal("hide");
-                                                location.reload();
+
                                             }else{
                                                 bootbox.alert({message: returnobj.message, size: 'small', className: 'danger-alert alert-with-icon'}); // show response from the php script.
                                             }
@@ -502,9 +669,9 @@
                                           var returnobj = JSON.parse(data);
 
                                           if(returnobj.result == 'pass' || returnobj.result == 'ok' ){
-                                              bootbox.alert({message: returnobj.message, size: 'small', className: 'success-alert alert-with-icon'}); // show response from the php script.
+                                              bootbox.alert({message: returnobj.message, size: 'small', className: 'success-alert alert-with-icon', callback: function () {location.reload();}}); // show response from the php script.
                                               $("#addNewOrg").modal("hide");
-                                              location.reload();
+
                                           }else{
                                               bootbox.alert({message: returnobj.message, size: 'small', className: 'danger-alert alert-with-icon'}); // show response from the php script.
                                           }
@@ -625,8 +792,17 @@
             <label class="control-label col-sm-3" for="email">Email:</label>
             <div class="col-sm-9">
               <input type="text" class="form-control" id="email" name="email" placeholder="Enter Email">
+              <span id="email-error" class="bg-danger" style="display : none" >Invaid Email Address</span>
             </div>
           </div>
+
+          <div class="form-group">
+              <label class="control-label col-sm-3" for="confemail">Confirm email:</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="confemail" onChange="checkEmailMatch();" name="confemail" placeholder="Enter Confirm Email">
+                <span id="conf-email-error" class="bg-danger" style="display : none" >Mismatched Email</span>
+              </div>
+            </div>
 
 
         <div class="form-group">
@@ -644,17 +820,22 @@
             </div>
           </div>
 
-        <div class="form-group">
-            <label class="control-label col-sm-3" for="orgid">Organisation:</label>
-            <div class="col-sm-9">
-              <select class="form-control" id="orgid" name="orgid"></select>
+
+
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="role">User Type:</label>
+            <div class="col-sm-9" id="regtype">
+              <label class="radio-inline"><input type="radio"  value="owner" name="regtype">Entity</label>
+              <label class="radio-inline"><input type="radio" value="advisor" name="regtype">Advisor</label>
+              <label class="radio-inline"><input type="radio" value="other" name="regtype">Other</label>
             </div>
           </div>
 
           <div class="form-group">
-              <label class="control-label col-sm-3" for="role">User Role:</label>
+              <label class="control-label col-sm-3" for="role">Assigned Role:</label>
               <div class="col-sm-9">
                 <select  class="form-control" id="role" name="role">
+                <option value="" selected disabled hidden>Choose Role</option>
                 <option value="8">Administrator</option>
                 <option value="2">Junior</option>
                 <option value="1">Senior</option>
@@ -663,13 +844,21 @@
               </div>
             </div>
 
+             <div class="form-group">
+                <label class="control-label col-sm-3" for="orgid">Organisation:</label>
+                <div class="col-sm-9">
+                  <select class="form-control" id="orgid" name="orgid" required></select>
+                </div>
+              </div>
+
 
           <div class="form-group">
-              <label class="control-label col-sm-3" for="assignorgid">Assigned Organisation:</label>
+              <label class="control-label col-sm-3" for="assignorgid">Assigned Organisation(s):</label>
               <div class="col-sm-9">
                 <select class="form-control" id="assignorgid" name="assignorgid[]" multiple=""></select>
               </div>
-            </div>
+          </div>
+
 
 
       </div>
@@ -706,15 +895,20 @@
 
           <div class="form-group">
             <label class="control-label col-sm-3" for="abn">ABN:</label>
-            <div class="col-sm-9">
-              <input type="text" class="form-control" id="abn" name="abn" value="" size="50" maxlength="11" placeholder="ABN">
+            <div class="col-sm-7">
+              <input type="text" class="form-control" id="abn" name="abn" value="" size="50" maxlength="15" placeholder="ABN">
             </div>
+            <div class="col-sm-2"><button type="button" id="verifyAbn" class="btn btn-default waves-effect">Verify</button></div>
           </div>
 
           <div class="form-group">
               <label class="control-label col-sm-3" for="orgidnew">Organisation:</label>
               <div class="col-sm-9">
-                <input type="text" class="form-control" id="orgname" name="orgname" value="" size="50" placeholder="Organisation Name">
+
+                <div id="oneOrgName">
+                    <input type="text" class="form-control" id="orgname" name="orgname" value="" size="50" placeholder="Organisation Name">
+                </div>
+
               </div>
             </div>
 
@@ -731,6 +925,7 @@
             <label class="control-label col-sm-3" for="orgmocompemailbile">Organisation Email:</label>
             <div class="col-sm-9">
               <input type="text" class="form-control" id="compemail" name="compemail"  placeholder="Enter Email">
+              <span id="compemail-error"  class="bg-danger" style="display : none" >Invaid Email Address</span>
             </div>
           </div>
 
@@ -763,6 +958,8 @@
 		include("inc/footer.inc.php"); 
 	?>
 	<!-- end footer -->
+    <link href="https://cdn.rawgit.com/davidstutz/bootstrap-multiselect/master/dist/css/bootstrap-multiselect.css" rel="stylesheet">
+    <script src="https://cdn.rawgit.com/davidstutz/bootstrap-multiselect/master/dist/js/bootstrap-multiselect.js"></script>
 
 </body>
 </html>

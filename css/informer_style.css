@@ -405,3 +405,32 @@ i.btn.btn-default.waves-input-wrapper.waves-effect {
     left: 0;
     bottom: -1px;
 }
+
+/* new table modificaton for map data*/
+
+table#pla tr th:nth-child(4),
+table#pla tr th:nth-child(5),
+table#pla tr th:nth-child(6),
+table#pla tr td:nth-child(4),
+table#pla tr td:nth-child(5),
+table#pla tr td:nth-child(6) {
+    max-width: 70px !important;
+    min-width: 70px !important;
+    word-break: unset;
+}
+
+.tabcontent #pla td input {
+    width: 100%;
+}
+
+.tabcontent #pla td:last-child input[type=checkbox]{
+    display: inline-block;
+    width: inherit;
+}
+
+table#pla tr th:last-child,
+table#pla tr td:last-child {
+    max-width: 50px !important;
+    min-width: 50px !important;
+    text-align: center;
+}
