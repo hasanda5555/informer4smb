@@ -30,7 +30,7 @@ function navigateTo(navData) {
 			showCommentary = true;
 			break;
 		case 'makebuy':
-			pageTitle = 'Operations';
+			pageTitle = 'Make Buy';
 			showCommentary = true;
 			break;
 		case 'grossprofit':
@@ -38,11 +38,11 @@ function navigateTo(navData) {
 			showCommentary = true;
 			break;
 		case 'selling':
-			pageTitle = 'Selling Exp';
+			pageTitle = 'Obtain Retain Customers';
 			showCommentary = true;
 			break;
 		case 'administration':
-			pageTitle = 'Administration';
+			pageTitle = 'Running Bus';
 			showCommentary = true;
 			break;
 		case 'upload': 
@@ -2049,6 +2049,7 @@ function prepareAccordions(context) {
 (function() {
 	function promptToChangeData(pageID) {
 		// clear the selects in the dialog
+        //alert(selectedMonth);
 		$('.change-data-dialog select').val('');
 		$('.change-data-dialog option').not('.change-data-dialog option[value=""]').remove();
 		$('.period-select-container').addClass('hidden');
@@ -2077,10 +2078,19 @@ function prepareAccordions(context) {
 					//alert($(this).find('orgname').text());
 					var orgid = $(this).find('orgid').text();
 					var orgname = $(this).find('orgname').text();
+                    if( typeof selectedCompany != 'undefined' && (orgname == selectedCompany ) ){
+                        options += '<option data-id="'+orgid+'" value="'+orgname+'" selected>'+orgname+'</option>';
+                    }else{
+                        options += '<option data-id="'+orgid+'" value="'+orgname+'">'+orgname+'</option>';
+                    }
 					//$('.company-select').append('<option data-id="'+orgid+'" value="'+orgname+'">'+orgname+'</option>');
-					options += '<option data-id="'+orgid+'" value="'+orgname+'">'+orgname+'</option>';
-				});
-				
+                });
+
+                if( typeof selectedCompany != 'undefined' ){
+                    updateAvailablePeriods(selectedCompany);
+                }
+
+
 				// prepare the dialog content
 				var dialogContent = $('.change-data-dialog').clone();
 				$('.company-select', dialogContent).append(options);
@@ -2179,7 +2189,9 @@ function prepareAccordions(context) {
 	
 	function updateAvailablePeriods(company) {
 		// clear any existing period options
-		$('.period-select option').not('.period-select option[value=""]').remove();
+		//$('.period-select option').not('.period-select option[value=""]').remove();
+        $('.period-select').find("option").remove().end();
+        $('.period-select').append('<option selected="true" disabled="disabled">Select Month</option>');
 		
 		$.ajax({
 		  method: "POST",
@@ -2200,8 +2212,13 @@ function prepareAccordions(context) {
 					var year = $(this).find('year').text();
 					
 					var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-					
-					$('.period-select').append('<option value="'+month+'|'+year+'">'+monthNames[month-1]+' '+year+'</option>');
+
+
+                    if( typeof selectedMonth != 'undefined' && (selectedMonth == (month+'|'+year) )){
+                        $('.period-select').append('<option value="'+month+'|'+year+'" selected>'+monthNames[month-1]+' '+year+'</option>');
+                    }else{
+                        $('.period-select').append('<option value="'+month+'|'+year+'">'+monthNames[month-1]+' '+year+'</option>');
+                    }
 				});
 				
 				// show the period select

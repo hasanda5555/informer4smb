@@ -57,6 +57,7 @@
 	// GET REPORT VALUES
 	$selectedCompany = (isset($_GET['company'])) ? $_GET['company']:$_POST['company'];
 	$selectedMonth = (isset($_GET['month'])) ? $_GET['month']:$_POST['month'];
+	$uname=isset($_SESSION["uname"]) ? $_SESSION["uname"] : "";
 	
 	// flag whether or not there is data to load/show
 	$noData = true;

@@ -1,6 +1,7 @@
 <?php
 	ob_start();
 	
+
 	require "../includes/db_functions.php";
 	require "../includes/common_functions.inc.php";
 	require "../includes/interface_functions.inc.php";
@@ -22,6 +23,51 @@
 
         <?php 
 			include("inc/head.inc.php"); 
+			
+			//GET EXPENSE REPORT
+			$ch = curl_init();
+        	curl_setopt($ch,CURLOPT_URL, $GLOBALS['Base_URL']."informer/reports.php");
+        	curl_setopt($ch, CURLOPT_POST, TRUE);
+        	curl_setopt($ch, CURLOPT_POSTFIELDS, array(
+        		'mode' => 'expensereport',
+        		'company' => $selectedCompany,
+        		'monthyear' => $selectedMonth
+        	));
+        	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        	$result = curl_exec($ch);
+        	curl_close($ch);
+        	
+        	// clear any preceeding content in the returned data (i.e. test data)
+        	$cleanedResultParts = explode('<data>', $result);
+        	if(sizeof($cleanedResultParts) > 1) {
+        		$cleanedResult = '<data>'.array_pop($cleanedResultParts);
+        	} else {
+        		$cleanedResult = $result;
+        	}
+        	
+        	echo '<div style="display:none">'. $result.'</div>';
+        
+        	$xml = simplexml_load_string(trim($cleanedResult)) ;
+        	$json = json_encode($xml);
+        	
+        	$statusresult=$xml->result;
+        	$messageresult = $xml->message;
+        	
+        	$uname=isset($_SESSION["uname"]) ? $_SESSION["uname"] : "";
+        	$regtype=isset($_SESSION["regtype"]) ? $_SESSION["regtype"] : "";
+        	$companyname=isset($_GET["company"]) ? $_GET["company"] : "";
+        	
+        	//$currentPeriod=$xml->period;
+        	$currentPeriod; // temp
+        	
+        	$monthParts = explode('\|', $selectedMonth);
+        	if (sizeof($monthParts) > 1) {
+        		// get the current period
+        		$months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        		
+        		$monthIndex = intval($monthParts[0]);
+        		$currentPeriod = $months[$monthIndex-1] .' '.$monthParts[1];
+        	}
 		?>
 		
 		<script>
@@ -51,8 +97,11 @@
 							<div class="row">
 								<?php if(!$noData) { ?>
 								<!-- show the summary data -->
+
+								    <?php //var_dump($summaryData); ?>
+
 								<div class="col-xs-12 col-md-8">
-									<div class="row clouds">
+									<div class="row clouds cloud-<?php echo $summaryData->totalForecast; ?>">
 										<div class="col-xs-9 col-xs-offset-1-5 col-sm-6 col-sm-offset-3">
 											<table class="layer-table feature">
 												<tr class="title-row">
@@ -272,17 +321,17 @@
 							<!-- the menu content, linking to the layer screens -->
 							<div class="row">
 								<?php if(isset($layerSales) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 col-md-offset-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="sales"><i class="zmdi zmdi-shopping-cart"></i> Revenue</button></div>
+								<div class="col-xs-6 col-md-4 col-md-offset-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="sales"><i class="zmdi zmdi-shopping-cart"></i> <?php echo $GLOBALS['revenue_label']; ?> </button></div>
 								<?php } if(isset($layerNetProfitLoss) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="netprofitloss"><i class="zmdi zmdi-money"></i> Net Profit/(Loss)</button></div>
+								<div class="col-xs-6 col-md-4 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="netprofitloss"><i class="zmdi zmdi-money"></i> <?php echo $GLOBALS['netprofit_label']; ?> </button></div>
 								<?php } if(isset($layerMakeBuy) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 col-md-offset-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="makebuy"><i class="zmdi zmdi-label"></i> Operations</button></div>
+								<div class="col-xs-6 col-md-4 col-md-offset-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="makebuy"><i class="zmdi zmdi-label"></i> <?php echo $GLOBALS['operations_label']; ?></button></div>
 								<?php } if(isset($labelsGrossProfit) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="grossprofit"><i class="zmdi zmdi-money-box"></i> Gross Profit</button></div>
+								<div class="col-xs-6 col-md-4 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="grossprofit"><i class="zmdi zmdi-money-box"></i> <?php echo $GLOBALS['grossprofit_label']; ?></button></div>
 								<?php } if(isset($layerSelling) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 col-md-offset-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="selling"><i class="zmdi zmdi-receipt"></i> Selling Exp</button></div>
+								<div class="col-xs-6 col-md-4 col-md-offset-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="selling"><i class="zmdi zmdi-receipt"></i> <?php echo $GLOBALS['sellingexp_label']; ?></button></div>
 								<?php } if(isset($layerAdmin) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="administration"><i class="zmdi zmdi-assignment"></i> Administration</button></div>
+								<div class="col-xs-6 col-md-4 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="administration"><i class="zmdi zmdi-assignment"></i> <?php echo $GLOBALS['administration_label']; ?></button></div>
 								<?php } ?>
 								
 							</div>

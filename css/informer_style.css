@@ -434,3 +434,100 @@ table#pla tr td:last-child {
     min-width: 50px !important;
     text-align: center;
 }
+
+.tab-content #dashboard .row.clouds.cloud-0 {
+    background:url(../img/scene-01.jpg) left top repeat-x rgba(255,255,255,.5);
+    background-size: contain;
+}
+
+.tab-content #dashboard .row.clouds.cloud-1 {
+    background:url(../img/scene-01.jpg) left top repeat-x rgba(255,255,255,.5);
+    background-size: contain;
+}
+
+.tab-content #dashboard .row.clouds.cloud-2 {
+    background:url(../img/scene-02.jpg) left top repeat-x rgba(255,255,255,.5);
+    background-size: cover;
+}
+
+.tab-content #dashboard .row.clouds.cloud-3 {
+    background:url(../img/scene-03.jpg) left top repeat-x rgba(255,255,255,.5);
+    background-size: cover;
+}
+
+.tab-content #dashboard .row.clouds.cloud-4 {
+    background:url(../img/scene-04.jpg) left top repeat-x rgba(255,255,255,.5);
+    background-size: cover;
+}
+
+.tab-content #dashboard .row.clouds.cloud-5 {
+    background:url(../img/scene-05.jpg) left top repeat-x rgba(255,255,255,.5);
+    background-size: cover;
+}
+
+.tab-content #dashboard .row.clouds.cloud-6 {
+    background:url(../img/scene-06.jpg) left top repeat-x rgba(255,255,255,.5);
+    background-size: cover;
+}
+
+.tab-content #dashboard .row.clouds.cloud-7 {
+    background:url(../img/scene-07.jpg) left top repeat-x rgba(255,255,255,.5);
+    background-size: cover;
+}
+
+span.titel-holder {
+    padding-left: 63px;
+}
+
+.company-center {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 20px;
+    line-height: 37px;
+    color: #fff;
+    pointer-events: none;
+}
+
+.title-row .titel-holder:before {
+    content: "-- ";
+}
+
+.title-row .titel-holder:after {
+    content: " --";
+}
+
+
+span.gauge-indicator {
+    display: inline-block;
+    position: absolute;
+    height: 55px;
+    width: 8px;
+    right: 55px;
+    background: #e8e8e8;
+    top: 0px;
+    border: 1px solid #9c9c9ca1;
+}
+
+td.tertiary-cell {
+    position: relative;
+}
+
+span.gauge-indicator:before {
+    content: ' ';
+    height: calc(var(--data-val));
+    position: absolute;
+    width: 4px;
+    right: 1px;
+}
+
+span.gauge-indicator.direction-up:before {
+    top: calc(50% - var(--data-val));
+    background: #53bd0f;
+}
+
+span.gauge-indicator.direction-down:before {
+    top: 50%;
+    background: #f12626;
+}

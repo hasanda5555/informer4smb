@@ -145,4 +145,6 @@
 		$summaryData->percentProjection = 0;
 		$summaryData->percentProjectionIndicator = 0;
 	}
+
+
 ?>

@@ -57,18 +57,18 @@
 				<a href="" data-ma-action="submenu-toggle"><i class="zmdi zmdi-chevron-right"></i><i class="zmdi zmdi-chevron-down hidden"></i> Layers</a>
 				<ul>
 					<?php if(isset($labelsSales) || $demo) { ?>
-					<li><a href="#sales" data-ma-action="navigate" data-nav-data="sales">Revenue</a></li>
+					<li><a href="#sales" data-ma-action="navigate" data-nav-data="sales"><?php echo $GLOBALS['revenue_label']; ?></a></li>
 					<?php } if(isset($labelsNetProfitLoss) || $demo) { ?>
-					<li><a href="#netprofitloss" data-ma-action="navigate" data-nav-data="netprofitloss">Net Profit/(Loss)</a></li>
+					<li><a href="#netprofitloss" data-ma-action="navigate" data-nav-data="netprofitloss"><?php echo $GLOBALS['netprofit_label']; ?></a></li>
 					<?php } if(true || isset($labelsMakeBuy) || $demo) { ?>
 					
-					<li><a href="#makebuy" data-ma-action="navigate" data-nav-data="makebuy">Operations</a></li> <!---->
+					<li><a href="#makebuy" data-ma-action="navigate" data-nav-data="makebuy"><?php echo $GLOBALS['operations_label']; ?></a></li> <!---->
 					<?php } if(isset($labelsGrossProfit) || $demo) { ?>
-					<li><a href="#grossprofit" data-ma-action="navigate" data-nav-data="grossprofit">Gross Profit</a></li>
+					<li><a href="#grossprofit" data-ma-action="navigate" data-nav-data="grossprofit"><?php echo $GLOBALS['grossprofit_label']; ?></a></li>
 					<?php }	if(isset($labelsSelling) || $demo) { ?>
-					<li><a href="#selling" data-ma-action="navigate" data-nav-data="selling">Selling Exp</a></li>
+					<li><a href="#selling" data-ma-action="navigate" data-nav-data="selling"><?php echo $GLOBALS['sellingexp_label']; ?></a></li>
 					<?php } if(isset($labelsAdmin) || $demo) { ?>
-					<li><a href="#administration" data-ma-action="navigate" data-nav-data="administration">Administration</a></li>
+					<li><a href="#administration" data-ma-action="navigate" data-nav-data="administration"><?php echo $GLOBALS['administration_label']; ?></a></li>
 					<?php } ?>
 					
 				</ul>
@@ -110,16 +110,7 @@
 	<div class="subheading">
 		<div class="sub-container">
 
-			<span class="company-name"><?php echo isset($selectedCompany) ? $selectedCompany : '&nbsp;'; ?> -
-			 <?php
-             		   // echo isset($_GET['month']) ? $_GET['month'] : ''; isset($companyname)
-             		    if(isset($_GET['month'])){
-             		        $pieces = explode("|", $_GET['month']);
-             		        $monthDate = date("M", strtotime($pieces[1]."-".$pieces[0]."-01"));
-             		        echo $monthDate .' '.$pieces[1];
-             		    }
-             ?>
-			 </span>
+
 			<span class="greeting"><?php echo isset($uname) ? 'Logged in as '.$uname : '&nbsp;'; ?></span>
 		</div>
 	</div>
@@ -138,6 +129,21 @@
 					<a href="" class=" ma-trigger" data-ma-action="navigate" data-nav-data="dashboard"><i class="him-icon zmdi zmdi-arrow-left"></i></a>
 				</li>
 			</ul>
+		</li>
+
+		<li class="company-center">
+
+		<span class="company-name"><?php echo isset($selectedCompany) ? $selectedCompany : '&nbsp;'; ?> -
+        			 <?php
+                     		   // echo isset($_GET['month']) ? $_GET['month'] : ''; isset($companyname)
+                     		    if(isset($_GET['month'])){
+                     		        $pieces = explode("|", $_GET['month']);
+                     		        $monthDate = date("M", strtotime($pieces[1]."-".$pieces[0]."-01"));
+                     		        echo $monthDate .' '.$pieces[1];
+                     		    }
+                     ?>
+        			 </span>
+
 		</li>
 		
 		<li class="pull-right">
