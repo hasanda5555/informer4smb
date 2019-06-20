@@ -46,12 +46,24 @@
         	}
         	
         	echo '<div style="display:none">'. $result.'</div>';
+
+
+
         
         	$xml = simplexml_load_string(trim($cleanedResult)) ;
         	$json = json_encode($xml);
-        	
+
+            $chartDataXml = simplexml_load_string(trim($cleanedResult->charts->chart)) ;
+        	$chartDataJson = json_encode($chartDataXml);
+
+        	//echo '<per class="json">hello json : '.$chartDataJson.'</pre>';
         	$statusresult=$xml->result;
         	$messageresult = $xml->message;
+
+
+
+
+
         	
         	$uname=isset($_SESSION["uname"]) ? $_SESSION["uname"] : "";
         	$regtype=isset($_SESSION["regtype"]) ? $_SESSION["regtype"] : "";
@@ -78,8 +90,9 @@
     <body class="">
 		<?php 
 			// CHECK PERMISSIONS
-			if ($permissions['Reports'] == 0) {
-				echo $GLOBALS['accesserrormsg']; 
+			if ($permissions['Summary'] == 0) {
+			    
+			  	echo $GLOBALS['accesserrormsg']; 
 				die;
 			}
 		?>
@@ -88,7 +101,77 @@
 			include("inc/layer-data.inc.php"); 
 			include("inc/navbar.inc.php"); 
 		?>
-		
+
+		<?  echo "<script> var administrationTotalPercent = ". round((float)$summaryData->adminTotalPercent,2) ."</script>";
+		    echo '<script> var administrationPurchasesPercent = '. round((float)$summaryData->adminPurchasesPercent,2) .'</script>';
+		    echo '<script> var administrationPeoplePercent = '. round((float)$summaryData->adminPeoplePercent,2) .'</script>';
+
+		    echo '<script> var obtainRetainTotalPercent = '. round((float)$summaryData->sellingTotalPercent,2) .'</script>';
+		    echo '<script> var obtainRetainPurchasesPercent = '. round((float)$summaryData->sellingPurchasesPercent,2) .'</script>';
+		    echo '<script> var obtainRetainPeoplePercent = '. round((float)$summaryData->sellingPeoplePercent,2) .'</script>';
+
+            echo '<script> var makeBuyTotalPercent = '. round((float)$summaryData->operationsTotalPercent,2) .'</script>';
+		    echo '<script> var makeBuyPurchasesPercent = '. round((float)$summaryData->operationsPurchasesPercent,2) .'</script>';
+		    echo '<script> var makeBuyPeoplePercent = '. round((float)$summaryData->operationsPeoplePercent,2) .'</script>';
+
+            echo '<script> var netProfitTotalPercent = '. round((float)$summaryData->profitTotalPercent,2) .'</script>';
+
+            // Net Profit and Loss
+                // - Total 28 / 29 is the same
+            echo '<script> var chartNetProfitRevenueTrackingS_01 = '.$summaryData->chartNetProfitRevenueTrackingS.'; console.log("chartNetProfitRevenueTrackingS_01 - ",chartNetProfitRevenueTrackingS_01);</script>';
+            echo '<script> var chartNetProfitCrossMarker_03 = '.$summaryData->chartNetProfitCrossMarker.'; console.log("chartNetProfitCrossMarker_03 - ",chartNetProfitCrossMarker_03);</script>';
+
+            // Obtain Retain Customers
+                // - Total
+            echo '<script> var chartObtainRetainTotalRevenueTrackingS_08 = '.$summaryData->chartObtainRetainTotalRevenueTrackingS.'; console.log("chartObtainRetainTotalRevenueTrackingS_08 - ",chartObtainRetainTotalRevenueTrackingS_08);</script>';
+            echo '<script> var chartObtainRetainTotalCrossMarker_09 = '.$summaryData->chartObtainRetainTotalCrossMarker.'; console.log("chartObtainRetainTotalCrossMarker_09 - ",chartObtainRetainTotalCrossMarker_09);</script>';
+                // - Purchases
+            echo '<script> var chartObtainRetainPurchasesRevenueTrackingS_12 = '.$summaryData->chartObtainRetainPurchasesRevenueTrackingS.'; console.log("chartObtainRetainPurchasesRevenueTrackingS_12 - ",chartObtainRetainPurchasesRevenueTrackingS_12);</script>';
+            echo '<script> var chartObtainRetainPurchasesCrossMarker_13 = '.$summaryData->chartObtainRetainPurchasesCrossMarker.'; console.log("chartObtainRetainPurchasesCrossMarker_13 - ",chartObtainRetainPurchasesCrossMarker_13);</script>';
+              // - People
+            echo '<script> var chartObtainRetainPeopleRevenueTrackingS_10 = '.$summaryData->chartObtainRetainPeopleRevenueTrackingS.'; console.log("chartObtainRetainPeopleRevenueTrackingS_10 - ",chartObtainRetainPeopleRevenueTrackingS_10);</script>';
+            echo '<script> var chartObtainRetainPeopleCrossMarker_11 = '.$summaryData->chartObtainRetainPeopleCrossMarker.'; console.log("chartObtainRetainPeopleCrossMarker_11 - ",chartObtainRetainPeopleCrossMarker_11);</script>';
+
+           // Running Bus
+               // - Total
+           echo '<script> var chartRunningBusTotalRevenueTrackingS_14 = '.$summaryData->chartRunningBusTotalRevenueTrackingS.'; console.log("chartRunningBusTotalRevenueTrackingS_14 - ",chartRunningBusTotalRevenueTrackingS_14);</script>';
+           echo '<script> var chartRunningBusTotalCrossMarker_15 = '.$summaryData->chartRunningBusTotalCrossMarker.'; console.log("chartRunningBusTotalCrossMarker_15 - ",chartRunningBusTotalCrossMarker_15);</script>';
+               // - Purchases
+           echo '<script> var chartRunningBusPurchasesRevenueTrackingS_18 = '.$summaryData->chartRunningBusPurchasesRevenueTrackingS.'; console.log("chartRunningBusPurchasesRevenueTrackingS_18 - ",chartRunningBusPurchasesRevenueTrackingS_18);</script>';
+           echo '<script> var chartRunningBusPurchasesCrossMarker_19 = '.$summaryData->chartRunningBusPurchasesCrossMarker.'; console.log("chartRunningBusPurchasesCrossMarker_19 - ",chartRunningBusPurchasesCrossMarker_19);</script>';
+             // - People
+           echo '<script> var chartRunningBusPeopleRevenueTrackingS_16 = '.$summaryData->chartRunningBusPeopleRevenueTrackingS.'; console.log("chartRunningBusPeopleRevenueTrackingS_16 - ",chartRunningBusPeopleRevenueTrackingS_16);</script>';
+           echo '<script> var chartRunningBusPeopleCrossMarker_17 = '.$summaryData->chartRunningBusPeopleCrossMarker.'; console.log("chartRunningBusPeopleCrossMarker_17 - ",chartRunningBusPeopleCrossMarker_17);</script>';
+
+
+           // Revenue
+                // - Total
+           echo '<script> var chartRevenueCrossMarker_04 = '.$summaryData->chartRevenueCrossMarker.'; console.log("chartRevenueCrossMarker_04 - ",chartRevenueCrossMarker_04);</script>';
+
+
+           // Make Buy Chart Set
+                // - Total
+           echo '<script> var chartMakeBuyRevenueTracking_05 = '.$summaryData->chartMakeBuyRevenueTracking.'; console.log("chartMakeBuyRevenueTracking_05 - ",chartMakeBuyRevenueTracking_05);</script>';
+           echo '<script> var chartMakeBuyRevenueTrackingS_06 = '.$summaryData->chartMakeBuyRevenueTrackingS.'; console.log("chartMakeBuyRevenueTrackingS_06 - ",chartMakeBuyRevenueTrackingS_06);</script>';
+           echo '<script> var chartMakeBuyCrossMarker_07 = '.$summaryData->chartMakeBuyCrossMarker.'; console.log("chartMakeBuyCrossMarker_07 - ",chartMakeBuyCrossMarker_07);</script>';
+                // - Purchases
+           echo '<script> var chartMakeBuyPurchasesRevenueTracking_23 = '.$summaryData->chartMakeBuyPurchasesRevenueTracking.'; console.log("chartMakeBuyPurchasesRevenueTracking_23 - ",chartMakeBuyPurchasesRevenueTracking_23);</script>';
+           echo '<script> var chartMakeBuyPurchasesRevenueTrackingS_24 = '.$summaryData->chartMakeBuyPurchasesRevenueTrackingS.'; console.log("chartMakeBuyPurchasesRevenueTrackingS_24 - ",chartMakeBuyPurchasesRevenueTrackingS_24);</script>';
+           echo '<script> var chartMakeBuyPurchasesCrossMarker_25 = '.$summaryData->chartMakeBuyPurchasesCrossMarker.'; console.log("chartMakeBuyPurchasesCrossMarker_25 - ",chartMakeBuyPurchasesCrossMarker_25);</script>';
+                // - People
+           echo '<script> var chartMakeBuyPeopleRevenueTracking_20 = '.$summaryData->chartMakeBuyRevenueTracking.'; console.log("chartMakeBuyPeopleRevenueTracking_20 - ",chartMakeBuyPeopleRevenueTracking_20);</script>';
+           echo '<script> var chartMakeBuyPeopleRevenueTrackingS_21 = '.$summaryData->chartMakeBuyRevenueTrackingS.'; console.log("chartMakeBuyPeopleRevenueTrackingS_21 - ",chartMakeBuyPeopleRevenueTrackingS_21);</script>';
+           echo '<script> var chartMakeBuyPeopleCrossMarker_22 = '.$summaryData->chartMakeBuyCrossMarker.'; console.log("chartMakeBuyPeopleCrossMarker_22 - ",chartMakeBuyPeopleCrossMarker_22);</script>';
+
+           // Gross Profit
+                // - Total
+           echo '<script> var chartGrossProfitTotalRevenueTrackingS_26 = '.$summaryData->chartGrossProfitTotalRevenueTrackingS.'; console.log("chartGrossProfitTotalRevenueTrackingS_26 - ",chartGrossProfitTotalRevenueTrackingS_26);</script>';
+           echo '<script> var chartGrossProfitTotalCrossMarker_27 = '.$summaryData->chartGrossProfitTotalCrossMarker.'; console.log("chartGrossProfitTotalCrossMarker_27 - ",chartGrossProfitTotalCrossMarker_27);</script>';
+
+                    //echo '<script> var administrationPeoplePercent = '.$result->layers->layer[0]->labels[1]->label[0]->currpercent.'</script>';
+                    //echo '<script> var administrationPurchasesPercent = '.$result->layers->layer[0]->labels[2]->label[0]->currpercent.'</script>';
+?>
+
 		<section id="main">
            <section id="content">
                 <div class="container">
@@ -98,7 +181,7 @@
 								<?php if(!$noData) { ?>
 								<!-- show the summary data -->
 
-								    <?php //var_dump($summaryData); ?>
+								    <?php //print_r($summaryData); ?>
 
 								<div class="col-xs-12 col-md-8">
 									<div class="row clouds cloud-<?php echo $summaryData->totalForecast; ?>">
@@ -270,15 +353,14 @@
 									
 									<!-- placeholder for 'cash flow' -->
 									<div class="layer-wrapper">
-										<table class="layer-table disabled">
+										<table class="layer-table ">
 											<tr class="title-row">
-												<td colspan="4">
-													Cash Flow
-												</td>
+												<td colspan="4">Cash Flow</td>
 											</tr>
 											<tr class="number-row">
 												<td class="secondary-cell" colspan="3">
-													<span class="number">Coming soon...</span>
+													<span class="number ">Coming soon...</span>
+													<!-- div id="cashFlowchart"> </div -->
 												</td>
 											</tr>
 											<tr class="bottom-row">
@@ -287,15 +369,110 @@
 										</table>
 										<div class="layer-spacer"></div>
 									</div>
-									
+
+									<!-- Dendogram chart -->
+									<div class="row">
+                                        <div class="col-md-12">
+
+                                            <div class="graph-container">
+                                               <h4 class="widget-titel">Inspector</h4>
+                                               <div class="svg-chart-holder">
+                                                   <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                                   	 viewBox="0 0 664.3 443.5" style="enable-background:new 0 0 664.3 443.5;" xml:space="preserve">
+                                                   <style type="text/css">
+                                                   	.st0{fill:none;stroke:#25457D;stroke-width:33;stroke-miterlimit:10;}
+                                                   	.st1{fill:none;stroke:#25457D;stroke-width:30;stroke-miterlimit:10;}
+                                                   	.st2{fill:none;stroke:#25457D;stroke-width:4;stroke-miterlimit:10;}
+                                                   	.st3{fill:none;stroke:#25457D;stroke-width:10;stroke-miterlimit:10;}
+                                                   	.st4{fill:none;stroke:#25457D;stroke-width:5;stroke-miterlimit:10;}
+                                                   	.st5{fill:#FFFFFF;stroke:#25457D;stroke-width:3;stroke-miterlimit:10;}
+                                                   	.st6{font-family:'MyriadPro-Regular';}
+                                                   	.st7{font-size:15px;}
+                                                   	.st8{fill:none;}
+                                                   	.st9{font-size:13px;}
+                                                   	.st10{fill:#25457D;}
+                                                   </style>
+                                                   <title>Inspector</title>
+                                                   <g id="Layer_2_1_">
+                                                   	<g id="Layer_1-2">
+                                                   		<line class="st0" x1="19.2" y1="285.8" x2="131.9" y2="285.8"/>
+                                                   		<path class="st1" d="M303.2,161.1c-117.2,5-102,122.5-174.3,123"/>
+                                                   		<path id="profitline" class="st2 profitline" d="M128.9,300.7c48.1,0.5,38,118,116,123h399.6"/>
+                                                   		<path class="st3" d="M439.2,54.6C347,58.5,358.9,151,302,151.4"/>
+                                                   		<path class="st3" d="M439.2,268c-92.2-3.9-80.3-96.4-137.2-96.8"/>
+                                                   		<line class="st3" x1="303.3" y1="161.3" x2="433.8" y2="161.3"/>
+                                                   		<path class="st4" d="M437.1,51.6c32.7-0.1,25.8-31.5,78.9-32.8h128.5"/>
+                                                   		<path class="st4" d="M430.5,159.3c32.7-0.1,25.8-30.5,78.9-30.5h132.1"/>
+                                                   		<path class="st4" d="M433.7,164.3c32.7,0.1,25.8,24.5,78.9,25.5h129"/>
+                                                   		<path class="st4" d="M439.1,266.3c32.7-0.1,25.8-26.4,78.9-27.5h122.6"/>
+                                                   		<path class="st4" d="M436.9,270c32.7,0.1,25.8,35.5,78.9,37h124.8"/>
+                                                   		<path class="st4" d="M516,80.8c-53-1-46.2-23.7-78.9-23.8"/>
+                                                   		<line class="st4" x1="516" y1="80.8" x2="644.5" y2="80.8"/>
+                                                   		<circle id="revenueC" class="st5" cx="32" cy="286.8" r="30.5"/>
+                                                   		<circle id="expenditureC" class="st5" cx="284.2" cy="159.3" r="30.5"/>
+                                                   		<circle id="netProfitC" class="st5 profitline" cx="644.5" cy="423.7" r="18.3"/>
+                                                   		<circle class="st5" cx="644.5" cy="303.4" r="18.3"/>
+                                                   		<circle class="st5" cx="644.5" cy="189.9" r="18.3"/>
+                                                   		<circle class="st5" cx="644.5" cy="238.8" r="18.3"/>
+                                                   		<circle class="st5" cx="644.5" cy="128.8" r="18.3"/>
+                                                   		<circle class="st5" cx="644.5" cy="81.4" r="18.3"/>
+                                                   		<circle class="st5" cx="644.5" cy="19.8" r="18.3"/>
+                                                   		<text transform="matrix(1 0 0 1 16 291.8)" class="st6 st7">100%</text>
+                                                   		<rect x="254.5" y="151.7" class="st8" width="60.3" height="16.3"/>
+                                                   		<text id="revenueNum" transform="matrix(1 0 0 1 272.9045 164.3)" class="st6 st7">00%</text>
+                                                   		<rect x="626.5" y="415.7" class="st8" width="36.1" height="16.3"/>
+                                                   		<text id="netProfitNum" transform="matrix(1 0 0 1 633.2003 428.22)" class="st6 st9">00%</text>
+                                                   		<rect x="626.5" y="295.2" class="st8" width="36.1" height="16.3"/>
+                                                   		<text id="administrationPeoplePercentNum" transform="matrix(1 0 0 1 632.2002 307.7623)" class="st6 st9">00%</text>
+                                                   		<rect x="626.5" y="230.6" class="st8" width="36.1" height="16.3"/>
+                                                   		<text id="administrationPurchasesPercentNum" transform="matrix(1 0 0 1 632.2002 243.2023)" class="st6 st9">00%</text>
+                                                   		<rect x="626.5" y="181.7" class="st8" width="36.1" height="16.3"/>
+                                                   		<text id="obtainRetainPeoplePercentNum" transform="matrix(1 0 0 1 633.2002 194.3023)" class="st6 st9">00%</text>
+                                                   		<rect x="626.5" y="120.6" class="st8" width="36.1" height="16.3"/>
+                                                   		<text id="obtainRetainPurchasesPercentNum" transform="matrix(1 0 0 1 633.2002 133.2023)" class="st6 st9">00%</text>
+                                                   		<rect x="626.5" y="73.6" class="st8" width="36.1" height="16.3"/>
+                                                   		<text id="makeBuyPeoplePercentNum" transform="matrix(1 0 0 1 633.2002 86.2023)" class="st6 st9">00%</text>
+                                                   		<rect x="626.5" y="11.6" class="st8" width="36.1" height="16.3"/>
+                                                   		<text id="makeBuyPurchasesPercentNum" transform="matrix(1 0 0 1 633.2002 24.2023)" class="st6 st9">00%</text>
+                                                   		<text transform="matrix(1 0 0 1 66.5 322.5)" class="st10 st6 st7">Revenue</text>
+                                                   		<text transform="matrix(1 0 0 1 257.5 210.2)" class="st10 st6 st7">Expenses</text>
+                                                   		<text transform="matrix(1 0 0 1 568.709 440.6994)" class="st10 st6 st7">Profit</text>
+                                                   		<text transform="matrix(1 0 0 1 564.0068 324.5004)" class="st10 st6 st7">People</text>
+                                                   		<text transform="matrix(1 0 0 1 554.2568 257.2998)" class="st10 st6 st7">Purchases</text>
+                                                   		<text transform="matrix(1 0 0 1 564.0068 207.2003)" class="st10 st6 st7">People</text>
+                                                   		<text transform="matrix(1 0 0 1 554.2568 147.05)" class="st10 st6 st7">Purchases</text>
+                                                   		<text transform="matrix(1 0 0 1 554.2568 37.2)" class="st10 st6 st7">Purchases</text>
+                                                   		<text transform="matrix(1 0 0 1 564.0068 98.7002)" class="st10 st6 st7">People</text>
+                                                   		<circle id="expenditureC_1_" class="st5" cx="441" cy="161.1" r="25.9"/>
+                                                   		<circle id="expenditureC_2_" class="st5" cx="441" cy="268" r="25.9"/>
+                                                   		<circle id="expenditureC_3_" class="st5" cx="441" cy="54.6" r="25.9"/>
+                                                   		<text id="obtainRetainTotalPercentNum" transform="matrix(1 0 0 1 429.2834 166.0152)" class="st6 st7">00%</text>
+                                                   		<text id="administrationTotalPercentNum" transform="matrix(1 0 0 1 428.2831 273.7303)" class="st6 st7">00%</text>
+                                                   		<text id="makeBuyTotalPercentNum" transform="matrix(1 0 0 1 428.2834 58.6522)" class="st6 st7">00%</text>
+                                                   		<text transform="matrix(1 0 0 1 402.3416 317.3)" class="st10 st6 st7">Run Business</text>
+                                                   		<text transform="matrix(1 0 0 1 405.2591 206.2002)" class="st10 st6 st7">Ob/Retain C</text>
+                                                   		<text transform="matrix(1 0 0 1 411.7764 99.6998)" class="st10 st6 st7">Make/Buy</text>
+                                                   	</g>
+                                                   </g>
+                                                   </svg>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
 									<!-- a sample graph (currently using sample data) -->
 									<div class="row">
 										<div class="col-md-12">
-											<div class="graph-container">
-												<div class="dashboard-graph" style="width:100%;height:150px;"></div>
+											<div class="graph-container second">
+												<div class="dashboard-graph " style="width:100%;height:auto;"></div>
 											</div>
 										</div>
 									</div>
+
+
+
 								</div>
 								<?php } ?>
 								
@@ -309,7 +486,7 @@
 								<div class="col-xs-6 col-md-2 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="report-bs" ><i class="zmdi zmdi-collection-item"></i> BS Reports</button></div>
 
 								<div class="col-xs-6 col-md-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="mapdata" ><i class="zmdi zmdi-shuffle"></i> Map Data</button></div>
-                                <div class="col-xs-6 col-md-2 right"><button class="btn btn-primary btn-inverted btn-lg" disabled="disabled"><i class="zmdi zmdi-card"></i> Comming soon</button></div>
+                                <div class="col-xs-6 col-md-2 right"><button class="btn btn-primary btn-inverted btn-lg" disabled="disabled"><i class="zmdi zmdi-card"></i> Coming soon</button></div>
 
 
 								<div class="col-xs-6 col-md-2 left"><button class="btn btn-primary btn-inverted btn-lg" disabled="disabled"><i class="zmdi zmdi-directions"></i> Planning Assistant</button></div>
@@ -404,7 +581,7 @@
 								<div role="tabpanel" class="tab-pane has-alert active <?php if(isset($labelsMakeBuy) && hasAlert($labelsMakeBuy)) echo 'hasAlert'; ?>" id="makebuytotal">
 									<?php
 										drawFullLabel($labelsMakeBuy);
-									//	drawGraphContainer('makebuy', 'total', false);
+										drawGraphContainer('makebuy', 'total', false);
 										drawCommentaryMini($labelsMakeBuy,'makebuy');
 									?>
 								</div>
@@ -412,7 +589,7 @@
 								<div role="tabpanel" class="tab-pane has-alert" id="makebuypurchases">
 									<?php
 										drawFullLabel($labelsMakeBuyPurchases);
-									//	drawGraphContainer('makebuy', 'purchases');
+										drawGraphContainer('makebuy', 'purchases',false);
 										drawCommentaryMini($labelsMakeBuyPurchases,'makebuypurchases');
 									?>
 								</div>
@@ -420,7 +597,7 @@
 								<div role="tabpanel" class="tab-pane has-alert" id="makebuypeople">
 									<?php
 										drawFullLabel($labelsMakeBuyPeople);
-									//	drawGraphContainer('makebuy', 'people');
+										drawGraphContainer('makebuy', 'people',false);
 										drawCommentaryMini($labelsMakeBuyPeople,'makebuypeople');
 									?>
 								</div>
@@ -430,7 +607,7 @@
 						<div role="tabpanel" class="tab-pane has-alert" id="netprofitloss">
 							<?php
 								drawFullLabel($labelsNetProfitLoss);
-							//	drawGraphContainer('netprofitloss', 'total', false);
+								drawGraphContainer('netprofitloss', 'total', false);
 								drawCommentaryMini($labelsNetProfitLoss,'netprofitloss');
 							?>
 						</div>
@@ -438,7 +615,7 @@
 						<div role="tabpanel" class="tab-pane has-alert" id="sales">
 							<?php
 								drawFullLabel($labelsSales);
-							//	drawGraphContainer('sales',  'total', false);
+								drawGraphContainer('sales',  'total', false);
 								drawCommentaryMini($labelsSales,'sales');
 							?>
 						</div>
@@ -446,7 +623,7 @@
 						<div role="tabpanel" class="tab-pane has-alert" id="grossprofit">
 							<?php
 								drawFullLabel($labelsGrossProfit);
-                              //  drawGraphContainer('grossprofit', 'total', false);
+                                drawGraphContainer('grossprofit', 'total', false);
                                 drawCommentaryMini($labelsGrossProfit, 'grossprofit');
 							?>
 						</div>
@@ -456,6 +633,7 @@
 								<div role="tabpanel" class="tab-pane has-alert active <?php if(isset($labelsSelling) && hasAlert($labelsSelling)) echo 'hasAlert'; ?>" id="sellingtotal">
 									<?php
 										drawFullLabel($labelsSelling);
+										drawGraphContainer('selling', 'total', false);
 										drawCommentaryMini($labelsSelling, 'selling');
 									?>
 								</div>
@@ -463,7 +641,7 @@
 								<div role="tabpanel" class="tab-pane has-alert" id="sellingpurchases">
 									<?php
 										drawFullLabel($labelsSellingPurchases);
-									//	drawGraphContainer('sellingtotal', 'purchases');
+										drawGraphContainer('selling', 'purchases', false);
 										drawCommentaryMini($labelsSellingPurchases, 'sellingpurchases');
 									?>
 								</div>
@@ -471,7 +649,7 @@
 								<div role="tabpanel" class="tab-pane has-alert" id="sellingpeople">
 									<?php
 										drawFullLabel($labelsSellingPeople);
-									//	drawGraphContainer('sellingtotal', 'people');
+										drawGraphContainer('selling', 'people', false);
 										drawCommentaryMini($labelsSellingPeople, 'sellingpeople');
 									?>
 								</div>
@@ -483,21 +661,21 @@
 								<div role="tabpanel" class="tab-pane has-alert active <?php if(isset($labelsAdministration) && hasAlert($labelsAdministration)) echo 'hasAlert'; ?>" id="administrationtotal">
 									<?php
 										drawFullLabel($labelsAdministration);
-									//	drawGraphContainer('administrationtotal', 'total', false);
+										drawGraphContainer('administration', 'total', false);
 									?>
 								</div>
 								
 								<div role="tabpanel" class="tab-pane has-alert" id="administrationpurchases">
 									<?php
 										drawFullLabel($labelsAdminPurchases);
-										//drawGraphContainer('administrationtotal', 'purchases');
+										drawGraphContainer('administration', 'purchases', false);
 									?>
 								</div>
 								
 								<div role="tabpanel" class="tab-pane has-alert" id="administrationpeople">
 									<?php
 										drawFullLabel($labelsAdminPeople);
-									//	drawGraphContainer('administrationtotal', 'people');
+										drawGraphContainer('administration', 'people', false);
 									?>
 								</div>
 							</div>

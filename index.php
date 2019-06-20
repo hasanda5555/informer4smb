@@ -28,6 +28,7 @@
 			$gname=$xml->user->first_name;
 			$lname=$xml->user->surname;
 			$regtype=$xml->user->regtype;
+			$resetpwd=$xml->user->reset;
 			session_start();
 			$_SESSION["userid"]=trim($userid);
 			$_SESSION["uname"]=trim($gname)." ".trim($lname);
@@ -35,12 +36,12 @@
 			setsession($userid, session_id());
 			
 			// check for company & period
-			if (isset($_POST['company']) && isset($_POST['period'])) {
+			if ($resetpwd==1) 
+				header("Location: changepass.php");
+			elseif (isset($_POST['company']) && isset($_POST['period'])) 
 				header("Location: main.php?company=".urlencode($_POST['company'])."&month=".$_POST['period']);
-			} else {
-				// redirect without company & period
+			else 
 				header("Location: main.php");
-			}
 		}
 		else{
 			$_GET[msg]='Re-login failed.';
@@ -159,7 +160,7 @@ ob_end_flush();
 						<!-- HELP -->
 						<div id="help" class="content-panel hidden">
 							<h2>Help information</h2>
-							<p class="text-left">If you need any assistance, or require an account to be set up, please contact Denis Hitchens by phone on <a href="tel:12345678">1234 5678</a> or email at <a href="mailto:info@test.com" target="_blank">info@test.com</a> </p>
+							<p class="text-left">If you need any assistance, or require an account to be set up, please contact Informer 4 SMB by phone on <a href="tel:12345678">1234 56 78</a> or email at <a href="mailto:info@informer4smb.com.au" target="_blank">info@informer4smb.com.au</a> </p>
 								
 							<div class="row">
 								<div class="col-sm-12 text-center">

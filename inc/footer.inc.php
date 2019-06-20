@@ -44,6 +44,8 @@
 <script src="vendors/tinymce/tinymce.min.js"></script>
 
 <script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.1.1/modules/sankey.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 

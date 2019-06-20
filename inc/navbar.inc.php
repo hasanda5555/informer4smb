@@ -76,22 +76,36 @@
 			<?php } ?>
 			
 			<li><a href="#upload" data-ma-action="navigate" data-nav-data="upload">Upload</a></li>
+			<li><a href="#mapdata" data-ma-action="navigate" data-nav-data="mapdata">Map Data</a></li>
 			
 			<hr/>
 			
-			<li><a href="#" data-action="changeData"><i class="zmdi zmdi-refresh"></i> Change data source</a></li>
+			<li><a href="#" data-action="changeData"><i class="zmdi zmdi-refresh"></i> Change Company / Period</a></li>
+			<?php
+			    $url = "//{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+                $query = parse_url($url, PHP_URL_QUERY);
+                parse_str($query);
+                parse_str($query, $arr);
+
+                $newquery = str_replace('dashboard','changepassword', $query);
+
+
+			?>
+			<li><a <?php echo 'href="changepass.php?' . $newquery . '"' ?> ><i class="zmdi zmdi-key"></i> Change Password</a></li>
 			<li><a href="index.php" ><i class="zmdi zmdi-close-circle-o"></i> Log out</a></li>
 		</ul>
 				
 		<!--  -->
-		<hr/>
-		Apply a different style:<br/>
-		<select class="style-change">
-			<option value="">Default</option>
-			<option value="variant1">Example 1</option>
-		</select>
-		<br/>
-		(Note: style reverted when navigating to/from 'upload' or 'reports'.)
+		<div style="display:none;">
+            <hr/>
+            Apply a different style:<br/>
+            <select class="style-change">
+                <option value="">Default</option>
+                <option value="variant1">Example 1</option>
+            </select>
+            <br/>
+            (Note: style reverted when navigating to/from 'upload' or 'reports'.)
+		</div>
 	</div>
 </aside>
 

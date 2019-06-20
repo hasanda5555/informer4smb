@@ -123,7 +123,7 @@
 	<body class="">
 		<?php
 			// CHECK PERMISSIONS
-			if ($permissions['Reports']==0) {
+			if ($permissions['Admin users']==0) {
 				echo $GLOBALS['accesserrormsg']; 
 				die;
 			}
@@ -803,7 +803,13 @@
                 <span id="conf-email-error" class="bg-danger" style="display : none" >Mismatched Email</span>
               </div>
             </div>
-
+        <div class="form-group hide-for-edit">
+            <label class="control-label col-sm-3" for="verifyemail">Send Verification Email:</label>
+            <div class="col-sm-9" id="regtype">
+              <label class="radio-inline"><input type="radio"  value="" name="verifyemail">To Me</label>
+              <label class="radio-inline"><input type="radio" value="" name="verifyemail">To User</label>
+              </div>
+          </div>
 
         <div class="form-group">
             <label class="control-label col-sm-3" for="mobile">Mobile:</label>

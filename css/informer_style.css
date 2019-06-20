@@ -437,12 +437,12 @@ table#pla tr td:last-child {
 
 .tab-content #dashboard .row.clouds.cloud-0 {
     background:url(../img/scene-01.jpg) left top repeat-x rgba(255,255,255,.5);
-    background-size: contain;
+    background-size: cover;
 }
 
 .tab-content #dashboard .row.clouds.cloud-1 {
     background:url(../img/scene-01.jpg) left top repeat-x rgba(255,255,255,.5);
-    background-size: contain;
+    background-size: cover;
 }
 
 .tab-content #dashboard .row.clouds.cloud-2 {
@@ -530,4 +530,40 @@ span.gauge-indicator.direction-up:before {
 span.gauge-indicator.direction-down:before {
     top: 50%;
     background: #f12626;
+}
+
+.generated-commentary {
+    max-height: 205px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.widget-titel {
+    color: #32218a;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.tab-content .graph-container {
+    background: transparent;
+    padding: 0px;
+    border-radius: 0px;
+}
+
+.tab-content .graph-container .highcharts-container {
+    margin-bottom: 7px;
+    overflow: hidden;
+    border-radius: 4px;
+    margin-top: 7px;
+}
+
+#dashboard .graph-container {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 7px;
+}
+
+#dashboard .graph-container.second {
+    padding: 0px !important;
+    background: transparent;
 }

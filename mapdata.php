@@ -48,7 +48,9 @@ ob_start();
     	});
     }
 
-			function mapall(ele,tabs) {
+	function mapall(tabs) {
+	    
+	var ele=document.getElementById('chkmapall');
 
 	if(ele.checked) {
 		//confirm("Do you wish to use same mapping for all the months?");
@@ -195,7 +197,7 @@ if($_POST) {
 					$cat2=($_POST['cat2'.$key.$i]=="") ? 0 : $_POST['cat2'.$key.$i];
 					$cat3=($_POST['cat3'.$key.$i]=="") ? 0 : $_POST['cat3'.$key.$i];
 					
-					$mapid=mysqli_real_escape_string ($GLOBALS['link'],$_POST['mapid']);
+					$mapid=mysqli_real_escape_string ($GLOBALS['link'],$_POST['mapid'.$key.$i]);
                 	$company=mysqli_real_escape_string ($GLOBALS['link'],$_POST['company']);
                 	$type=mysqli_real_escape_string ($GLOBALS['link'],$_POST['type'.$key.$i]);
                 	$item=mysqli_real_escape_string ($GLOBALS['link'],$_POST['item'.$key.$i]);
@@ -203,11 +205,11 @@ if($_POST) {
                 	$cat2=mysqli_real_escape_string ($GLOBALS['link'],$cat2);
                 	$cat3=mysqli_real_escape_string ($GLOBALS['link'],$cat3);
 
-            		$delsql="delete from ".$srctype."mapping where company='$company' and item='$item' and typeid=$type and mapid=$mapid ";
+            		$delsql="delete from ".$srctype."mapping where company='$company' and item='$item' and mapid=$mapid ";
             	
             	    if(!mysqli_query($GLOBALS['link'],$delsql)){ print 'MySQL Error: PLA ERROR0x9001' . mysqli_error($GLOBALS['link']); }
 
-                $delsql="delete from ".$srctype."mapping_amount where company='$company' and year=$curyear and month=$month and item='$item' and typeid=$type ";
+                $delsql="delete from ".$srctype."mapping_amount where company='$company' and year=$curyear and month=$month and item='$item' and mapid=$mapid ";
 	
 	      //  echo $delsql;
 	                if(!mysqli_query($GLOBALS['link'],$delsql)){ print 'MySQL Error: PLA ERROR0x9004' . mysqli_error($GLOBALS['link']); } 
@@ -223,7 +225,7 @@ if($_POST) {
 	                 $cat2=($value==0) ? 0 : number_format((($cat2/100)*$value),2,'.','');
 	                 $cat3=($value==0) ? 0 : number_format((($cat3/100)*$value),2,'.','');
 
-					$buildsql2.="('$company',$curyear,$month,$type,'$item',$value,$cat1,$cat2,$cat3,'".$curyear."-".$month."-01'),";
+					$buildsql2.="($mapid,'$company',$curyear,$month,$type,'$item',$value,$cat1,$cat2,$cat3,'".$curyear."-".$month."-01'),";
 				}
 				
 				$buildsql=substr($buildsql,0,-1);
@@ -247,7 +249,7 @@ if($_POST) {
 ?>
 
   <div id="content" class="content-panel mapdata">
-        <h2 class="step">Map data to uploaded file</h2>
+        <h2 class="step">Map Data</h2>
        <div id="frmmsg" class="row">
 
 <?php 
@@ -373,28 +375,25 @@ if(sizeof($data)<=0) {
 </div>
 <?php 
 } 
-if(sizeof($data)>0 && $company==trim(getcompany($data))){
+if(sizeof($data)>0 ){
     
         $types=($_POST['xlstype']=='bs') ? getbstypes() : gettypes();
+        $company=getcompany($data);
+		$year=setyear($data);
 		
-		echo "<p style=\"font-weight:bold; font-size:18px; padding-left:10px;\"><font style=\"color:#eb8932;\">Step 1. File Uploaded</font> <font style=\"font-size: 1.75rem;\">&rArr;</font> Step 2. Map the data</p>";
-		echo "<form name=\"frmmap\" action=\"mapdata.php\" method=\"post\" onsubmit=\" return checkform(); \"> \n";
+		echo "<form name=\"frmmap\" action=\"mapdata.php\" method=\"post\" onsubmit='mapall(".json_encode($year)."); return checkform();' > \n";
 		echo "<table> \n";
 		echo "<tr><td colspan=\"6\">&nbsp;</td></tr> \n";
 		echo "<tr><td style=\"padding-left:10px; font-size:16px; \" ><strong>Company: </strong></td><td style=\"font-size:16px; \" colspan=\"5\">&nbsp;";
-		
-		$company=getcompany($data);
-		
+
 		if($company=="")
 			echo "<input style=\"width:400px;\" type=\"text\" name=\"company\" id=\"company\" value=\"\" size=\"50\" />";
 		else
 			echo "$company<input type=\"hidden\" name=\"company\" id=\"company\" value=\"$company\" />";
-		
-		$year=setyear($data);
-		
+
 		echo "</td> \n</tr>\n</table>\n";
 		
-		echo "<p style=\"padding-top:10px; padding-left:10px;  font-size:16px;\"><input type=\"checkbox\" name=\"chkmapall\" id=\"chkmapall\" onclick='mapall(this,".json_encode($year).");' />&nbsp;Use same mapping for all months</p>";
+		echo "<p style=\"padding-top:10px; padding-left:10px;  font-size:16px;\"><input type=\"checkbox\" name=\"chkmapall\" id=\"chkmapall\" onclick='mapall(".json_encode($year).");' checked />&nbsp;Copy first month's mapping to all months</p>";
 		
 		echo "<ul class=\"tab\">\n";
 		
@@ -408,6 +407,9 @@ if(sizeof($data)>0 && $company==trim(getcompany($data))){
 		$csvdata=getcsvdata($data,$year);
 		$oldkey="";
 		$endtag=false;
+	//	var_dump($csvdata);
+		
+		//echo $csvdata;
 		foreach ($csvdata as $key=>$value) {
 			if($oldkey!=$key){
 				if($endtag){
@@ -433,34 +435,40 @@ if(sizeof($data)>0 && $company==trim(getcompany($data))){
     	foreach ($value as $itemamount) {
     	    
                 $key=preg_replace("/[^a-zA-Z0-9]+/", "", $key);
-                $selectedval=2;
+                $selectedval=0;
 		        $cat1=100;
 		        $cat2=0;
 		        $cat3=0;
-		        
-			    $mapvalues=explode("|",getmapping($company,key($itemamount),$i));
-			    
-			    if($mapvalues!=""){
-			        $selectedval=$mapvalues[0];
-			        $cat1=$mapvalues[1];
-			        $cat2=$mapvalues[2];
-			        $cat3=$mapvalues[3];
-			    }
-			    
+
 				foreach ($GLOBALS['labelarray'] as $label){
 				    $matchstr=substr(trim(key($itemamount)),0,strlen($label)); 
                     if(strcasecmp($matchstr,$label)==0)
                         $selectedval=4;
                 }
+                
+                $mapvalues=explode("|",getmapping($company,key($itemamount),$i));
+                
+			    if($mapvalues[0]!=""){
+			        $selectedval=$mapvalues[0];
+			        $cat1=$mapvalues[1];
+			        $cat2=$mapvalues[2];
+			        $cat3=$mapvalues[3];
+			    }
 				
 				echo "<tr><td class=\"item\">".trim(key($itemamount))."<input type=\"hidden\" name=\"item$key$i\" id=\"item$key$i\" value=\"".trim(key($itemamount))."\" />";
-				echo "<input type=\"hidden\" name=\"mapid\" id=\"mapid\" value=\"$i\" /></td>";
+				echo "<input type=\"hidden\" name=\"mapid$key$i\" id=\"mapid$key$i\" value=\"$i\" /></td>";
 				echo "<td><select name=\"type$key$i\" id=\"type$key$i\">";
 				$curgrp="";
 				$onclick="";
 				foreach ($types as $typeval){
 					$type=explode("|",$typeval);
-					$selected=($type[2]==1 || $type[0]==$selectedval) ? "selected" : "";
+					
+					if($type[0]==$selectedval)
+					    $selected="selected";
+					elseif ($type[2]==1 && $selectedval==0)
+					    $selected="selected";
+					else
+					    $selected="";
 					
 					if($_POST['xlstype']=='bs')
 					   $onclick="onclick=\"populatefield('cat".trim($type[3])."','$key$i');\"";	    
@@ -481,9 +489,9 @@ if(sizeof($data)>0 && $company==trim(getcompany($data))){
 				
 			   echo "</select></td>";
 			   echo "<td class=\"item\"><input style=\"text-align:right;\" type=\"text\" name=\"value$key$i\" value=\"".$itemamount[key($itemamount)]."\" /></td>";
-				echo "$td<input style=\"text-align:right;\" type=\"$inputtype\" name=\"cat1$key$i\" id=\"cat1$key$i\" value=\"100\"  onclick=\"populatefield('cat1','$key$i');\" onchange=\"checkblank(this);\" / >$slashtd";
-				echo "$td<input style=\"text-align:right;\"  type=\"$inputtype\" name=\"cat2$key$i\" id=\"cat2$key$i\" value=\"0\" onclick=\"populatefield('cat2','$key$i');\" onchange=\"checkblank(this);\" />$slashtd";
-				echo "$td<input style=\"text-align:right;\" type=\"$inputtype\" name=\"cat3$key$i\" id=\"cat3$key$i\" value=\"0\" onclick=\"populatefield('cat3','$key$i');\" onchange=\"checkblank(this);\" />$slashtd";
+				echo "$td<input style=\"text-align:right;\" type=\"$inputtype\" name=\"cat1$key$i\" id=\"cat1$key$i\" value=\"$cat1\"  onclick=\"populatefield('cat1','$key$i');\" onchange=\"checkblank(this);\" / >$slashtd";
+				echo "$td<input style=\"text-align:right;\"  type=\"$inputtype\" name=\"cat2$key$i\" id=\"cat2$key$i\" value=\"$cat2\" onclick=\"populatefield('cat2','$key$i');\" onchange=\"checkblank(this);\" />$slashtd";
+				echo "$td<input style=\"text-align:right;\" type=\"$inputtype\" name=\"cat3$key$i\" id=\"cat3$key$i\" value=\"$cat3\" onclick=\"populatefield('cat3','$key$i');\" onchange=\"checkblank(this);\" />$slashtd";
 				echo "<td class=\"item\"><input style=\"text-align:right;\" type=\"checkbox\" name=\"review$key$i\" value=\"1\" /></td>";
 				echo "</tr> \n";
 				$i++;
@@ -509,10 +517,12 @@ if(sizeof($data)>0 && $company==trim(getcompany($data))){
 		echo "<script>\n document.getElementById('tab0').click();\n</script>\n";
 		
 	}
-else if(sizeof($data)>0 && $company!=trim(getcompany($data)))
-    $msgtext="Chosen file does not match selected organisation.";
+else 
+    echo "<h1>$msgtext</h1>";
+//if(sizeof($data)>0 && $company!=trim(getcompany($data)))
+  //  $msgtext="Chosen file does not match selected organisation.";
 
-	echo "<h1>$msgtext</h1>";
+	
 ?>
 
 

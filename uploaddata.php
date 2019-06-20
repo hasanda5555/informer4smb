@@ -391,10 +391,18 @@ if(!$upload && !$msg) {
 ?>
 <div id="uploadfrm">
 	<form name="frmupload" action="uploaddata.php?company=<?php echo urlencode($selectedCompany); ?>&month=<?php echo $selectedMonth; ?>&page=upload" method="post" enctype="multipart/form-data">
-	    <input type="hidden" name="company" id="company" value="<?php echo urlencode($selectedCompany); ?>" />
-	    <h2 class="step">Step 1: Upload file</h2>
-		
-		<p class="left-content">Select CSV to upload:</p>
+	   
+	    <h2 class="step">Upload File</h2>
+		 <?php if($role>=8){ ?>
+	        <p class="left-content">Company*:</p>
+	        <p class="right-content"><select id="company" name="company" >
+                <?php echo $options; ?>
+            </select> </p>	<p class="spacer">&nbsp;</p>
+	    <?php } else { ?>
+	        <input type="hidden" name="company" id="company" value="<?php echo urlencode($selectedCompany); ?>" />
+	    <?php } ?>
+	    
+		<p class="left-content">Select File to upload:</p>
 		<p class="right-content"><input type="file"  name="fileToUpload" id="fileToUpload"></p>
 		<p class="spacer">&nbsp;</p>
 		
@@ -416,7 +424,7 @@ if(!$upload && !$msg) {
 		</p>
 		<p class="spacer">&nbsp;</p>
 		
-		<button type="submit" name="upload" class="btn btn-primary pull-right m-r-30" >Upload CSV</button>
+		<button type="submit" name="upload" class="btn btn-primary pull-right m-r-30" >Upload File</button>
 	    
 	</form>
 </div>
@@ -708,7 +716,15 @@ else
 					 <div style="padding:10px 0px 20px 0px;"><b>Upload Xero Data (Direct)</b></div>
 					 <div style="color:#13B5EA;padding-bottom:20px;">&#10003;&nbsp;Connected to Xero <span id="api-logout" style="cursor: pointer;">[<u>Logout</u>]</span></div>					 
 					 <form name="frmupload" action="uploaddata.php" method="post" enctype="multipart/form-data" class="form-horizontal">
-                                  <input type="hidden" name="company" id="company" value="<?php echo urlencode($selectedCompany); ?>" />
+					     <div class="form-group">
+                                   <?php if($role>=8){ ?>
+	        <label class="col-lg-3 control-label">Company*:</label><div class="col-lg-9"><select id="company" name="company" class="form-control">
+                <?php echo $options; ?>
+            </select> </div>
+	    <?php } else { ?>
+	        <input type="hidden" name="company" id="company" value="<?php echo urlencode($selectedCompany); ?>" />
+	    <?php } ?>
+	    	                              </div>
 	                             <div class="form-group">
 	                                <label class="col-lg-3 control-label">Type:</label>
 	                                <div class="col-lg-9">

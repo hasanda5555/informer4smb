@@ -349,53 +349,67 @@ $(document).ready(function () {
 function plotGraph(page, section) {
 	var graphName = section == '' ? '.'+page+'-graph' : '.'+page+'-'+section+'-graph';
     //var highchartCont = section == '' ? ''+page+'-graph' : ''+page+'-'+section+'-graph';
-    
-    $.ajax({
-        url: "../inc/chartData.php",
+    var legendSmall = {
+        align: 'center',
+        verticalAlign: 'bottom',
+        layout: 'horizontal'
+    }
+    console.log("graphName " + graphName);
+    /*$.ajax({
+        url: "../report.php",
         type: "get", //send it through get method
         data: {
-            section :page,
+            mode : 'charts',
+            term : 'longterm',
+            layer : 'summary',
+            month : selectedMonth,
+            comany : selectedCompany,
             type: "json"
         },
         success: function(response) {
-            //Do Something
+            console.log(response);
         },
         error: function(xhr) {
-            //Do Something to handle error
         }
-    });
+    });*/
+    // plot chart Revenue Tracking
+    var plotchartRevenueTracking = function (obj,chartid){
+        Highcharts.setOptions({
+            colors: ['#E87E2B', '#2287e8']
+        });
 
-    if($(graphName)[0]) {
-
-
-        var dataObje = {
-            "chartName": "My profit and loss Chart ",
-            "Period": ["may 2017", "jun 2017", "jul 2017", "aug 2017", "sept 2017", "nov 2017", "dec 2017", "jan 2018"],
+        console.log(chartid, obj);
+        var RevenueTrackingTemp = {
+            "chartName": "Revenue Tracking",
+            "Period": obj.months.split(","),
             "properties": {
                 "line_1": {
-                    "lineName": "Proft",
-                    "values": [10, 30, 40, 60, 50, 200, 50, 100]
+                    "lineName": "Revenue",
+                    "values": obj.line1.split(",").map(function (item) {
+                        return parseFloat(item);
+                    })
                 },
                 "line_2": {
-                    "lineName": "Loss",
-                    "values": [130, 305, 406, 360, 550, 250, 150, 140]
+                    "lineName": "Make Buy",
+                    "values": obj.line2.split(",").map(function (item) {
+                        return parseFloat(item);
+                    })
                 }
             }
-        } ;
+        };
 
-       // var $chartcontainer = $('<div>').appendTo(document.body);
-
-        setTimeout(function(){
-            Highcharts.chart( {
+        setTimeout(function() {
+            //Chart for Revenue Tracking
+            Highcharts.chart({
                 chart: {
-                    renderTo: $(graphName)[0],
+                    renderTo: chartid,
                     zoomType: 'xy'
                 },
                 title: {
-                    text: dataObje.chartName
+                    text: RevenueTrackingTemp.chartName
                 },
                 xAxis: [{
-                    categories: dataObje.Period,
+                    categories: RevenueTrackingTemp.Period,
                     crosshair: true
                 }],
                 yAxis: [{ // Primary yAxis
@@ -406,14 +420,14 @@ function plotGraph(page, section) {
                         }
                     },
                     title: {
-                        text: dataObje.properties.line_1.lineName,
+                        text: RevenueTrackingTemp.properties.line_1.lineName,
                         style: {
                             color: Highcharts.getOptions().colors[1]
                         }
                     }
                 }, { // Secondary yAxis
                     title: {
-                        text: dataObje.properties.line_2.lineName,
+                        text: RevenueTrackingTemp.properties.line_2.lineName,
                         style: {
                             color: Highcharts.getOptions().colors[0]
                         }
@@ -430,32 +444,711 @@ function plotGraph(page, section) {
                     shared: true
                 },
                 legend: {
-                    layout: 'vertical',
-                    align: 'left',
+                    layout: 'horizontal',
+                    align: 'center',
                     x: 120,
-                    verticalAlign: 'top',
+                    verticalAlign: 'bottom',
                     y: 100,
                     floating: true,
                     backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || 'rgba(255,255,255,0.25)'
                 },
                 series: [{
-                    name: dataObje.properties.line_1.lineName,
+                    name: RevenueTrackingTemp.properties.line_1.lineName,
                     type: 'line',
                     yAxis: 1,
-                    data: dataObje.properties.line_1.values,
+                    data: RevenueTrackingTemp.properties.line_1.values,
                     tooltip: {
                         valueSuffix: ' $'
                     }
 
                 }, {
-                    name: dataObje.properties.line_2.lineName,
+                    name: RevenueTrackingTemp.properties.line_2.lineName,
                     type: 'line',
-                    data: dataObje.properties.line_2.values,
+                    data: RevenueTrackingTemp.properties.line_2.values,
                     tooltip: {
                         valueSuffix: '$'
                     }
                 }]
             });
+
+        });
+
+    }
+
+    // plot chart Revenue Tracking S
+    var plotchartRevenueTrackingS = function (obj,chartid){
+
+        console.log(chartid, obj);
+        var RevenueTrackingSTemp = {
+            "chartName": "Revenue Tracking Growing and Slowing",
+            "Period": obj.months.split(","),
+            "properties": {
+                "line_1": {
+                    "lineName": "Revenue",
+                    "values": obj.line1.split(",").map(function (item) {
+                        return parseFloat(item);
+                    })
+                },
+                "line_2": {
+                    "lineName": "Make Buy",
+                    "values": obj.line2.split(",").map(function (item) {
+                        return parseFloat(item);
+                    })
+                }
+            }
+        };
+
+        setTimeout(function() {
+            //Chart for Revenue Tracking S
+            Highcharts.chart({
+                chart: {
+                    renderTo: chartid
+                },
+                title: {
+                    text: RevenueTrackingSTemp.chartName
+                },
+                xAxis: [{
+                    categories: RevenueTrackingSTemp.Period
+                }],
+                yAxis: {
+                    title: {
+                        text: 'Revenue',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+
+                    labels: {
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    }
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'center',
+                    verticalAlign: 'bottom'
+                },
+                series: [{
+                    name: RevenueTrackingSTemp.properties.line_1.lineName,
+                    color: Highcharts.getOptions().colors[1],
+                    data: RevenueTrackingSTemp.properties.line_1.values
+                }, {
+                    name: RevenueTrackingSTemp.properties.line_2.lineName,
+                    color: Highcharts.getOptions().colors[0],
+                    data: RevenueTrackingSTemp.properties.line_2.values
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 900
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            }
+                        }
+                    }]
+                }
+
+            });
+        });
+
+    }
+
+    // plot chart Cross Marker
+    var plotchartCrossMarker = function (obj,chartid){
+
+        console.log(chartid, obj);
+        var CrossMakerTemp = {
+            "chartName": "Cross Marker",
+            "Period": obj.months.split(","),
+            "properties": {
+                "line_1": {
+                    "lineName": "GOS Smooth",
+                    "values": obj.line1.split(",").map(function (item) {
+                        return parseFloat(item);
+                    })
+                },
+                "line_2": {
+                    "lineName": "FOS Smooth",
+                    "values": obj.line2.split(",").map(function (item) {
+                        return parseFloat(item);
+                    })
+                }
+            }
+        };
+
+        setTimeout(function() {
+            //Chart for Cross Marker
+            Highcharts.chart({
+                chart: {
+                    renderTo: chartid
+                },
+                title: {
+                    text: CrossMakerTemp.chartName
+                },
+                xAxis: [{
+                    categories: CrossMakerTemp.Period
+                }],
+                yAxis: {
+                    title: {
+                        text: 'Revenue',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+
+                    labels: {
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    }
+                },
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom'
+                },
+                series: [{
+                    name: CrossMakerTemp.properties.line_1.lineName,
+                    color: Highcharts.getOptions().colors[1],
+                    data: CrossMakerTemp.properties.line_1.values
+                }, {
+                    name: CrossMakerTemp.properties.line_2.lineName,
+                    color: Highcharts.getOptions().colors[0],
+                    data: CrossMakerTemp.properties.line_2.values
+                }]
+
+            });
+
+        });
+
+    }
+
+    if($(graphName)[0]) {
+
+        var grapId =  graphName.substr(1);
+        $(graphName).attr('id', grapId);
+
+        var chartDataObjRevenueTracking = null;
+        var chartDataObjRevenueTrackingS =  null;
+        var chartDataObjCrossMaker = null;
+
+
+
+        if( graphName == '.dashboard-graph') {
+            console.log("dashboard chart set rendering");
+            if (!$('#dashboard-netprofitloss-CrossMarker').length){
+                $('#dashboard-graph').append('<div class="dash-chart-holder" id="dashboard-makebuy-total-RevenueTrackingS"></div>');
+                $('#dashboard-graph').append('<div class="dash-chart-holder"  id="dashboard-selling-CrossMarker"></div>');
+                $('#dashboard-graph').append('<div class="dash-chart-holder" id="dashboard-netprofitloss-CrossMarker"></div>');
+                plotchartRevenueTracking(chartNetProfitRevenueTrackingS_01, 'dashboard-makebuy-total-RevenueTrackingS');
+                plotchartCrossMarker(chartRevenueCrossMarker_04, 'dashboard-selling-CrossMarker');
+                plotchartCrossMarker(chartNetProfitCrossMarker_03, 'dashboard-netprofitloss-CrossMarker');
+            }
+        }
+
+        if (graphName ==  ".sales-total-graph") {
+            console.log("sales chart set rendering");
+            if (!$('#sales-total-CrossMarker').length) {
+                $('.sales-total-graph').attr('id', 'sales-total-graph');
+                //$('#sales-total-graph').append('<div id="sales-total-RevenueTracking"></div>');
+                //$('#sales-total-graph').append('<div id="sales-total-RevenueTrackingS"></div>');
+                $('#sales-total-graph').append('<div id="sales-total-CrossMarker"></div>');
+                plotchartCrossMarker(chartRevenueCrossMarker_04, 'sales-total-CrossMarker');
+            }
+        }
+
+        if (graphName ==  ".netprofitloss-total-graph") {
+            console.log("netprofitloss chart set rendering");
+            if (!$('#netprofitloss-total-CrossMarker').length) {
+                $('.netprofitloss-total-graph').attr('id', 'netprofitloss-total-graph');
+                //$('#netprofitloss-total-graph').append('<div id="netprofitloss-total-RevenueTracking"></div>');
+                $('#netprofitloss-total-graph').append('<div id="netprofitloss-total-RevenueTrackingS"></div>');
+                $('#netprofitloss-total-graph').append('<div id="netprofitloss-total-CrossMarker"></div>');
+                plotchartRevenueTrackingS(chartNetProfitRevenueTrackingS_01, 'netprofitloss-total-RevenueTrackingS');
+                plotchartCrossMarker(chartNetProfitCrossMarker_03, 'netprofitloss-total-CrossMarker');
+            }
+        }
+
+        if (graphName ==  ".grossprofit-total-graph") {
+            console.log("grossprofit chart set rendering");
+            if (!$('#grossprofit-total-CrossMarker').length) {
+                $('.grossprofit-total-graph').attr('id', 'grossprofit-total-graph');
+                //$('#netprofitloss-total-graph').append('<div id="netprofitloss-total-RevenueTracking"></div>');
+                $('#grossprofit-total-graph').append('<div id="grossprofit-total-RevenueTrackingS"></div>');
+                $('#grossprofit-total-graph').append('<div id="grossprofit-total-CrossMarker"></div>');
+                plotchartRevenueTrackingS(chartGrossProfitTotalRevenueTrackingS_26, 'grossprofit-total-RevenueTrackingS');
+                plotchartRevenueTrackingS(chartGrossProfitTotalRevenueTrackingS_26, 'grossprofit-total-RevenueTrackingS');
+                plotchartCrossMarker(chartGrossProfitTotalCrossMarker_27, 'grossprofit-total-CrossMarker');
+            }
+        }
+
+        if (graphName ==  ".makebuy-total-graph") {
+            console.log("make buy chart set rendering");
+            if (!$('#makebuy-purchases-CrossMarker').length) {
+
+                $('.makebuy-total-graph').attr('id', 'makebuy-total-graph');
+                $('#makebuy-total-graph').append('<div id="makebuy-total-RevenueTracking"></div>');
+                $('#makebuy-total-graph').append('<div id="makebuy-total-RevenueTrackingS"></div>');
+                $('#makebuy-total-graph').append('<div id="makebuy-total-CrossMarker"></div>');
+                plotchartRevenueTracking(chartMakeBuyRevenueTracking_05, 'makebuy-total-RevenueTracking');
+                plotchartRevenueTrackingS(chartMakeBuyRevenueTrackingS_06, 'makebuy-total-RevenueTrackingS');
+                plotchartCrossMarker(chartMakeBuyCrossMarker_07, 'makebuy-total-CrossMarker');
+
+                $('.makebuy-people-graph').attr('id', 'makebuy-people-graph');
+                $('#makebuy-people-graph').append('<div id="makebuy-people-RevenueTracking"></div>');
+                $('#makebuy-people-graph').append('<div id="makebuy-people-RevenueTrackingS"></div>');
+                $('#makebuy-people-graph').append('<div id="makebuy-people-CrossMarker"></div>');
+                plotchartRevenueTracking(chartMakeBuyPeopleRevenueTracking_20, 'makebuy-people-RevenueTracking');
+                plotchartRevenueTrackingS(chartMakeBuyPeopleRevenueTrackingS_21, 'makebuy-people-RevenueTrackingS');
+                plotchartCrossMarker(chartMakeBuyPeopleCrossMarker_22, 'makebuy-people-CrossMarker');
+
+                $('.makebuy-purchases-graph').attr('id', 'makebuy-purchases-graph');
+                $('#makebuy-purchases-graph').append('<div id="makebuy-purchases-RevenueTracking"></div>');
+                $('#makebuy-purchases-graph').append('<div id="makebuy-purchases-RevenueTrackingS"></div>');
+                $('#makebuy-purchases-graph').append('<div id="makebuy-purchases-CrossMarker"></div>');
+                plotchartRevenueTracking(chartMakeBuyPurchasesRevenueTracking_23, 'makebuy-purchases-RevenueTracking');
+                plotchartRevenueTrackingS(chartMakeBuyPurchasesRevenueTrackingS_24, 'makebuy-purchases-RevenueTrackingS');
+                plotchartCrossMarker(chartMakeBuyPurchasesCrossMarker_25, 'makebuy-purchases-CrossMarker');
+            }
+
+        }
+
+        if(graphName == ".administration-total-graph"){
+            console.log("administration chart set rendering");
+
+                if (!$('#administration-purchases-CrossMarker').length){
+
+                    $('.administration-total-graph').attr('id', 'administration-total-graph');
+                    //$('#administration-total-graph').append('<div id="administration-total-RevenueTracking"></div>');
+                    $('#administration-total-graph').append('<div id="administration-total-RevenueTrackingS"></div>');
+                    $('#administration-total-graph').append('<div id="administration-total-CrossMarker"></div>');
+                    //plotchartRevenueTracking(chartMakeBuyRevenueTracking_05,'administration-total-RevenueTracking');
+                    plotchartRevenueTrackingS (chartRunningBusTotalRevenueTrackingS_14 ,'administration-total-RevenueTrackingS');
+                    plotchartCrossMarker(chartRunningBusTotalCrossMarker_15,'administration-total-CrossMarker');
+
+                    $('.administration-people-graph').attr('id', 'administration-people-graph');
+                    //$('#administration-people-graph').append('<div id="administration-people-RevenueTracking"></div>');
+                    $('#administration-people-graph').append('<div id="administration-people-RevenueTrackingS"></div>');
+                    $('#administration-people-graph').append('<div id="administration-people-CrossMarker"></div>');
+                    //plotchartRevenueTracking(chartMakeBuyPeopleRevenueTracking_20,'administration-people-RevenueTracking');
+                    plotchartRevenueTrackingS (chartRunningBusPeopleRevenueTrackingS_16 ,'administration-people-RevenueTrackingS');
+                    plotchartCrossMarker(chartRunningBusPeopleCrossMarker_17,'administration-people-CrossMarker');
+
+                    $('.administration-purchases-graph').attr('id', 'administration-purchases-graph');
+                    //$('#administration-purchases-graph').append('<div id="administration-purchases-RevenueTracking"></div>');
+                    $('#administration-purchases-graph').append('<div id="administration-purchases-RevenueTrackingS"></div>');
+                    $('#administration-purchases-graph').append('<div id="administration-purchases-CrossMarker"></div>');
+                    //plotchartRevenueTracking(chartMakeBuyPurchasesRevenueTracking_23,'administration-purchases-RevenueTracking');
+                    plotchartRevenueTrackingS (chartRunningBusPurchasesRevenueTrackingS_18 ,'administration-purchases-RevenueTrackingS');
+                    plotchartCrossMarker(chartRunningBusPurchasesCrossMarker_19,'administration-purchases-CrossMarker');
+
+                }
+
+            }
+
+        if(graphName == ".selling-total-graph"){
+            console.log("selling chart set rendering");
+
+            if (!$('#selling-purchases-CrossMarker').length) {
+                $('.selling-total-graph').attr('id', 'selling-total-graph');
+                //$('#selling-total-graph').append('<div id="selling-total-RevenueTracking"></div>');
+                $('#selling-total-graph').append('<div id="selling-total-RevenueTrackingS"></div>');
+                $('#selling-total-graph').append('<div id="selling-total-CrossMarker"></div>');
+                //plotchartRevenueTracking(chartMakeBuyRevenueTracking_05,'selling-total-RevenueTracking');
+                plotchartRevenueTrackingS(chartObtainRetainTotalRevenueTrackingS_08, 'selling-total-RevenueTrackingS');
+                plotchartCrossMarker(chartObtainRetainTotalCrossMarker_09, 'selling-total-CrossMarker');
+
+                $('.selling-people-graph').attr('id', 'selling-people-graph');
+                //$('#selling-people-graph').append('<div id="selling-people-RevenueTracking"></div>');
+                $('#selling-people-graph').append('<div id="selling-people-RevenueTrackingS"></div>');
+                $('#selling-people-graph').append('<div id="selling-people-CrossMarker"></div>');
+                //plotchartRevenueTracking(chartMakeBuyPeopleRevenueTracking_20,'selling-people-RevenueTracking');
+                plotchartRevenueTrackingS(chartObtainRetainPeopleRevenueTrackingS_10, 'selling-people-RevenueTrackingS');
+                plotchartCrossMarker(chartObtainRetainPeopleCrossMarker_11, 'selling-people-CrossMarker');
+
+                $('.selling-purchases-graph').attr('id', 'selling-purchases-graph');
+                //$('#selling-purchases-graph').append('<div id="selling-purchases-RevenueTracking"></div>');
+                $('#selling-purchases-graph').append('<div id="selling-purchases-RevenueTrackingS"></div>');
+                $('#selling-purchases-graph').append('<div id="selling-purchases-CrossMarker"></div>');
+                //plotchartRevenueTracking(chartMakeBuyPurchasesRevenueTracking_23,'selling-purchases-RevenueTracking');
+                plotchartRevenueTrackingS(chartObtainRetainPurchasesRevenueTrackingS_12, 'selling-purchases-RevenueTrackingS');
+                plotchartCrossMarker(chartObtainRetainPurchasesCrossMarker_13, 'selling-purchases-CrossMarker');
+            }
+        }
+
+        //console.log('Months ', JSON.parse(JSON.stringify(chartDataObj.months)));
+        //console.log('Months ', chartDataObj.months.split(","));
+       /* if (chartDataObjRevenueTracking) {
+
+            var RevenueTrackingTemp = {
+                "chartName": "Revenue Tracking",
+                "Period": chartDataObjRevenueTracking.months.split(","),
+                "properties": {
+                    "line_1": {
+                        "lineName": "Revenue",
+                        "values": chartDataObjRevenueTracking.line1.split(",").map(function (item) {
+                            return parseFloat(item);
+                        })
+                    },
+                    "line_2": {
+                        "lineName": "Make Buy",
+                        "values": chartDataObjRevenueTracking.line2.split(",").map(function (item) {
+                            return parseFloat(item);
+                        })
+                    }
+                }
+            };
+        }
+
+        if (chartDataObjRevenueTrackingS) {
+            var RevenueTrackingSTemp = {
+                "chartName": "Revenue Tracking Grown and Slowing",
+                "Period": chartDataObjRevenueTrackingS.months.split(","),
+                "properties": {
+                    "line_1": {
+                        "lineName": "Revenue",
+                        "values": chartDataObjRevenueTrackingS.line1.split(",").map(function (item) {
+                            return parseFloat(item);
+                        })
+                    },
+                    "line_2": {
+                        "lineName": "Make Buy",
+                        "values": chartDataObjRevenueTrackingS.line2.split(",").map(function (item) {
+                            return parseFloat(item);
+                        })
+                    }
+                }
+            };
+        }
+        if (chartDataObjCrossMaker) {
+
+            var CrossMakerTemp = {
+                "chartName": "Cross Marker",
+                "Period": chartDataObjCrossMaker.months.split(","),
+                "properties": {
+                    "line_1": {
+                        "lineName": "GOS Smooth",
+                        "values": chartDataObjCrossMaker.line1.split(",").map(function (item) {
+                            return parseFloat(item);
+                        })
+                    },
+                    "line_2": {
+                        "lineName": "FOS Smooth",
+                        "values": chartDataObjCrossMaker.line2.split(",").map(function (item) {
+                            return parseFloat(item);
+                        })
+                    }
+                }
+            };
+        }
+        */
+       // var $chartcontainer = $('<div>').appendTo(document.body);
+
+
+
+        setTimeout(function() {
+
+            $("#revenueNum").text(Math.round(administrationTotalPercent + obtainRetainTotalPercent + makeBuyTotalPercent) + "%");
+            $("#netProfitNum").text(Math.round(netProfitTotalPercent) + "%");
+
+            $("#makeBuyTotalPercentNum").text(Math.round(makeBuyTotalPercent) + "%");
+            $("#obtainRetainTotalPercentNum").text(Math.round(obtainRetainTotalPercent) + "%");
+            $("#administrationTotalPercentNum").text(Math.round(administrationTotalPercent) + "%");
+
+            $("#makeBuyPurchasesPercentNum").text(Math.round(makeBuyPurchasesPercent) + "%");
+            $("#makeBuyPeoplePercentNum").text(Math.round(makeBuyPeoplePercent) + "%");
+            $("#obtainRetainPurchasesPercentNum").text(Math.round(obtainRetainPurchasesPercent) + "%");
+            $("#obtainRetainPeoplePercentNum").text(Math.round(obtainRetainPeoplePercent) + "%");
+            $("#administrationPurchasesPercentNum").text(Math.round(administrationPurchasesPercent) + "%");
+            $("#administrationPeoplePercentNum").text(Math.round(administrationPeoplePercent) + "%");
+
+            if (Math.round(netProfitTotalPercent) < 0) {
+                $(".profitline").css({stroke: "#E87E2B"});
+            }
+
+
+            // console.log(administrationTotalPercent + obtainRetainTotalPercent + makeBuyTotalPercent + netProfitTotalPercent );
+            Highcharts.setOptions({
+                colors: ['#E87E2B']
+            });
+
+            /*Highcharts.chart('cashFlowchartnull', {
+
+                title: {
+                    text: 'Cash Flow'
+                },
+
+                series: [{
+                    keys: ['from', 'to', 'weight'],
+                    data: [
+                        ['Start', 'Revenue', (administrationTotalPercent + obtainRetainTotalPercent + makeBuyTotalPercent ) ],
+                        ['Revenue','Expenditure',(administrationTotalPercent + obtainRetainTotalPercent + makeBuyTotalPercent )],
+                        ['Expenditure','Make/Buy',makeBuyTotalPercent],
+                        ['Make/Buy','Products MB',makeBuyPurchasesPercent],
+                        ['Make/Buy','People MB',makeBuyPeoplePercent],
+                        ['Expenditure','Ob/Retain Cust',obtainRetainTotalPercent],
+                        ['Ob/Retain Cust','Products OB',obtainRetainPurchasesPercent],
+                        ['Ob/Retain Cust','People OB',obtainRetainPeoplePercent],
+                        ['Expenditure','Running Bus',administrationTotalPercent],
+                        ['Running Bus','Products E',administrationPurchasesPercent],
+                        ['Running Bus','People E',administrationPeoplePercent],
+                        ['Revenue','Net profit',netProfitTotalPercent]
+                    ],
+                    type: 'sankey',
+                    name: 'Cash Flow'
+                }]
+
+            });*/
+
+            Highcharts.setOptions({
+                colors: ['#E87E2B', '#2287e8']
+            });
+
+               /*if (graphName ==  ".makebuy-total-graph"){
+                    $(graphName).append('<div id="'+grapId+'-RevenueTracking"></div>');
+                    $(graphName).append('<div id="'+grapId+'-RevenueTrackingS"></div>');
+                    $(graphName).append('<div id="'+grapId+'-CrossMarker"></div>');
+
+               }*/
+
+                /*if (graphName ==  ".makebuy-people-graph"){
+                    $(graphName).append('<div id="'+grapId+'-RevenueTracking"></div>');
+                    plotchartSingleAx ('hello');
+                    $(graphName).append('<div id="'+grapId+'-RevenueTrackingS"></div>');
+                    $(graphName).append('<div id="'+grapId+'-CrossMarker"></div>');
+
+                }
+
+                if (graphName ==  ".makebuy-people-graph"){
+                    $(graphName).append('<div id="'+grapId+'-RevenueTracking"></div>');
+                    plotchartSingleAx ('hello');
+                    $(graphName).append('<div id="'+grapId+'-RevenueTrackingS"></div>');
+                    $(graphName).append('<div id="'+grapId+'-CrossMarker"></div>');
+
+                }*/
+
+                /*if (chartDataObjRevenueTracking) {
+
+
+
+                    //Chart for Revenue Tracking
+                    Highcharts.chart({
+                        chart: {
+                            renderTo: grapId+'-RevenueTracking',
+                            zoomType: 'xy'
+                        },
+                        title: {
+                            text: RevenueTrackingTemp.chartName
+                        },
+                        xAxis: [{
+                            categories: RevenueTrackingTemp.Period,
+                            crosshair: true
+                        }],
+                        yAxis: [{ // Primary yAxis
+                            labels: {
+                                format: '{value} $',
+                                style: {
+                                    color: Highcharts.getOptions().colors[1]
+                                }
+                            },
+                            title: {
+                                text: RevenueTrackingTemp.properties.line_1.lineName,
+                                style: {
+                                    color: Highcharts.getOptions().colors[1]
+                                }
+                            }
+                        }, { // Secondary yAxis
+                            title: {
+                                text: RevenueTrackingTemp.properties.line_2.lineName,
+                                style: {
+                                    color: Highcharts.getOptions().colors[0]
+                                }
+                            },
+                            labels: {
+                                format: '{value} $',
+                                style: {
+                                    color: Highcharts.getOptions().colors[0]
+                                }
+                            },
+                            opposite: true
+                        }],
+                        tooltip: {
+                            shared: true
+                        },
+                        legend: {
+                            layout: 'vertical',
+                            align: 'left',
+                            x: 120,
+                            verticalAlign: 'top',
+                            y: 100,
+                            floating: true,
+                            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || 'rgba(255,255,255,0.25)'
+                        },
+                        series: [{
+                            name: RevenueTrackingTemp.properties.line_1.lineName,
+                            type: 'line',
+                            yAxis: 1,
+                            data: RevenueTrackingTemp.properties.line_1.values,
+                            tooltip: {
+                                valueSuffix: ' $'
+                            }
+
+                        }, {
+                            name: RevenueTrackingTemp.properties.line_2.lineName,
+                            type: 'line',
+                            data: RevenueTrackingTemp.properties.line_2.values,
+                            tooltip: {
+                                valueSuffix: '$'
+                            }
+                        }]
+                    });
+                }*/
+
+                /*if (chartDataObjRevenueTrackingS) {
+
+                    //Chart for Revenue Tracking S
+                    Highcharts.chart({
+                        chart: {
+                            renderTo: grapId+'-RevenueTrackingS'
+                        },
+                        title: {
+                            text: RevenueTrackingSTemp.chartName
+                        },
+                        xAxis: [{
+                            categories: RevenueTrackingSTemp.Period
+                        }],
+                        yAxis: {
+                            title: {
+                                text: 'Revenue'
+                            }
+                        },
+                        legend: {
+                            layout: 'vertical',
+                            align: 'right',
+                            verticalAlign: 'middle'
+                        },
+                        series: [{
+                            name: RevenueTrackingSTemp.properties.line_1.lineName,
+                            data: RevenueTrackingSTemp.properties.line_1.values
+                        }, {
+                            name: RevenueTrackingSTemp.properties.line_2.lineName,
+                            data: RevenueTrackingSTemp.properties.line_2.values
+                        }]
+
+                    });
+
+
+                    Highcharts.chart({
+                        chart: {
+                            renderTo: grapId+'-RevenueTrackingS',
+                            zoomType: 'xy'
+                        },
+                        title: {
+                            text: RevenueTrackingSTemp.chartName
+                        },
+                        xAxis: [{
+                            categories: RevenueTrackingSTemp.Period,
+                            crosshair: true
+                        }],
+                        yAxis: [{ // Primary yAxis
+                            labels: {
+                                format: '{value} $',
+                                style: {
+                                    color: Highcharts.getOptions().colors[1]
+                                }
+                            },
+                            title: {
+                                text: RevenueTrackingSTemp.properties.line_1.lineName,
+                                style: {
+                                    color: Highcharts.getOptions().colors[1]
+                                }
+                            }
+                        }, { // Secondary yAxis
+                            title: {
+                                text: RevenueTrackingSTemp.properties.line_2.lineName,
+                                style: {
+                                    color: Highcharts.getOptions().colors[0]
+                                }
+                            },
+                            labels: {
+                                format: '{value} $',
+                                style: {
+                                    color: Highcharts.getOptions().colors[0]
+                                }
+                            },
+                            opposite: true
+                        }],
+                        tooltip: {
+                            shared: true
+                        },
+                        legend: {
+                            layout: 'vertical',
+                            align: 'left',
+                            x: 120,
+                            verticalAlign: 'top',
+                            y: 100,
+                            floating: true,
+                            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || 'rgba(255,255,255,0.25)'
+                        },
+                        series: [{
+                            name: RevenueTrackingSTemp.properties.line_1.lineName,
+                            type: 'line',
+                            yAxis: 1,
+                            data: RevenueTrackingSTemp.properties.line_1.values,
+                            tooltip: {
+                                valueSuffix: ' $'
+                            }
+
+                        }, {
+                            name: RevenueTrackingSTemp.properties.line_2.lineName,
+                            type: 'line',
+                            data: RevenueTrackingSTemp.properties.line_2.values,
+                            tooltip: {
+                                valueSuffix: '$'
+                            }
+                        }]
+                    });
+            }*/
+
+            /*if (chartDataObjCrossMaker) {
+                    //Chart for CrossMarker
+                    Highcharts.chart({
+                        chart: {
+                            renderTo: grapId+'-CrossMarker'
+                        },
+                        title: {
+                            text: CrossMakerTemp.chartName
+                        },
+                        xAxis: [{
+                            categories: CrossMakerTemp.Period
+                        }],
+                        yAxis: {
+                            title: {
+                                text: 'Revenue'
+                            }
+                        },
+                        legend: {
+                            layout: 'vertical',
+                            align: 'right',
+                            verticalAlign: 'middle'
+                        },
+                        series: [{
+                            name: CrossMakerTemp.properties.line_1.lineName,
+                            data: CrossMakerTemp.properties.line_1.values
+                        }, {
+                            name: CrossMakerTemp.properties.line_2.lineName,
+                            data: CrossMakerTemp.properties.line_2.values
+                        }]
+
+                    });
+
+
+                }*/
 
             });
 		// TEST - example graph with hard-coded data (the data would be passed in as a parameter)

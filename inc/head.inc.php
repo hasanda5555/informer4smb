@@ -1,4 +1,5 @@
 <?php
+	require_once("../includes/config.inc.php");
 	require_once("../includes/db_functions.php");
 	require_once("../includes/common_functions.inc.php");	
 ?>
@@ -30,7 +31,7 @@
 	$ch = curl_init();
 	curl_setopt($ch,CURLOPT_URL, $GLOBALS['Base_URL']."user/userrolepermissions.php");
 	curl_setopt($ch, CURLOPT_POST, TRUE);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'rolepermission','roleid' => $role,'category'=>'Reports'));
+	curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'rolepermission','roleid' => $role,'category'=>'Summary'));
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 	$result = curl_exec($ch);
 	curl_close($ch);
@@ -49,8 +50,9 @@
 	}
 	
 	// check if user has access to reports
-	if ($permissions['Reports']==0) {
-		echo $GLOBALS['accesserrormsg']; 
+	if ($permissions['Summary']==0) {
+	    
+	   	echo $GLOBALS['accesserrormsg']; 
 		die;
 	}
 	
