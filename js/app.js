@@ -2611,7 +2611,7 @@ function prepareAccordions(context) {
 				
 				// show the dialog
 				dataDialog = BootstrapDialog.show({
-					title: 'Select data source',
+					title: 'Change Company / Period',
 					message: dialogContent,
 					cssClass: 'period-dialog',
 					type: BootstrapDialog.TYPE_PRIMARY,
@@ -2802,7 +2802,7 @@ function prepareAccordions(context) {
 				
 				// show the dialog
 				var changeDataDialog = BootstrapDialog.show({
-					title: 'Select data source',
+					title: 'Change Company / Period',
 					message: dialogContent,
 					cssClass: 'period-dialog',
 					type: BootstrapDialog.TYPE_PRIMARY,
