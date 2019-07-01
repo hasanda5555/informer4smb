@@ -352,7 +352,7 @@
 								<?php } ?>
 									
 									<!-- placeholder for 'cash flow' -->
-									<div class="layer-wrapper">
+									<div class="layer-wrapper hide">
 										<table class="layer-table ">
 											<tr class="title-row">
 												<td colspan="4">Cash Flow</td>
