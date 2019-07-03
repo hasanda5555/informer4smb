@@ -567,3 +567,19 @@ span.gauge-indicator.direction-down:before {
     padding: 0px !important;
     background: transparent;
 }
+
+.layer-table.feature .title-row .second img {
+    margin-top: 0px;
+}
+
+span.lst-year {
+    position: absolute;
+    font-size: 15px;
+    font-weight: 500;
+    left: 10px;
+    top: 2px;
+}
+
+td.second {
+    position: relative;
+}

@@ -192,6 +192,7 @@
 														Revenue
 													</td>
 													<td class="second" rowspan="3">
+													    <span class="lst-year">Last Year</span>
 														<span class="number <?php if($summaryData->revenuePercent < 0) echo 'negative'; ?>">
 															<img class="arrow-icon" src="img/arrow-<?php echo ($summaryData->revenuePercent < 0 ? 'down-' : 'up-') . $summaryData->revenueIndicator; ?>.png"/>
 															<?php echo prettifyPercentSales($summaryData->revenuePercent, true); ?>
@@ -217,6 +218,7 @@
 														Profit
 													</td>
 													<td class="second" rowspan="3">
+													    <span class="lst-year">Last Year</span>
 														<span class="number <?php if($summaryData->profitPercent < 0) echo 'negative'; ?>">
 															<img class="arrow-icon" src="img/arrow-<?php echo ($summaryData->profitPercent < 0 ? 'down-' : 'up-') . $summaryData->profitIndicator; ?>.png"/>
 															<?php echo prettifyPercentSales($summaryData->profitPercent, true); ?>
