@@ -342,7 +342,7 @@
 														<img class="arrow-icon" src="img/arrow-<?php echo ($summaryData->adminPercent < 0 ? 'down-' : 'up-') . $summaryData->adminIndicator; ?>.png"/>
 															<?php echo prettifyDollarAmount($summaryData->admin); ?>
 													</span>
-													<span class="support">Admin</span>
+													<span class="support">Run Business</span>
 												</td>
 											</tr>
 											<tr class="bottom-row">
