@@ -31,7 +31,7 @@
 	$ch = curl_init();
 	curl_setopt($ch,CURLOPT_URL, $GLOBALS['Base_URL']."user/userrolepermissions.php");
 	curl_setopt($ch, CURLOPT_POST, TRUE);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'rolepermission','roleid' => $role,'category'=>'Summary'));
+	curl_setopt($ch, CURLOPT_POSTFIELDS, array('mode' => 'userrolepermissions','roleid' => $role));
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 	$result = curl_exec($ch);
 	curl_close($ch);
@@ -46,16 +46,16 @@
 			$access=trim($element->access);
 			$permissions[$category]=$access;
 		}
-		//print_r($permissions);
+		print_r($permissions);
 	}
 	
 	// check if user has access to reports
-	if ($permissions['Summary']==0) {
+/*	if ($permissions['Summary']==0) {
 	    
 	   	echo $GLOBALS['accesserrormsg']; 
 		die;
 	}
-	
+	*/
 	// GET REPORT VALUES
 	$selectedCompany = (isset($_GET['company'])) ? $_GET['company']:$_POST['company'];
 	$selectedMonth = (isset($_GET['month'])) ? $_GET['month']:$_POST['month'];
@@ -70,5 +70,5 @@
 	
 	
 	// TEMP
-	$demo = true;
+	//$demo = true;
 ?>

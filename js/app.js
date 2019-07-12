@@ -646,9 +646,12 @@ function plotGraph(page, section) {
         if( graphName == '.dashboard-graph') {
             console.log("dashboard chart set rendering");
             if (!$('#dashboard-netprofitloss-CrossMarker').length){
-                $('#dashboard-graph').append('<div class="dash-chart-holder" id="dashboard-makebuy-total-RevenueTrackingS"></div>');
-                $('#dashboard-graph').append('<div class="dash-chart-holder"  id="dashboard-selling-CrossMarker"></div>');
-                $('#dashboard-graph').append('<div class="dash-chart-holder" id="dashboard-netprofitloss-CrossMarker"></div>');
+
+                $('#dashboard-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#dashboard-makebuy-total-RevenueTrackingS-tab">Revenue Tracking Growing and Slowing</a></li><li><a data-toggle="tab" href="#dashboard-selling-CrossMarker-tab"> Revenue Cross Marker</a></li><li><a data-toggle="tab" href="#dashboard-netprofitloss-CrossMarker-tab">Net profit loss Cross Marker</a></li></ul> <div class="tab-content"> <div id="dashboard-makebuy-total-RevenueTrackingS-tab" class="tab-pane fade in active"></div><div id="dashboard-selling-CrossMarker-tab" class="tab-pane fade"></div><div id="dashboard-netprofitloss-CrossMarker-tab" class="tab-pane fade"></div></div>');
+
+                $('#dashboard-makebuy-total-RevenueTrackingS-tab').append('<div class="dash-chart-holder" id="dashboard-makebuy-total-RevenueTrackingS"></div>');
+                $('#dashboard-selling-CrossMarker-tab').append('<div class="dash-chart-holder"  id="dashboard-selling-CrossMarker"></div>');
+                $('#dashboard-netprofitloss-CrossMarker-tab').append('<div class="dash-chart-holder" id="dashboard-netprofitloss-CrossMarker"></div>');
                 plotchartRevenueTrackingS(chartNetProfitRevenueTrackingS_01, 'dashboard-makebuy-total-RevenueTrackingS','Revenue','Net Profit/Loss');
                 plotchartCrossMarker(chartRevenueCrossMarker_04, 'dashboard-selling-CrossMarker','Revenue Cross Marker');
                 plotchartCrossMarker(chartNetProfitCrossMarker_03, 'dashboard-netprofitloss-CrossMarker','Net Profit/Loss Cross Marker');
@@ -670,9 +673,11 @@ function plotGraph(page, section) {
             console.log("netprofitloss chart set rendering");
             if (!$('#netprofitloss-total-CrossMarker').length) {
                 $('.netprofitloss-total-graph').attr('id', 'netprofitloss-total-graph');
+
+                $('#netprofitloss-total-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#netprofitloss-total-RevenueTrackingS-tab">Net Profit/Loss Growing and Slowing</a></li><li><a data-toggle="tab" href="#netprofitloss-total-CrossMarker-tab"> Net Profit/Loss Cross Marker</a></li></ul><div class="tab-content"> <div id="netprofitloss-total-RevenueTrackingS-tab" class="tab-pane fade in active"></div><div id="netprofitloss-total-CrossMarker-tab" class="tab-pane fade"></div></div>');
                 //$('#netprofitloss-total-graph').append('<div id="netprofitloss-total-RevenueTracking"></div>');
-                $('#netprofitloss-total-graph').append('<div id="netprofitloss-total-RevenueTrackingS"></div>');
-                $('#netprofitloss-total-graph').append('<div id="netprofitloss-total-CrossMarker"></div>');
+                $('#netprofitloss-total-RevenueTrackingS-tab').append('<div id="netprofitloss-total-RevenueTrackingS"></div>');
+                $('#netprofitloss-total-CrossMarker-tab').append('<div id="netprofitloss-total-CrossMarker"></div>');
                 plotchartRevenueTrackingS(chartNetProfitRevenueTrackingS_01, 'netprofitloss-total-RevenueTrackingS','Revenue','Net Profit/Loss');
                 plotchartCrossMarker(chartNetProfitCrossMarker_03, 'netprofitloss-total-CrossMarker','Cross Marker');
             }
@@ -682,9 +687,9 @@ function plotGraph(page, section) {
             console.log("grossprofit chart set rendering");
             if (!$('#grossprofit-total-CrossMarker').length) {
                 $('.grossprofit-total-graph').attr('id', 'grossprofit-total-graph');
-                //$('#netprofitloss-total-graph').append('<div id="netprofitloss-total-RevenueTracking"></div>');
-                $('#grossprofit-total-graph').append('<div id="grossprofit-total-RevenueTrackingS"></div>');
-                $('#grossprofit-total-graph').append('<div id="grossprofit-total-CrossMarker"></div>');
+                $('#grossprofit-total-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#grossprofit-total-RevenueTrackingS-tab">Net Profit/Loss Growing and Slowing</a></li><li><a data-toggle="tab" href="#grossprofit-total-CrossMarker-tab"> Net Profit/Loss Cross Marker</a></li></ul><div class="tab-content"> <div id="grossprofit-total-RevenueTrackingS-tab" class="tab-pane fade in active"></div><div id="grossprofit-total-CrossMarker-tab" class="tab-pane fade"></div></div>');
+                $('#grossprofit-total-RevenueTrackingS-tab').append('<div id="grossprofit-total-RevenueTrackingS"></div>');
+                $('#grossprofit-total-CrossMarker-tab').append('<div id="grossprofit-total-CrossMarker"></div>');
                 plotchartRevenueTrackingS(chartGrossProfitTotalRevenueTrackingS_26, 'grossprofit-total-RevenueTrackingS','Revenue','Gross Profit');
                 plotchartCrossMarker(chartGrossProfitTotalCrossMarker_27, 'grossprofit-total-CrossMarker','Cross Marker');
             }
@@ -695,25 +700,28 @@ function plotGraph(page, section) {
             if (!$('#makebuy-purchases-CrossMarker').length) {
 
                 $('.makebuy-total-graph').attr('id', 'makebuy-total-graph');
-                $('#makebuy-total-graph').append('<div id="makebuy-total-RevenueTracking"></div>');
-                $('#makebuy-total-graph').append('<div id="makebuy-total-RevenueTrackingS"></div>');
-                $('#makebuy-total-graph').append('<div id="makebuy-total-CrossMarker"></div>');
+                $('#makebuy-total-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#makebuy-total-RevenueTracking-tab">Net Profit/Loss Growing and Slowing</a></li><li><a data-toggle="tab" href="#makebuy-total-RevenueTrackingS-tab"> Net Profit/Loss Cross Marker</a></li><li><a data-toggle="tab" href="#makebuy-total-CrossMarker-tab"> Net Profit/Loss Cross Marker</a></li></ul><div class="tab-content"> <div id="makebuy-total-RevenueTracking-tab" class="tab-pane fade in active"></div><div id="makebuy-total-RevenueTrackingS-tab" class="tab-pane fade"></div><div id="makebuy-total-CrossMarker-tab" class="tab-pane fade"></div></div>');
+                $('#makebuy-total-RevenueTracking-tab').append('<div id="makebuy-total-RevenueTracking"></div>');
+                $('#makebuy-total-RevenueTrackingS-tab').append('<div id="makebuy-total-RevenueTrackingS"></div>');
+                $('#makebuy-total-CrossMarker-tab').append('<div id="makebuy-total-CrossMarker"></div>');
                 plotchartRevenueTracking(chartMakeBuyRevenueTracking_05, 'makebuy-total-RevenueTracking');
                 plotchartRevenueTrackingS(chartMakeBuyRevenueTrackingS_06, 'makebuy-total-RevenueTrackingS','Revenue','Make/Buy');
                 plotchartCrossMarker(chartMakeBuyCrossMarker_07, 'makebuy-total-CrossMarker','Cross Marker');
 
                 $('.makebuy-people-graph').attr('id', 'makebuy-people-graph');
-                $('#makebuy-people-graph').append('<div id="makebuy-people-RevenueTracking"></div>');
-                $('#makebuy-people-graph').append('<div id="makebuy-people-RevenueTrackingS"></div>');
-                $('#makebuy-people-graph').append('<div id="makebuy-people-CrossMarker"></div>');
+                $('#makebuy-people-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#makebuy-people-RevenueTracking-tab">Net Profit/Loss Growing and Slowing</a></li><li><a data-toggle="tab" href="#makebuy-people-RevenueTrackingS-tab"> Net Profit/Loss Cross Marker</a></li><li><a data-toggle="tab" href="#makebuy-people-CrossMarker-tab"> Net Profit/Loss Cross Marker</a></li></ul><div class="tab-content"> <div id="makebuy-people-RevenueTracking-tab" class="tab-pane fade in active"></div><div id="makebuy-people-RevenueTrackingS-tab" class="tab-pane fade"></div><div id="makebuy-people-CrossMarker-tab" class="tab-pane fade"></div></div>');
+                $('#makebuy-people-RevenueTracking-tab').append('<div id="makebuy-people-RevenueTracking"></div>');
+                $('#makebuy-people-RevenueTrackingS-tab').append('<div id="makebuy-people-RevenueTrackingS"></div>');
+                $('#makebuy-people-CrossMarker-tab').append('<div id="makebuy-people-CrossMarker"></div>');
                 plotchartRevenueTracking(chartMakeBuyPeopleRevenueTracking_20, 'makebuy-people-RevenueTracking');
                 plotchartRevenueTrackingS(chartMakeBuyPeopleRevenueTrackingS_21, 'makebuy-people-RevenueTrackingS','Revenue','Make/Buy');
                 plotchartCrossMarker(chartMakeBuyPeopleCrossMarker_22, 'makebuy-people-CrossMarker','Cross Marker');
 
                 $('.makebuy-purchases-graph').attr('id', 'makebuy-purchases-graph');
-                $('#makebuy-purchases-graph').append('<div id="makebuy-purchases-RevenueTracking"></div>');
-                $('#makebuy-purchases-graph').append('<div id="makebuy-purchases-RevenueTrackingS"></div>');
-                $('#makebuy-purchases-graph').append('<div id="makebuy-purchases-CrossMarker"></div>');
+                $('#makebuy-purchases-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#makebuy-purchases-RevenueTracking-tab">Net Profit/Loss Growing and Slowing</a></li><li><a data-toggle="tab" href="#makebuy-purchases-RevenueTrackingS-tab"> Net Profit/Loss Cross Marker</a></li><li><a data-toggle="tab" href="#makebuy-purchases-CrossMarker-tab"> Net Profit/Loss Cross Marker</a></li></ul><div class="tab-content"> <div id="makebuy-purchases-RevenueTracking-tab" class="tab-pane fade in active"></div><div id="makebuy-purchases-RevenueTrackingS-tab" class="tab-pane fade"></div><div id="makebuy-purchases-CrossMarker-tab" class="tab-pane fade"></div></div>');
+                $('#makebuy-purchases-RevenueTracking-tab').append('<div id="makebuy-purchases-RevenueTracking"></div>');
+                $('#makebuy-purchases-RevenueTrackingS-tab').append('<div id="makebuy-purchases-RevenueTrackingS"></div>');
+                $('#makebuy-purchases-CrossMarker-tab').append('<div id="makebuy-purchases-CrossMarker"></div>');
                 plotchartRevenueTracking(chartMakeBuyPurchasesRevenueTracking_23, 'makebuy-purchases-RevenueTracking');
                 plotchartRevenueTrackingS(chartMakeBuyPurchasesRevenueTrackingS_24, 'makebuy-purchases-RevenueTrackingS','Revenue','Make/Buy');
                 plotchartCrossMarker(chartMakeBuyPurchasesCrossMarker_25, 'makebuy-purchases-CrossMarker','Cross Marker');
@@ -727,25 +735,25 @@ function plotGraph(page, section) {
                 if (!$('#administration-purchases-CrossMarker').length){
 
                     $('.administration-total-graph').attr('id', 'administration-total-graph');
-                    //$('#administration-total-graph').append('<div id="administration-total-RevenueTracking"></div>');
-                    $('#administration-total-graph').append('<div id="administration-total-RevenueTrackingS"></div>');
-                    $('#administration-total-graph').append('<div id="administration-total-CrossMarker"></div>');
+                    $('#administration-total-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#administration-total-RevenueTrackingS-tab">Net Profit/Loss Growing and Slowing</a></li><li><a data-toggle="tab" href="#administration-total-CrossMarker-tab"> Net Profit/Loss Cross Marker</a></li></ul><div class="tab-content"> <div id="administration-total-RevenueTrackingS-tab" class="tab-pane fade in active"></div><div id="administration-total-CrossMarker-tab" class="tab-pane fade"></div></div>');
+                    $('#administration-total-RevenueTrackingS-tab').append('<div id="administration-total-RevenueTrackingS"></div>');
+                    $('#administration-total-CrossMarker-tab').append('<div id="administration-total-CrossMarker"></div>');
                     //plotchartRevenueTracking(chartMakeBuyRevenueTracking_05,'administration-total-RevenueTracking');
                     plotchartRevenueTrackingS (chartRunningBusTotalRevenueTrackingS_14 ,'administration-total-RevenueTrackingS','Revenue','Running Bus');
                     plotchartCrossMarker(chartRunningBusTotalCrossMarker_15,'administration-total-CrossMarker','Cross Marker');
 
                     $('.administration-people-graph').attr('id', 'administration-people-graph');
-                    //$('#administration-people-graph').append('<div id="administration-people-RevenueTracking"></div>');
-                    $('#administration-people-graph').append('<div id="administration-people-RevenueTrackingS"></div>');
-                    $('#administration-people-graph').append('<div id="administration-people-CrossMarker"></div>');
+                    $('#administration-people-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#administration-people-RevenueTrackingS-tab">Net Profit/Loss Growing and Slowing</a></li><li><a data-toggle="tab" href="#administration-people-CrossMarker-tab"> Net Profit/Loss Cross Marker</a></li></ul><div class="tab-content"> <div id="administration-people-RevenueTrackingS-tab" class="tab-pane fade in active"></div><div id="administration-people-CrossMarker-tab" class="tab-pane fade"></div></div>');
+                    $('#administration-people-RevenueTrackingS-tab').append('<div id="administration-people-RevenueTrackingS"></div>');
+                    $('#administration-people-CrossMarker-tab').append('<div id="administration-people-CrossMarker"></div>');
                     //plotchartRevenueTracking(chartMakeBuyPeopleRevenueTracking_20,'administration-people-RevenueTracking');
                     plotchartRevenueTrackingS (chartRunningBusPeopleRevenueTrackingS_16 ,'administration-people-RevenueTrackingS','Revenue','Running Bus - people');
                     plotchartCrossMarker(chartRunningBusPeopleCrossMarker_17,'administration-people-CrossMarker','Cross Marker');
 
                     $('.administration-purchases-graph').attr('id', 'administration-purchases-graph');
-                    //$('#administration-purchases-graph').append('<div id="administration-purchases-RevenueTracking"></div>');
-                    $('#administration-purchases-graph').append('<div id="administration-purchases-RevenueTrackingS"></div>');
-                    $('#administration-purchases-graph').append('<div id="administration-purchases-CrossMarker"></div>');
+                    $('#administration-purchases-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#administration-purchases-RevenueTrackingS-tab">Net Profit/Loss Growing and Slowing</a></li><li><a data-toggle="tab" href="#administration-purchases-CrossMarker-tab"> Net Profit/Loss Cross Marker</a></li></ul><div class="tab-content"> <div id="administration-purchases-RevenueTrackingS-tab" class="tab-pane fade in active"></div><div id="administration-purchases-CrossMarker-tab" class="tab-pane fade"></div></div>');
+                    $('#administration-purchases-RevenueTrackingS-tab').append('<div id="administration-purchases-RevenueTrackingS"></div>');
+                    $('#administration-purchases-CrossMarker-tab').append('<div id="administration-purchases-CrossMarker"></div>');
                     //plotchartRevenueTracking(chartMakeBuyPurchasesRevenueTracking_23,'administration-purchases-RevenueTracking');
                     plotchartRevenueTrackingS (chartRunningBusPurchasesRevenueTrackingS_18 ,'administration-purchases-RevenueTrackingS','Revenue','Running Bus - purchases');
                     plotchartCrossMarker(chartRunningBusPurchasesCrossMarker_19,'administration-purchases-CrossMarker','Cross Marker');
@@ -759,25 +767,25 @@ function plotGraph(page, section) {
 
             if (!$('#selling-purchases-CrossMarker').length) {
                 $('.selling-total-graph').attr('id', 'selling-total-graph');
-                //$('#selling-total-graph').append('<div id="selling-total-RevenueTracking"></div>');
-                $('#selling-total-graph').append('<div id="selling-total-RevenueTrackingS"></div>');
-                $('#selling-total-graph').append('<div id="selling-total-CrossMarker"></div>');
+                $('#selling-total-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#selling-total-RevenueTrackingS-tab">Net Profit/Loss Growing and Slowing</a></li><li><a data-toggle="tab" href="#selling-total-CrossMarker-tab"> Net Profit/Loss Cross Marker</a></li></ul><div class="tab-content"> <div id="selling-total-RevenueTrackingS-tab" class="tab-pane fade in active"></div><div id="selling-total-CrossMarker-tab" class="tab-pane fade"></div></div>');
+                $('#selling-total-RevenueTrackingS-tab').append('<div id="selling-total-RevenueTrackingS"></div>');
+                $('#selling-total-CrossMarker-tab').append('<div id="selling-total-CrossMarker"></div>');
                 //plotchartRevenueTracking(chartMakeBuyRevenueTracking_05,'selling-total-RevenueTracking');
                 plotchartRevenueTrackingS(chartObtainRetainTotalRevenueTrackingS_08, 'selling-total-RevenueTrackingS','Revenue','Ob/Retain Customers');
                 plotchartCrossMarker(chartObtainRetainTotalCrossMarker_09, 'selling-total-CrossMarker','Cross Marker');
 
                 $('.selling-people-graph').attr('id', 'selling-people-graph');
-                //$('#selling-people-graph').append('<div id="selling-people-RevenueTracking"></div>');
-                $('#selling-people-graph').append('<div id="selling-people-RevenueTrackingS"></div>');
-                $('#selling-people-graph').append('<div id="selling-people-CrossMarker"></div>');
+                $('#selling-people-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#selling-people-RevenueTrackingS-tab">Net Profit/Loss Growing and Slowing</a></li><li><a data-toggle="tab" href="#selling-people-CrossMarker-tab"> Net Profit/Loss Cross Marker</a></li></ul><div class="tab-content"> <div id="selling-people-RevenueTrackingS-tab" class="tab-pane fade in active"></div><div id="selling-people-CrossMarker-tab" class="tab-pane fade"></div></div>');
+                $('#selling-people-RevenueTrackingS-tab').append('<div id="selling-people-RevenueTrackingS"></div>');
+                $('#selling-people-CrossMarker-tab').append('<div id="selling-people-CrossMarker"></div>');
                 //plotchartRevenueTracking(chartMakeBuyPeopleRevenueTracking_20,'selling-people-RevenueTracking');
                 plotchartRevenueTrackingS(chartObtainRetainPeopleRevenueTrackingS_10, 'selling-people-RevenueTrackingS','Revenue','Ob/Retain Cust - People');
                 plotchartCrossMarker(chartObtainRetainPeopleCrossMarker_11, 'selling-people-CrossMarker','Cross Marker');
 
                 $('.selling-purchases-graph').attr('id', 'selling-purchases-graph');
-                //$('#selling-purchases-graph').append('<div id="selling-purchases-RevenueTracking"></div>');
-                $('#selling-purchases-graph').append('<div id="selling-purchases-RevenueTrackingS"></div>');
-                $('#selling-purchases-graph').append('<div id="selling-purchases-CrossMarker"></div>');
+                $('#selling-purchases-graph').append('<ul class="nav nav-tabs"> <li class="active"><a data-toggle="tab" href="#selling-purchases-RevenueTrackingS-tab">Net Profit/Loss Growing and Slowing</a></li><li><a data-toggle="tab" href="#selling-purchases-CrossMarker-tab"> Net Profit/Loss Cross Marker</a></li></ul><div class="tab-content"> <div id="selling-purchases-RevenueTrackingS-tab" class="tab-pane fade in active"></div><div id="selling-purchases-CrossMarker-tab" class="tab-pane fade"></div></div>');
+                $('#selling-purchases-RevenueTrackingS-tab').append('<div id="selling-purchases-RevenueTrackingS"></div>');
+                $('#selling-purchases-CrossMarker-tab').append('<div id="selling-purchases-CrossMarker"></div>');
                 //plotchartRevenueTracking(chartMakeBuyPurchasesRevenueTracking_23,'selling-purchases-RevenueTracking');
                 plotchartRevenueTrackingS(chartObtainRetainPurchasesRevenueTrackingS_12, 'selling-purchases-RevenueTrackingS','Revenue','Ob/Retain Cust - Purchases');
                 plotchartCrossMarker(chartObtainRetainPurchasesCrossMarker_13, 'selling-purchases-CrossMarker','Cross Marker');

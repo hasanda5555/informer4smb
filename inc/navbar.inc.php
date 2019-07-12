@@ -73,11 +73,14 @@
 					
 				</ul>
 			</li>
-			<?php } ?>
+			<?php } 
 			
-			<li><a href="#upload" data-ma-action="navigate" data-nav-data="upload">Upload</a></li>
-			<li><a href="#mapdata" data-ma-action="navigate" data-nav-data="mapdata">Map Data</a></li>
+			if (array_key_exists("Upload Data",$permissions)) 
+			    echo "<li><a href=\"#upload\" data-ma-action=\"navigate\" data-nav-data=\"upload\">Upload</a></li>";
+			if (array_key_exists("Map Data",$permissions)) 
+			    echo "<li><a href=\"#mapdata\" data-ma-action=\"navigate\" data-nav-data=\"mapdata\">Map Data</a></li>";
 			
+			?>
 			<hr/>
 			
 			<li><a href="#" data-action="changeData"><i class="zmdi zmdi-refresh"></i> Change Company / Period</a></li>

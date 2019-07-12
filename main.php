@@ -264,9 +264,9 @@
 												<td class="tertiary-cell">
 													<span class="number <?php if($summaryData->percentProjection < 0) echo 'negative'; ?>">
 														<img class="arrow-icon" src="img/arrow-<?php echo ($summaryData->percentProjection < 0 ? 'down-' : 'up-') . $summaryData->percentProjectionIndicator; ?>.png"/>
-														<?php echo prettifyPercent($summaryData->percentProjection, true); ?>
+														<span class="precentage"><?php echo prettifyPercent($summaryData->percentProjection, true); ?></span>
 													</span>
-													<span class="support">Sales</span>
+													<span class="support">Revenue</span>
 												</td>
 											</tr>
 											<tr class="bottom-row">
@@ -302,9 +302,9 @@
 												<td class="tertiary-cell">
 													<span class="number <?php if($summaryData->percentYTD < 0) echo 'negative'; ?>">
 														<img class="arrow-icon" src="img/arrow-<?php echo ($summaryData->percentYTD < 0 ? 'down-' : 'up-') . $summaryData->percentYTDIndicator; ?>.png"/>
-														<?php echo prettifyPercent($summaryData->percentYTD, true); ?>
+														<span class="precentage"><?php echo prettifyPercent($summaryData->percentYTD, true); ?></span>
 													</span>
-													<span class="support">Sales</span>
+													<span class="support">Revenue</span>
 												</td>
 											</tr>
 											<tr class="bottom-row">
@@ -328,19 +328,19 @@
 														<img class="arrow-icon" src="img/arrow-<?php echo ($summaryData->operationsPercent < 0 ? 'down-' : 'up-') . $summaryData->operationsIndicator; ?>.png"/>
 														<?php echo prettifyDollarAmount($summaryData->operations); ?>
 													</span>
-													<span class="support">Operations</span>
+													<span class="support">Make/Buy</span>
 												</td>
 												<td class="secondary-cell">
 													<span class="number <?php if($summaryData->selling < 0) echo 'negative'; ?>">
 														<img class="arrow-icon" src="img/arrow-<?php echo ($summaryData->sellingPercent < 0 ? 'down-' : 'up-') . $summaryData->sellingIndicator; ?>.png"/>
 														<?php echo prettifyDollarAmount($summaryData->selling); ?>
 													</span>
-													<span class="support">Selling</span>
+													<span class="support">Ob/Retain Customers</span>
 												</td>
 												<td class="tertiary-cell">
 													<span class="number <?php if($summaryData->admin < 0) echo 'negative'; ?>">
 														<img class="arrow-icon" src="img/arrow-<?php echo ($summaryData->adminPercent < 0 ? 'down-' : 'up-') . $summaryData->adminIndicator; ?>.png"/>
-															<?php echo prettifyDollarAmount($summaryData->admin); ?>
+														<?php echo prettifyDollarAmount($summaryData->admin); ?>
 													</span>
 													<span class="support">Run Business</span>
 												</td>
@@ -476,23 +476,44 @@
 
 
 								</div>
-								<?php } ?>
+								<?php } 
 								
-								<!-- side menu items -->
-								<div class="col-xs-12 col-md-4"><button class="btn btn-primary btn-inverted btn-lg" <?php if($noData) { ?> data-action="changeData" data-page="menu" <?php } else {?> data-ma-action="navigate" data-nav-data="overview"<?php }?>><i class="zmdi zmdi-money"></i> Menu</button></div>
-								
-								<div class="col-xs-6 col-md-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="upload" ><i class="zmdi zmdi-upload"></i> Upload</button></div>
-								<div class="col-xs-6 col-md-2 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="user-management"><i class="zmdi zmdi-account"></i> User Management</button></div>
-								
-								<div class="col-xs-6 col-md-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="report" ><i class="zmdi zmdi-collection-text"></i> P/L Reports</button></div>
-								<div class="col-xs-6 col-md-2 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="report-bs" ><i class="zmdi zmdi-collection-item"></i> BS Reports</button></div>
+							// -- side menu items --
+							
+			if (array_key_exists("Summary",$permissions)){
+				echo "<div class=\"col-xs-12 col-md-4\"><button class=\"btn btn-primary btn-inverted btn-lg\""; 
+				
+    		    if($noData)
+    			    echo "data-action=\"changeData\" data-page=\"menu\""; 
+    			else 
+    				echo "data-ma-action=\"navigate\" data-nav-data=\"overview\"";
 
-								<div class="col-xs-6 col-md-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="mapdata" ><i class="zmdi zmdi-shuffle"></i> Map Data</button></div>
-                                <div class="col-xs-6 col-md-2 right"><button class="btn btn-primary btn-inverted btn-lg" disabled="disabled"><i class="zmdi zmdi-card"></i> Coming soon</button></div>
+  		        echo "><i class=\"zmdi zmdi-money\"></i> Menu</button></div>";
+			}
 
+			if (array_key_exists("Reports",$permissions)){		
+				echo "<div class=\"col-xs-6 col-md-2 \"><button class=\"btn btn-primary btn-inverted btn-lg\" data-ma-action=\"navigate\" data-nav-data=\"report\" ><i class=\"zmdi zmdi-collection-text\"></i> P/L Reports</button></div>";
+					
+				echo "<div class=\"col-xs-6 col-md-2 \"><button class=\"btn btn-primary btn-inverted btn-lg\" data-ma-action=\"navigate\" data-nav-data=\"report-bs\" ><i class=\"zmdi zmdi-collection-item\"></i> BS Reports</button></div>";
+			}
+			
+			if (array_key_exists("Upload Data",$permissions)) 
+			    echo "<div class=\"col-xs-6 col-md-2 \"><button class=\"btn btn-primary btn-inverted btn-lg\" data-ma-action=\"navigate\" data-nav-data=\"upload\" ><i class=\"zmdi zmdi-upload\"></i> Upload</button></div>";
+			                
+			if (array_key_exists("Map Data",$permissions)) 
+			    echo "<div class=\"col-xs-6 col-md-2 \"><button class=\"btn btn-primary btn-inverted btn-lg\" data-ma-action=\"navigate\" data-nav-data=\"mapdata\" ><i class=\"zmdi zmdi-shuffle\"></i> Map Data</button></div>";
+			    
+			if (array_key_exists("Admin users",$permissions))   
+    		    echo "<div class=\"col-xs-6 col-md-2 \"><button class=\"btn btn-primary btn-inverted btn-lg\" data-ma-action=\"navigate\" data-nav-data=\"user-management\"><i class=\"zmdi zmdi-account\"></i> User Management</button></div>";
+    		    
+                echo "<div class=\"col-xs-6 col-md-2 \"><button class=\"btn btn-primary btn-inverted btn-lg\" disabled=\"disabled\"><i class=\"zmdi zmdi-card\"></i> Coming soon</button></div>";
 
-								<div class="col-xs-6 col-md-2 left"><button class="btn btn-primary btn-inverted btn-lg" disabled="disabled"><i class="zmdi zmdi-directions"></i> Planning Assistant</button></div>
-								<div class="col-xs-6 col-md-2 right"><button class="btn btn-primary btn-inverted btn-lg" disabled="disabled"><i class="zmdi zmdi-trending-up"></i> Forecasting Module</button></div>
+                echo "<div class=\"col-xs-6 col-md-2 \"><button class=\"btn btn-primary btn-inverted btn-lg\" disabled=\"disabled\"><i class=\"zmdi zmdi-directions\"></i> Planning Assistant</button></div>";
+                
+                echo "<div class=\"col-xs-6 col-md-2 \"><button class=\"btn btn-primary btn-inverted btn-lg\" disabled=\"disabled\"><i class=\"zmdi zmdi-trending-up\"></i> Forecasting Module</button></div>";
+			
+			?>	
+				
 							</div>
 						</div>
 						
@@ -500,17 +521,17 @@
 							<!-- the menu content, linking to the layer screens -->
 							<div class="row">
 								<?php if(isset($layerSales) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 col-md-offset-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="sales"><i class="zmdi zmdi-shopping-cart"></i> <?php echo $GLOBALS['revenue_label']; ?> </button></div>
+								<div class="col-xs-6 col-md-4 col-md-offset-2 "><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="sales"><i class="zmdi zmdi-shopping-cart"></i> <?php echo $GLOBALS['revenue_label']; ?> </button></div>
 								<?php } if(isset($layerNetProfitLoss) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="netprofitloss"><i class="zmdi zmdi-money"></i> <?php echo $GLOBALS['netprofit_label']; ?> </button></div>
+								<div class="col-xs-6 col-md-4 "><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="netprofitloss"><i class="zmdi zmdi-money"></i> <?php echo $GLOBALS['netprofit_label']; ?> </button></div>
 								<?php } if(isset($layerMakeBuy) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 col-md-offset-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="makebuy"><i class="zmdi zmdi-label"></i> <?php echo $GLOBALS['operations_label']; ?></button></div>
+								<div class="col-xs-6 col-md-4 col-md-offset-2 "><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="makebuy"><i class="zmdi zmdi-label"></i> <?php echo $GLOBALS['operations_label']; ?></button></div>
 								<?php } if(isset($labelsGrossProfit) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="grossprofit"><i class="zmdi zmdi-money-box"></i> <?php echo $GLOBALS['grossprofit_label']; ?></button></div>
+								<div class="col-xs-6 col-md-4 "><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="grossprofit"><i class="zmdi zmdi-money-box"></i> <?php echo $GLOBALS['grossprofit_label']; ?></button></div>
 								<?php } if(isset($layerSelling) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 col-md-offset-2 left"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="selling"><i class="zmdi zmdi-receipt"></i> <?php echo $GLOBALS['sellingexp_label']; ?></button></div>
+								<div class="col-xs-6 col-md-4 col-md-offset-2 "><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="selling"><i class="zmdi zmdi-receipt"></i> <?php echo $GLOBALS['sellingexp_label']; ?></button></div>
 								<?php } if(isset($layerAdmin) || $demo) { ?>
-								<div class="col-xs-6 col-md-4 right"><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="administration"><i class="zmdi zmdi-assignment"></i> <?php echo $GLOBALS['administration_label']; ?></button></div>
+								<div class="col-xs-6 col-md-4 "><button class="btn btn-primary btn-inverted btn-lg" data-ma-action="navigate" data-nav-data="administration"><i class="zmdi zmdi-assignment"></i> <?php echo $GLOBALS['administration_label']; ?></button></div>
 								<?php } ?>
 								
 							</div>

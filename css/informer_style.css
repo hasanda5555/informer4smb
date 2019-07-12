@@ -545,9 +545,9 @@ span.gauge-indicator.direction-down:before {
 }
 
 .tab-content .graph-container {
-    background: transparent;
-    padding: 0px;
-    border-radius: 0px;
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
 }
 
 .tab-content .graph-container .highcharts-container {
@@ -555,6 +555,7 @@ span.gauge-indicator.direction-down:before {
     overflow: hidden;
     border-radius: 4px;
     margin-top: 7px;
+    width: 100% !important;
 }
 
 #dashboard .graph-container {
@@ -563,10 +564,6 @@ span.gauge-indicator.direction-down:before {
     border-radius: 7px;
 }
 
-#dashboard .graph-container.second {
-    padding: 0px !important;
-    background: transparent;
-}
 
 .layer-table.feature .title-row .second img {
     margin-top: 0px;
@@ -582,4 +579,22 @@ span.lst-year {
 
 td.second {
     position: relative;
+}
+
+.graph-container .nav-tabs>li.active>a,
+.graph-container .nav-tabs>li.active>a:focus,
+.graph-container .nav-tabs>li>a {
+    color: #25457D;
+}
+
+.graph-container .nav-tabs>li.active>a {
+    font-weight: bold;
+}
+
+.graph-container .nav-tabs>li.active>a:hover {
+    color: #333333;
+}
+
+span.number.negative .precentage:before {
+    content: "- ";
 }

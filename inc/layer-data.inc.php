@@ -122,7 +122,7 @@
 						$summaryData->profitPercent = $labelData->percentchange;
 						$summaryData->profitTotalPercent = $labelData->currpercent;
 						$summaryData->profitIndicator = $labelData->indicator;
-						$summaryData->profitForecast=($labelData->cloudindicator*0.25);
+						$summaryData->profitForecast=($labelData->cloudindicator*0.40);
 
 						foreach($labelData->charts->chart as $chart) {
 
@@ -269,7 +269,7 @@
 						$summaryData->revenue = $labelData->currentamount;
 						$summaryData->revenuePercent = $labelData->percentchange;
 						$summaryData->revenueIndicator = $labelData->indicator;
-						$summaryData->revenueForecast=(	$labelData->cloudindicator*0.35);
+						$summaryData->revenueForecast=(	$labelData->cloudindicator*0.20);
 
 						foreach($labelData->charts->chart as $chart) {
 
@@ -463,7 +463,9 @@
 		$summaryData->forecastProjection=0;
 	}
 	
-	$summaryData->totalForecast=round(($summaryData->forecastProjection+$summaryData->forecastYTD+$summaryData->profitForecast+$summaryData->revenueForecast+$summaryData->profitProjectionForecast)/5);
+//	$summaryData->totalForecast=round(($summaryData->forecastProjection+$summaryData->forecastYTD+$summaryData->profitForecast+$summaryData->revenueForecast+$summaryData->profitProjectionForecast)/5);
+	
+	$summaryData->totalForecast=ceil(($summaryData->forecastProjection+$summaryData->forecastYTD+$summaryData->profitForecast+$summaryData->revenueForecast+$summaryData->profitProjectionForecast)/5);
 
 
 ?>
