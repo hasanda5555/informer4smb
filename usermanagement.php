@@ -806,8 +806,8 @@
         <div class="form-group hide-for-edit">
             <label class="control-label col-sm-3" for="verifyemail">Send Verification Email:</label>
             <div class="col-sm-9" id="regtype">
-              <label class="radio-inline"><input type="radio"  value="" name="verifyemail">To Me</label>
-              <label class="radio-inline"><input type="radio" value="" name="verifyemail">To User</label>
+              <label class="radio-inline"><input type="radio"  value="<?php echo $_SESSION['userid']; ?>" name="verifyemail" >To Me</label>
+              <label class="radio-inline"><input type="radio" value="" name="verifyemail" onclick="this.value=document.getElementById('loginid').value">To User</label>
               </div>
           </div>
 
